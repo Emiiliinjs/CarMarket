@@ -2,7 +2,7 @@
     @php
         $images = $listing->galleryImages;
         $primaryImage = $images->first();
-        $primaryUrl = $primaryImage ? asset('storage/'.$primaryImage->filename) : asset('images/car.png');
+        $primaryUrl = $primaryImage ? route('listing-images.show', $primaryImage) : asset('images/car.png');
         $additionalImages = $images->skip(1);
     @endphp
 
@@ -39,7 +39,7 @@
                         <div class="grid grid-cols-2 gap-4 sm:grid-cols-3">
                             @foreach($additionalImages as $image)
                                 <div class="overflow-hidden rounded-2xl bg-gray-100 shadow-sm">
-                                    <img src="{{ asset('storage/'.$image->filename) }}" alt="Papildu auto bilde" class="h-32 w-full object-cover" loading="lazy">
+                                    <img src="{{ route('listing-images.show', $image) }}" alt="Papildu auto bilde" class="h-32 w-full object-cover" loading="lazy">
                                 </div>
                             @endforeach
                         </div>
