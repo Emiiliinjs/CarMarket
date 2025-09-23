@@ -1,73 +1,101 @@
 <x-app-layout>
+    @php
+        $images = $listing->images;
+        $primaryImage = $images->first();
+        $primaryUrl = $primaryImage ? asset('storage/'.$primaryImage->filename) : asset('images/car.png');
+        $additionalImages = $images->skip(1);
+    @endphp
+
     <x-slot name="header">
-        <h2 class="text-xl font-semibold leading-tight text-gray-800">
-            {{ $listing->marka }} {{ $listing->modelis }} ({{ $listing->gads }})
-        </h2>
+        <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+                <h2 class="text-2xl font-semibold leading-tight text-gray-900">{{ $listing->marka }} {{ $listing->modelis }} ({{ $listing->gads }})</h2>
+                <p class="text-sm text-gray-500">Galerija ar {{ $images->count() }} bild{{ $images->count() === 1 ? 'i' : 'ēm' }} – optimizētas ātrai ielādei un izskatam uz jebkuras ierīces.</p>
+            </div>
+        </div>
     </x-slot>
 
-    <div class="py-6">
-        <div class="mx-auto max-w-4xl sm:px-6 lg:px-8 bg-white rounded-lg shadow p-6">
+    <div class="space-y-10">
+        <div class="grid gap-8 lg:grid-cols-5">
+            <div class="space-y-6 lg:col-span-3">
+                <div class="overflow-hidden rounded-3xl bg-white/80 shadow-xl ring-1 ring-gray-100">
+                    <div class="relative aspect-[4/3]">
+                        <img src="{{ $primaryUrl }}" alt="{{ $listing->marka }} {{ $listing->modelis }}" class="h-full w-full object-cover" loading="lazy">
+                        @if($images->count() > 1)
+                            <span class="absolute right-4 top-4 inline-flex items-center gap-1 rounded-full bg-black/60 px-3 py-1 text-xs font-semibold text-white backdrop-blur">
+                                <svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                    <path d="M4.5 4A1.5 1.5 0 0 0 3 5.5v7A1.5 1.5 0 0 0 4.5 14h7A1.5 1.5 0 0 0 13 12.5v-7A1.5 1.5 0 0 0 11.5 4h-7Z" />
+                                    <path d="M6.5 6h8A1.5 1.5 0 0 1 16 7.5v6A1.5 1.5 0 0 1 14.5 15h-8A1.5 1.5 0 0 1 5 13.5v-6A1.5 1.5 0 0 1 6.5 6Z" opacity=".6" />
+                                </svg>
+                                <span>{{ $images->count() }} bild{{ $images->count() === 1 ? 'e' : 'es' }}</span>
+                            </span>
+                        @endif
+                    </div>
+                </div>
 
-            <!-- Sludinājuma info -->
-            <div class="text-gray-700 space-y-2">
-                <p><strong>Nobraukums:</strong> {{ number_format($listing->nobraukums, 0, '.', ' ') }} km</p>
-                <p><strong>Cena:</strong> <span class="text-green-600 font-semibold">{{ number_format($listing->cena, 2, '.', ' ') }} €</span></p>
-                <p><strong>Degviela:</strong> {{ ucfirst($listing->degviela) }}</p>
-                <p><strong>Pārnesumkārba:</strong> {{ ucfirst($listing->parnesumkarba) }}</p>
-
-                @if($listing->apraksts)
-                    <div class="mt-2 text-gray-600">
-                        <h4 class="font-semibold mb-1">Apraksts</h4>
-                        <p>{{ $listing->apraksts }}</p>
+                @if($additionalImages->count())
+                    <div class="rounded-3xl bg-white/70 p-4 shadow ring-1 ring-gray-100">
+                        <h3 class="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-500">Papildu bildes</h3>
+                        <div class="grid grid-cols-2 gap-4 sm:grid-cols-3">
+                            @foreach($additionalImages as $image)
+                                <div class="overflow-hidden rounded-2xl bg-gray-100 shadow-sm">
+                                    <img src="{{ asset('storage/'.$image->filename) }}" alt="Papildu auto bilde" class="h-32 w-full object-cover" loading="lazy">
+                                </div>
+                            @endforeach
+                        </div>
                     </div>
                 @endif
             </div>
 
-            <!-- Galvenā bilde -->
-            <div class="flex justify-center my-4">
-                @php
-                    $firstImage = $listing->images->first();
-                @endphp
-                <div class="w-32 h-32 sm:w-40 sm:h-40 rounded-lg overflow-hidden shadow-lg">
-                    <img src="{{ $firstImage ? asset('storage/'.$firstImage->filename) : asset('images/car.png') }}"
-                         alt="{{ $listing->marka }} {{ $listing->modelis }}"
-                         class="w-full h-full object-cover object-center">
-                </div>
-            </div>
-
-            <!-- Galerija (skip first image) -->
-            @if($listing->images->count() > 1)
-                <div class="mt-6 grid grid-cols-2 sm:grid-cols-3 gap-4">
-                    @foreach($listing->images->skip(1) as $image)
-                        <div class="overflow-hidden rounded-lg shadow hover:shadow-lg transition transform hover:scale-105">
-                            <img src="{{ asset('storage/'.$image->filename) }}"
-                                 alt="Auto bilde"
-                                 class="w-full h-32 sm:h-40 object-cover object-center">
+            <div class="space-y-6 lg:col-span-2">
+                <div class="space-y-6 rounded-3xl bg-white/80 p-6 shadow-xl ring-1 ring-gray-100">
+                    <div class="flex items-baseline justify-between gap-4">
+                        <div>
+                            <p class="text-sm font-medium text-gray-500">Cena</p>
+                            <p class="text-3xl font-semibold text-indigo-600">{{ number_format($listing->cena, 2, '.', ' ') }} €</p>
                         </div>
-                    @endforeach
+                        <span class="inline-flex items-center rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-600">{{ ucfirst($listing->degviela) }} • {{ ucfirst($listing->parnesumkarba) }}</span>
+                    </div>
+
+                    <dl class="grid gap-4 text-sm text-gray-600">
+                        <div class="flex items-center justify-between rounded-2xl bg-gray-50/70 px-4 py-3">
+                            <dt class="font-medium text-gray-500">Marka / modelis</dt>
+                            <dd class="font-semibold text-gray-900">{{ $listing->marka }} {{ $listing->modelis }}</dd>
+                        </div>
+                        <div class="flex items-center justify-between rounded-2xl bg-gray-50/70 px-4 py-3">
+                            <dt class="font-medium text-gray-500">Izlaiduma gads</dt>
+                            <dd class="font-semibold text-gray-900">{{ $listing->gads }}</dd>
+                        </div>
+                        <div class="flex items-center justify-between rounded-2xl bg-gray-50/70 px-4 py-3">
+                            <dt class="font-medium text-gray-500">Nobraukums</dt>
+                            <dd class="font-semibold text-gray-900">{{ number_format($listing->nobraukums, 0, '.', ' ') }} km</dd>
+                        </div>
+                    </dl>
+
+                    @if($listing->apraksts)
+                        <div class="space-y-2">
+                            <h3 class="text-base font-semibold text-gray-900">Apraksts</h3>
+                            <p class="text-sm leading-relaxed text-gray-600">{{ $listing->apraksts }}</p>
+                        </div>
+                    @endif
                 </div>
-            @endif
 
-            <!-- Rediģēt un dzēst pogas -->
-            @if(auth()->check() && (auth()->user()->id === $listing->user_id || auth()->user()->is_admin))
-                <div class="mt-6 flex flex-col sm:flex-row sm:space-x-4 space-y-2 sm:space-y-0">
-                    <a href="{{ route('listings.edit', $listing->id) }}"
-                       class="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow hover:bg-blue-700 transition">
-                        Rediģēt sludinājumu
-                    </a>
+                @if(auth()->check() && (auth()->user()->id === $listing->user_id || auth()->user()->is_admin))
+                    <div class="flex flex-col gap-3 rounded-3xl bg-white/80 p-6 shadow ring-1 ring-gray-100 sm:flex-row sm:items-center sm:justify-between">
+                        <a href="{{ route('listings.edit', $listing->id) }}" class="inline-flex w-full items-center justify-center rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-md transition hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto">
+                            Rediģēt sludinājumu
+                        </a>
 
-                    <form action="{{ route('listings.destroy', $listing->id) }}" method="POST"
-                          onsubmit="return confirm('Vai tiešām dzēst šo sludinājumu?');">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit"
-                                class="px-6 py-3 bg-red-600 text-white font-semibold rounded-lg shadow hover:bg-red-700 transition">
-                            Dzēst sludinājumu
-                        </button>
-                    </form>
-                </div>
-            @endif
-
+                        <form action="{{ route('listings.destroy', $listing->id) }}" method="POST" class="w-full sm:w-auto" onsubmit="return confirm('Vai tiešām dzēst šo sludinājumu?');">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="inline-flex w-full items-center justify-center rounded-xl bg-rose-600 px-5 py-2.5 text-sm font-semibold text-white shadow-md transition hover:bg-rose-700 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-2">
+                                Dzēst sludinājumu
+                            </button>
+                        </form>
+                    </div>
+                @endif
+            </div>
         </div>
     </div>
 </x-app-layout>
