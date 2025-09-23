@@ -1,7 +1,7 @@
 @php
-    $coverImage = $listing->images->first();
+    $coverImage = $listing->galleryImages->first();
     $imageUrl = $coverImage ? asset('storage/'.$coverImage->filename) : asset('images/car.png');
-    $galleryCount = $listing->images->count();
+    $galleryCount = $listing->galleryImages->count();
 @endphp
 
 <article class="group flex flex-col overflow-hidden rounded-3xl bg-white/80 shadow-lg ring-1 ring-gray-100 transition duration-300 hover:-translate-y-1 hover:shadow-2xl">
