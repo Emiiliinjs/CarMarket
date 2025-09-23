@@ -92,14 +92,14 @@
                     </div>
                 </section>
 
-                @if($listing->images->count())
+                @if($listing->galleryImages->count())
                     <section class="space-y-4">
                         <div class="flex items-center justify-between">
                             <h3 class="text-lg font-semibold text-gray-900">Esošās bildes</h3>
-                            <span class="text-sm text-gray-500">Kopā {{ $listing->images->count() }} {{ $listing->images->count() === 1 ? 'bilde' : 'bildes' }}</span>
+                            <span class="text-sm text-gray-500">Kopā {{ $listing->galleryImages->count() }} {{ $listing->galleryImages->count() === 1 ? 'bilde' : 'bildes' }}</span>
                         </div>
                         <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
-                            @foreach($listing->images as $image)
+                            @foreach($listing->galleryImages as $image)
                                 <div class="overflow-hidden rounded-2xl bg-gray-100 shadow-sm">
                                     <img src="{{ asset('storage/'.$image->filename) }}" alt="Esoša auto bilde" class="h-32 w-full object-cover">
                                 </div>

@@ -113,7 +113,7 @@ class ListingController extends Controller
         }
 
         // Dzēst arī bildes no storage
-        foreach ($listing->images as $image) {
+        foreach ($listing->galleryImages as $image) {
             \Storage::disk('public')->delete($image->filename);
             $image->delete();
         }
@@ -135,7 +135,7 @@ class ListingController extends Controller
             }
 
             $path = $this->compressAndStoreImage($image);
-            $listing->images()->create(['filename' => $path]);
+            $listing->galleryImages()->create(['filename' => $path]);
         }
     }
 

@@ -21,8 +21,8 @@ class Listing extends Model
         'apraksts',
     ];
 
-    // Automātiski ielādē bildes, ja vajadzīgs
-    protected $with = ['images'];
+    // Automātiski ielādē galerijas bildes, ja vajadzīgs
+    protected $with = ['galleryImages'];
 
     /**
      * Lietotājs, kas ievietoja sludinājumu
@@ -35,7 +35,7 @@ class Listing extends Model
     /**
      * Sludinājuma bildes (vienam sludinājumam var būt vairākas bildes)
      */
-    public function images()
+    public function galleryImages()
     {
         return $this->hasMany(ListingImage::class);
     }

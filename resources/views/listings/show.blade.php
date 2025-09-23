@@ -1,6 +1,6 @@
 <x-app-layout>
     @php
-        $images = $listing->images;
+        $images = $listing->galleryImages;
         $primaryImage = $images->first();
         $primaryUrl = $primaryImage ? asset('storage/'.$primaryImage->filename) : asset('images/car.png');
         $additionalImages = $images->skip(1);
