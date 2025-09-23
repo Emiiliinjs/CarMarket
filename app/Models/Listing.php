@@ -21,13 +21,20 @@ class Listing extends Model
         'apraksts',
     ];
 
-    // Lietotājs, kas ievietoja sludinājumu
+    // Automātiski ielādē bildes, ja vajadzīgs
+    protected $with = ['images'];
+
+    /**
+     * Lietotājs, kas ievietoja sludinājumu
+     */
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    // Sludinājuma bildes (vienam sludinājumam var būt vairākas bildes)
+    /**
+     * Sludinājuma bildes (vienam sludinājumam var būt vairākas bildes)
+     */
     public function images()
     {
         return $this->hasMany(ListingImage::class);

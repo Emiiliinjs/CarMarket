@@ -10,8 +10,10 @@
             @if($listings->count())
                 <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                     @foreach($listings as $listing)
-                        <div class="overflow-hidden bg-white rounded-lg shadow">
-                            <div class="p-4">
+                        <div class="relative bg-white rounded-lg shadow hover:shadow-lg transition p-4 flex items-center justify-between">
+
+                            <!-- Teksts pa kreisi -->
+                            <div class="flex-1 pr-4">
                                 <h3 class="text-lg font-bold">{{ $listing->marka }} {{ $listing->modelis }} ({{ $listing->gads }})</h3>
                                 <p class="mt-1 text-sm text-gray-600">
                                     Nobraukums: {{ number_format($listing->nobraukums, 0, '.', ' ') }} km
@@ -24,14 +26,26 @@
                                 </p>
 
                                 <div class="mt-4">
-    <a href="{{ route('listings.show', $listing->id) }}"
-       class="inline-flex items-center justify-center w-full sm:w-auto px-6 py-3 text-gray-800 text-base font-semibold bg-blue-300 rounded-lg shadow-lg hover:bg-blue-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition">
-        Skatīt detaļas
-    </a>
-</div>
-
-
+                                    <a href="{{ route('listings.show', $listing->id) }}"
+                                       class="inline-flex items-center justify-center px-4 py-2 text-gray-800 text-sm font-semibold bg-gray-100 rounded shadow hover:bg-gray-200 transition">
+                                        Skatīt detaļas
+                                    </a>
+                                </div>
                             </div>
+
+                            <!-- Lielāka bilde pa labi ar proporciju saglabāšanu -->
+                            <div class="flex-shrink-0 w-32 h-32 rounded-lg overflow-hidden shadow-lg">
+                                @if($listing->images->count())
+                                    <img src="{{ asset('storage/'.$listing->images->first()->filename) }}"
+                                         alt="{{ $listing->marka }} {{ $listing->modelis }}"
+                                         class="w-full h-full object-cover object-center">
+                                @else
+                                    <img src="{{ Storage::url('stockcar.png') }}"
+                                         alt="Default auto bilde"
+                                         class="w-full h-full object-cover object-center">
+                                @endif
+                            </div>
+
                         </div>
                     @endforeach
                 </div>

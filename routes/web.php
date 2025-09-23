@@ -7,13 +7,19 @@ use Illuminate\Support\Facades\Route;
 // Mājaslapa - rāda visus sludinājumus
 Route::get('/', [ListingController::class, 'index'])->name('listings.index');
 
-// Sludinājumu CRUD
+// Sludinājumu CRUD (auth required)
 Route::middleware('auth')->group(function () {
+    // Create & Store
     Route::get('/listings/create', [ListingController::class, 'create'])->name('listings.create');
     Route::post('/listings', [ListingController::class, 'store'])->name('listings.store');
+
+    // Edit, Update, Destroy
+    Route::get('/listings/{listing}/edit', [ListingController::class, 'edit'])->name('listings.edit');
+    Route::put('/listings/{listing}', [ListingController::class, 'update'])->name('listings.update');
+    Route::delete('/listings/{listing}', [ListingController::class, 'destroy'])->name('listings.destroy');
 });
 
-// Sludinājuma detaļas (skatīt jebkurš)
+// Sludinājuma detaļas (skatīt jebkurš) — jābūt **pēc create/edit maršrutiem**
 Route::get('/listings/{listing}', [ListingController::class, 'show'])->name('listings.show');
 
 // Dashboard
