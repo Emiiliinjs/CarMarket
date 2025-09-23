@@ -1,11 +1,16 @@
 <?php
 
 use App\Http\Controllers\ListingController;
+use App\Http\Controllers\ListingImageController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 // Mājaslapa - rāda visus sludinājumus
 Route::get('/', [ListingController::class, 'index'])->name('listings.index');
+
+// Galerijas bilžu apkalpošana
+Route::get('/listing-images/{image}', [ListingImageController::class, 'show'])
+    ->name('listing-images.show');
 
 // Sludinājumu CRUD (auth required)
 Route::middleware('auth')->group(function () {

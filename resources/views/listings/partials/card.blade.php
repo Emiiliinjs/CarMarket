@@ -1,6 +1,6 @@
 @php
     $coverImage = $listing->galleryImages->first();
-    $imageUrl = $coverImage ? asset('storage/'.$coverImage->filename) : asset('images/car.png');
+    $imageUrl = $coverImage ? route('listing-images.show', $coverImage) : asset('images/car.png');
     $galleryCount = $listing->galleryImages->count();
 @endphp
 
