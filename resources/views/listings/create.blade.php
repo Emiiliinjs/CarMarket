@@ -1,87 +1,125 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-xl font-semibold leading-tight text-gray-800">
-            Pievienot jaunu sludinājumu
-        </h2>
+        <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <h2 class="text-2xl font-semibold leading-tight text-gray-900">
+                Pievienot jaunu sludinājumu
+            </h2>
+            <p class="text-sm text-gray-500">Ievadi automašīnas informāciju un pievieno bildes, lai tās tiktu kompresētas un parādītas galerijā.</p>
+        </div>
     </x-slot>
 
-    <div class="py-6">
-        <div class="mx-auto max-w-4xl sm:px-6 lg:px-8 bg-white rounded-lg shadow p-6">
-            <form method="POST" action="{{ route('listings.store') }}" enctype="multipart/form-data">
+    <div class="mx-auto w-full max-w-5xl">
+        <div class="space-y-10 rounded-3xl bg-white/80 p-8 shadow-xl ring-1 ring-gray-100 backdrop-blur">
+            <form method="POST" action="{{ route('listings.store') }}" enctype="multipart/form-data" class="space-y-10" x-data="imageUpload()">
                 @csrf
 
-                <!-- Auto info -->
-                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                    <div>
-                        <label class="block text-sm font-medium">Marka</label>
-                        <input type="text" name="marka" class="w-full rounded border-gray-300" required>
+                <section class="space-y-6">
+                    <div class="grid gap-6 md:grid-cols-2">
+                        <div>
+                            <label class="text-sm font-semibold text-gray-700" for="marka">Marka</label>
+                            <input id="marka" type="text" name="marka" value="{{ old('marka') }}" class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/30" required>
+                            @error('marka')
+                                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div>
+                            <label class="text-sm font-semibold text-gray-700" for="modelis">Modelis</label>
+                            <input id="modelis" type="text" name="modelis" value="{{ old('modelis') }}" class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/30" required>
+                            @error('modelis')
+                                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div>
+                            <label class="text-sm font-semibold text-gray-700" for="gads">Gads</label>
+                            <input id="gads" type="number" name="gads" value="{{ old('gads') }}" class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/30" required>
+                            @error('gads')
+                                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div>
+                            <label class="text-sm font-semibold text-gray-700" for="nobraukums">Nobraukums (km)</label>
+                            <input id="nobraukums" type="number" name="nobraukums" value="{{ old('nobraukums') }}" class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/30" required>
+                            @error('nobraukums')
+                                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div>
+                            <label class="text-sm font-semibold text-gray-700" for="cena">Cena (€)</label>
+                            <input id="cena" type="number" step="0.01" name="cena" value="{{ old('cena') }}" class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/30" required>
+                            @error('cena')
+                                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div>
+                            <label class="text-sm font-semibold text-gray-700" for="degviela">Degviela</label>
+                            <select id="degviela" name="degviela" class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/30" required>
+                                <option {{ old('degviela') === 'Benzīns' ? 'selected' : '' }}>Benzīns</option>
+                                <option {{ old('degviela') === 'Dīzelis' ? 'selected' : '' }}>Dīzelis</option>
+                                <option {{ old('degviela') === 'Elektriska' ? 'selected' : '' }}>Elektriska</option>
+                                <option {{ old('degviela') === 'Hibrīds' ? 'selected' : '' }}>Hibrīds</option>
+                            </select>
+                            @error('degviela')
+                                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div>
+                            <label class="text-sm font-semibold text-gray-700" for="parnesumkarba">Pārnesumkārba</label>
+                            <select id="parnesumkarba" name="parnesumkarba" class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/30" required>
+                                <option {{ old('parnesumkarba') === 'Manuālā' ? 'selected' : '' }}>Manuālā</option>
+                                <option {{ old('parnesumkarba') === 'Automātiskā' ? 'selected' : '' }}>Automātiskā</option>
+                            </select>
+                            @error('parnesumkarba')
+                                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium">Modelis</label>
-                        <input type="text" name="modelis" class="w-full rounded border-gray-300" required>
+                        <label class="text-sm font-semibold text-gray-700" for="apraksts">Apraksts</label>
+                        <textarea id="apraksts" name="apraksts" rows="4" class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/30">{{ old('apraksts') }}</textarea>
+                        @error('apraksts')
+                            <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+                </section>
+
+                <section class="space-y-4">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-900">Auto bildes</h3>
+                            <p class="text-sm text-gray-500">Velc un nomet bildes vai izvēlies tās no ierīces. Tās automātiski tiks samazinātas līdz optimālam izmēram.</p>
+                        </div>
+                        <button type="button" @click="$refs.fileInput.click()" class="inline-flex items-center rounded-xl bg-indigo-50 px-4 py-2 text-sm font-semibold text-indigo-600 transition hover:bg-indigo-100">
+                            Pievienot bildes
+                        </button>
                     </div>
 
-                    <div>
-                        <label class="block text-sm font-medium">Gads</label>
-                        <input type="number" name="gads" class="w-full rounded border-gray-300" required>
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium">Nobraukums (km)</label>
-                        <input type="number" name="nobraukums" class="w-full rounded border-gray-300" required>
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium">Cena (€)</label>
-                        <input type="number" step="0.01" name="cena" class="w-full rounded border-gray-300" required>
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium">Degviela</label>
-                        <select name="degviela" class="w-full rounded border-gray-300" required>
-                            <option>Benzīns</option>
-                            <option>Dīzelis</option>
-                            <option>Elektriska</option>
-                            <option>Hibrīds</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium">Pārnesumkārba</label>
-                        <select name="parnesumkarba" class="w-full rounded border-gray-300" required>
-                            <option>Manuālā</option>
-                            <option>Automātiskā</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- Apraksts -->
-                <div class="mt-4">
-                    <label class="block text-sm font-medium">Apraksts</label>
-                    <textarea name="apraksts" rows="4" class="w-full rounded border-gray-300"></textarea>
-                </div>
-
-                <!-- Drag & Drop bildes -->
-                <div class="mt-4" x-data="imageUpload()">
-                    <label class="block text-sm font-medium mb-2">Auto bildes</label>
-                    <div 
-                        @dragover.prevent="dragover=true" 
-                        @dragleave.prevent="dragover=false" 
+                    <div
+                        @dragover.prevent="dragover = true"
+                        @dragleave.prevent="dragover = false"
                         @drop.prevent="handleDrop($event)"
-                        :class="{'border-blue-400 bg-blue-50': dragover}"
-                        class="w-full border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer transition-colors"
+                        :class="{'border-indigo-400 bg-indigo-50/80': dragover}"
+                        class="flex min-h-[180px] flex-col items-center justify-center gap-4 rounded-2xl border-2 border-dashed border-indigo-200 bg-white/70 p-8 text-center transition"
                     >
                         <template x-if="files.length === 0">
-                            <p class="text-gray-500">Velc šeit bildes vai klikšķini, lai izvēlētos</p>
+                            <div class="space-y-2">
+                                <span class="inline-flex items-center justify-center rounded-full bg-indigo-100 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-indigo-600">Vairākas bildes</span>
+                                <p class="text-sm text-gray-500">Atbalstīti formāti: JPG, PNG, WEBP. Maks. izmērs 2MB katrai bildei.</p>
+                            </div>
                         </template>
 
                         <template x-if="files.length > 0">
-                            <div class="flex flex-wrap justify-center gap-2">
+                            <div class="grid w-full grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
                                 <template x-for="(file, index) in files" :key="index">
-                                    <div class="relative w-20 h-20 overflow-hidden rounded-lg shadow">
-                                        <img :src="file.url" class="w-full h-full object-cover">
-                                        <button type="button" @click="remove(index)" class="absolute top-0 right-0 bg-red-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">×</button>
+                                    <div class="group relative overflow-hidden rounded-2xl bg-gray-100 shadow-sm">
+                                        <img :src="file.url" class="h-28 w-full object-cover transition duration-200 group-hover:scale-105" alt="Augšupielādētā bilde">
+                                        <button type="button" @click="remove(index)" class="absolute right-2 top-2 inline-flex h-7 w-7 items-center justify-center rounded-full bg-black/60 text-xs font-semibold text-white transition hover:bg-black/80">×</button>
                                     </div>
                                 </template>
                             </div>
@@ -89,22 +127,25 @@
 
                         <input type="file" name="images[]" multiple class="hidden" x-ref="fileInput" @change="handleFiles($event)" accept="image/*">
                     </div>
-                    <button type="button" @click="$refs.fileInput.click()" class="mt-2 px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">Izvēlēties failus</button>
-                    <p class="text-xs text-gray-500 mt-1">Varat izvēlēties vairākas bildes (maks. 2MB katra).</p>
-                </div>
 
-                <!-- Submit -->
-                <div class="mt-6">
-                    <button type="submit"
-                        class="w-full sm:w-auto px-6 py-3 text-gray-800 text-base font-semibold bg-gray-200 rounded-lg shadow hover:bg-gray-300 focus:ring-2 focus:ring-offset-2 focus:ring-gray-400 transition">
-                        Ievietot
+                    @error('images')
+                        <p class="text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                    @error('images.*')
+                        <p class="text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </section>
+
+                <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <p class="text-sm text-gray-500">Ar augšupielādi tu apliecini, ka bilde nepārkāpj autortiesības.</p>
+                    <button type="submit" class="inline-flex items-center justify-center rounded-xl bg-indigo-600 px-8 py-3 text-base font-semibold text-white shadow-lg transition hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                        Ievietot sludinājumu
                     </button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Alpine.js script -->
     <script>
         function imageUpload() {
             return {
