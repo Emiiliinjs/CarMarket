@@ -3,6 +3,9 @@
 use App\Http\Controllers\ListingController;
 use App\Http\Controllers\ListingImageController;
 use App\Http\Controllers\ProfileController;
+use App\Models\Listing;
+use App\Models\ListingImage;
+use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
 // Mājaslapa - rāda visus sludinājumus
@@ -29,7 +32,17 @@ Route::get('/listings/{listing}', [ListingController::class, 'show'])->name('lis
 
 // Dashboard
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    $stats = [
+        'listingCount' => Listing::count(),
+        'userCount' => User::count(),
+        'averagePrice' => Listing::avg('cena'),
+        'totalImageCount' => ListingImage::count(),
+        'listingsThisMonth' => Listing::where('created_at', '>=', now()->startOfMonth())->count(),
+        'newUsersThisMonth' => User::where('created_at', '>=', now()->startOfMonth())->count(),
+        'latestListings' => Listing::latest()->take(5)->get(),
+    ];
+
+    return view('dashboard', $stats);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 // Profila CRUD (Laravel Breeze default)
