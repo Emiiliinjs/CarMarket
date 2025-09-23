@@ -40,7 +40,8 @@
                                          alt="{{ $listing->marka }} {{ $listing->modelis }}"
                                          class="w-full h-full object-cover object-center">
                                 @else
-                                    <img src="{{ Storage::url('stockcar.png') }}"
+
+                    <img src="{{ $listing->images->first() ? asset('storage/'.$listing->images->first()->path) : asset('images/car.png') }}"
                                          alt="Default auto bilde"
                                          class="w-full h-full object-cover object-center">
                                 @endif

@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('degviela');
             $table->string('parnesumkarba');
             $table->text('apraksts')->nullable();
+            $table->json('images')->nullable(); // šeit glabājam bildes kā JSON masīvu
             $table->timestamps();
         });
     }
