@@ -49,6 +49,14 @@ class LoginRequest extends FormRequest
             ]);
         }
 
+        if (Auth::user()?->is_blocked) {
+            Auth::logout();
+
+            throw ValidationException::withMessages([
+                'email' => 'Profils ir bloķēts. Lūdzu, sazinies ar administratoru.',
+            ]);
+        }
+
         RateLimiter::clear($this->throttleKey());
     }
 

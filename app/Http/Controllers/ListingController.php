@@ -12,17 +12,79 @@ use Illuminate\Validation\ValidationException;
 
 class ListingController extends Controller
 {
-    // Rāda visus sludinājumus ar pagination
-    public function index()
+    // Rāda visus sludinājumus ar filtriem, kārtošanu un meklēšanu
+    public function index(Request $request)
     {
-        $listings = Listing::latest()->paginate(9);
-        return view('listings.index', compact('listings'));
+        $filters = $request->only([
+            'marka',
+            'modelis',
+            'price_min',
+            'price_max',
+            'year_from',
+            'year_to',
+            'degviela',
+            'status',
+            'search',
+            'sort',
+        ]);
+
+        $query = Listing::query()
+            ->approved()
+            ->whereHas('user', fn ($builder) => $builder->where('is_blocked', false))
+            ->filter($filters);
+
+        $sort = $filters['sort'] ?? 'newest';
+        $query = $this->applySorting($query, $sort);
+
+        $listings = $query->paginate(9)->withQueryString();
+
+        $favoriteIds = [];
+
+        if ($request->user()) {
+            $favoriteIds = $request->user()->favoriteListings()->pluck('listings.id')->all();
+        }
+
+        $fuelOptions = ['Benzīns', 'Dīzelis', 'Elektriska', 'Hibrīds'];
+
+        $sortOptions = [
+            'newest' => 'Jaunākie sludinājumi',
+            'price_asc' => 'Cena: no zemākās',
+            'price_desc' => 'Cena: no augstākās',
+            'year_desc' => 'Gads: jaunākie',
+            'year_asc' => 'Gads: vecākie',
+        ];
+
+        $statusOptions = [
+            Listing::STATUS_AVAILABLE => 'Pieejams',
+            Listing::STATUS_RESERVED => 'Rezervēts',
+            Listing::STATUS_SOLD => 'Pārdots',
+        ];
+
+        return view('listings.index', [
+            'listings' => $listings,
+            'filters' => $filters,
+            'sortOptions' => $sortOptions,
+            'statusOptions' => $statusOptions,
+            'fuelOptions' => $fuelOptions,
+            'favoriteIds' => $favoriteIds,
+        ]);
     }
 
     // Rāda konkrēta sludinājuma detaļas
     public function show(Listing $listing)
     {
-        return view('listings.show', compact('listing'));
+        if (! $listing->is_approved && Auth::id() !== $listing->user_id && ! Auth::user()?->is_admin) {
+            abort(404);
+        }
+
+        $isFavorite = Auth::check()
+            ? Auth::user()->favoriteListings()->where('listings.id', $listing->id)->exists()
+            : false;
+
+        return view('listings.show', [
+            'listing' => $listing,
+            'isFavorite' => $isFavorite,
+        ]);
     }
 
     // Forma jaunam sludinājumam
@@ -43,11 +105,16 @@ class ListingController extends Controller
             'degviela' => 'required|string',
             'parnesumkarba' => 'required|string',
             'apraksts' => 'nullable|string',
+            'status' => 'required|in:' . implode(',', Listing::STATUSES),
+            'contact_info' => 'nullable|string|max:1000',
+            'show_contact' => 'nullable|boolean',
             'images' => 'nullable|array',
             'images.*' => 'image|max:2048', // katra bilde max 2MB
         ]);
 
         $validated['user_id'] = Auth::id();
+        $validated['show_contact'] = $request->boolean('show_contact', false);
+        $validated['is_approved'] = Auth::user()?->is_admin ?? false;
         unset($validated['images']);
 
         $listing = Listing::create($validated);
@@ -88,11 +155,18 @@ class ListingController extends Controller
             'degviela' => 'required|string',
             'parnesumkarba' => 'required|string',
             'apraksts' => 'nullable|string',
+            'status' => 'required|in:' . implode(',', Listing::STATUSES),
+            'contact_info' => 'nullable|string|max:1000',
+            'show_contact' => 'nullable|boolean',
             'images' => 'nullable|array',
             'images.*' => 'image|max:2048',
         ]);
 
         unset($validated['images']);
+        $validated['show_contact'] = $request->boolean('show_contact', false);
+        if (! Auth::user()->is_admin) {
+            $validated['is_approved'] = false;
+        }
 
         $listing->update($validated);
 
@@ -122,7 +196,48 @@ class ListingController extends Controller
 
         return redirect()->route('listings.index')
                          ->with('success', 'Sludinājums veiksmīgi dzēsts!');
-}
+    }
+
+    public function myListings(Request $request)
+    {
+        $filters = $request->only([
+            'marka',
+            'modelis',
+            'status',
+            'search',
+        ]);
+
+        $query = $request->user()->listings()->with(['galleryImages'])->filter($filters);
+
+        $sort = $request->input('sort', 'newest');
+        $query = $this->applySorting($query, $sort);
+
+        $listings = $query->paginate(9)->withQueryString();
+
+        $statusOptions = [
+            Listing::STATUS_AVAILABLE => 'Pieejams',
+            Listing::STATUS_RESERVED => 'Rezervēts',
+            Listing::STATUS_SOLD => 'Pārdots',
+        ];
+
+        return view('listings.my', [
+            'listings' => $listings,
+            'filters' => $filters,
+            'statusOptions' => $statusOptions,
+            'favoriteIds' => $request->user()->favoriteListings()->pluck('listings.id')->all(),
+        ]);
+    }
+
+    private function applySorting($query, string $sort)
+    {
+        return match ($sort) {
+            'price_asc' => $query->orderBy('cena', 'asc'),
+            'price_desc' => $query->orderBy('cena', 'desc'),
+            'year_asc' => $query->orderBy('gads', 'asc'),
+            'year_desc' => $query->orderBy('gads', 'desc'),
+            default => $query->latest(),
+        };
+    }
 
     /**
      * Kompresē un saglabā augšupielādētās bildes vienotā kvalitātē.

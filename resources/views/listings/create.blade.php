@@ -1,3 +1,5 @@
+@php use App\Models\Listing; @endphp
+
 <x-app-layout>
     <x-slot name="header">
         <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
@@ -80,12 +82,42 @@
                         </div>
                     </div>
 
-                    <div>
-                        <label class="text-sm font-semibold text-gray-700" for="apraksts">Apraksts</label>
-                        <textarea id="apraksts" name="apraksts" rows="4" class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/30">{{ old('apraksts') }}</textarea>
-                        @error('apraksts')
-                            <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                        @enderror
+                    <div class="grid gap-6 md:grid-cols-2">
+                        <div class="md:col-span-2">
+                            <label class="text-sm font-semibold text-gray-700" for="apraksts">Apraksts</label>
+                            <textarea id="apraksts" name="apraksts" rows="4" class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/30">{{ old('apraksts') }}</textarea>
+                            @error('apraksts')
+                                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div>
+                            <label class="text-sm font-semibold text-gray-700" for="status">Statuss</label>
+                            <select id="status" name="status" class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/30" required>
+                                <option value="{{ Listing::STATUS_AVAILABLE }}" @selected(old('status', Listing::STATUS_AVAILABLE) === Listing::STATUS_AVAILABLE)>Pieejams</option>
+                                <option value="{{ Listing::STATUS_RESERVED }}" @selected(old('status') === Listing::STATUS_RESERVED)>Rezervēts</option>
+                                <option value="{{ Listing::STATUS_SOLD }}" @selected(old('status') === Listing::STATUS_SOLD)>Pārdots</option>
+                            </select>
+                            @error('status')
+                                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div class="md:col-span-2">
+                            <label class="text-sm font-semibold text-gray-700" for="contact_info">Kontakta informācija</label>
+                            <textarea id="contact_info" name="contact_info" rows="3" class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/30" placeholder="Telefona numurs, e-pasts vai cita informācija">{{ old('contact_info') }}</textarea>
+                            @error('contact_info')
+                                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+
+                            <label class="mt-3 inline-flex items-center gap-2 text-sm text-gray-600">
+                                <input type="checkbox" name="show_contact" value="1" @checked(old('show_contact')) class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                                Rādīt kontaktinformāciju sludinājumā
+                            </label>
+                            @error('show_contact')
+                                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
                     </div>
                 </section>
 

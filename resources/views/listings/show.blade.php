@@ -9,18 +9,67 @@
     @endphp
 
     <x-slot name="header">
-        <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
-                <h2 class="text-2xl font-semibold leading-tight text-gray-900">{{ $listing->marka }} {{ $listing->modelis }} ({{ $listing->gads }})</h2>
-                <p class="text-sm text-gray-500">Galerija ar {{ $images->count() }} bild{{ $images->count() === 1 ? 'i' : 'ēm' }} – optimizētas ātrai ielādei un izskatam uz jebkuras ierīces.</p>
+                <h2 class="text-2xl font-semibold leading-tight text-gray-900 dark:text-white">{{ $listing->marka }} {{ $listing->modelis }} ({{ $listing->gads }})</h2>
+                <p class="text-sm text-gray-500 dark:text-gray-300">Galerija ar {{ $images->count() }} bild{{ $images->count() === 1 ? 'i' : 'ēm' }} – optimizētas ātrai ielādei jebkurā ierīcē.</p>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-3">
+                <span class="inline-flex items-center rounded-full px-4 py-1 text-sm font-semibold {{ match($listing->status) {
+                    \App\Models\Listing::STATUS_RESERVED => 'bg-amber-100 text-amber-700 dark:bg-amber-500/10 dark:text-amber-200',
+                    \App\Models\Listing::STATUS_SOLD => 'bg-rose-100 text-rose-700 dark:bg-rose-500/10 dark:text-rose-200',
+                    default => 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-200',
+                } }}">{{ $listing->status_label }}</span>
+
+                @auth
+                    <form method="POST" action="{{ route($isFavorite ? 'favorites.destroy' : 'favorites.store', $listing) }}">
+                        @csrf
+                        @if($isFavorite)
+                            @method('DELETE')
+                        @endif
+
+                        <button type="submit" class="inline-flex items-center gap-2 rounded-full border border-rose-200 bg-white px-4 py-2 text-sm font-semibold text-rose-600 shadow-sm transition hover:bg-rose-50 dark:border-rose-500/40 dark:bg-gray-900/60 dark:text-rose-200">
+                            <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                <path d="M3.172 5.172a4 4 0 0 1 5.656 0L10 6.343l1.172-1.171a4 4 0 0 1 5.656 5.656L10 17.657l-6.828-6.829a4 4 0 0 1 0-5.656Z" @if(! $isFavorite) fill="none" stroke="currentColor" stroke-width="1.5" @endif />
+                            </svg>
+                            {{ $isFavorite ? 'Favorīts' : 'Pievienot favorītiem' }}
+                        </button>
+                    </form>
+                @else
+                    <a href="{{ route('login') }}" class="inline-flex items-center gap-2 rounded-full border border-indigo-200 bg-white px-4 py-2 text-sm font-semibold text-indigo-600 shadow-sm transition hover:bg-indigo-50 dark:border-indigo-500/30 dark:bg-gray-900/60 dark:text-indigo-200">
+                        <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <path d="M3.172 5.172a4 4 0 0 1 5.656 0L10 6.343l1.172-1.171a4 4 0 0 1 5.656 5.656L10 17.657l-6.828-6.829a4 4 0 0 1 0-5.656Z" fill="none" stroke="currentColor" stroke-width="1.5" />
+                        </svg>
+                        Saglabāt
+                    </a>
+                @endauth
             </div>
         </div>
     </x-slot>
 
     <div class="space-y-10">
+        @if(!$listing->is_approved)
+            <div class="rounded-3xl border border-amber-200 bg-amber-50 px-6 py-4 text-sm text-amber-700 shadow-sm dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200">
+                Sludinājums vēl gaida administratora apstiprinājumu. Tas nav redzams publiskajā sarakstā.
+            </div>
+        @endif
+
+        @if(session('success'))
+            <div class="rounded-3xl border border-emerald-200 bg-emerald-50 px-6 py-4 text-sm text-emerald-700 shadow-sm dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-200">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        @if(session('error'))
+            <div class="rounded-3xl border border-rose-200 bg-rose-50 px-6 py-4 text-sm text-rose-700 shadow-sm dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-200">
+                {{ session('error') }}
+            </div>
+        @endif
+
         <div class="grid gap-8 lg:grid-cols-5">
             <div class="space-y-6 lg:col-span-3">
-                <div class="overflow-hidden rounded-3xl bg-white/80 shadow-xl ring-1 ring-gray-100">
+                <div class="overflow-hidden rounded-3xl bg-white/80 shadow-xl ring-1 ring-gray-100 dark:bg-gray-900/70 dark:ring-gray-800">
                     <div class="relative aspect-[4/3]">
                         <button
                             type="button"
@@ -45,7 +94,7 @@
                 </div>
 
                 @if($additionalImages->count())
-                    <div class="rounded-3xl bg-white/70 p-4 shadow ring-1 ring-gray-100">
+                    <div class="rounded-3xl bg-white/70 p-4 shadow ring-1 ring-gray-100 dark:bg-gray-900/60 dark:ring-gray-800">
                         <h3 class="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-500">Papildu bildes</h3>
                         <div class="grid grid-cols-2 gap-4 sm:grid-cols-3">
                             @foreach($additionalImages as $index => $imageUrl)
@@ -64,40 +113,67 @@
             </div>
 
             <div class="space-y-6 lg:col-span-2">
-                <div class="space-y-6 rounded-3xl bg-white/80 p-6 shadow-xl ring-1 ring-gray-100">
+                <div class="space-y-6 rounded-3xl bg-white/80 p-6 shadow-xl ring-1 ring-gray-100 dark:bg-gray-900/70 dark:ring-gray-800">
                     <div class="flex items-baseline justify-between gap-4">
                         <div>
-                            <p class="text-sm font-medium text-gray-500">Cena</p>
-                            <p class="text-3xl font-semibold text-indigo-600">{{ number_format($listing->cena, 2, '.', ' ') }} €</p>
+                            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Cena</p>
+                            <p class="text-3xl font-semibold text-indigo-600 dark:text-indigo-300">{{ number_format($listing->cena, 2, '.', ' ') }} €</p>
                         </div>
-                        <span class="inline-flex items-center rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-600">{{ ucfirst($listing->degviela) }} • {{ ucfirst($listing->parnesumkarba) }}</span>
+                        <span class="inline-flex items-center rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-200">{{ $listing->degviela }} • {{ $listing->parnesumkarba }}</span>
                     </div>
 
-                    <dl class="grid gap-4 text-sm text-gray-600">
-                        <div class="flex items-center justify-between rounded-2xl bg-gray-50/70 px-4 py-3">
-                            <dt class="font-medium text-gray-500">Marka / modelis</dt>
-                            <dd class="font-semibold text-gray-900">{{ $listing->marka }} {{ $listing->modelis }}</dd>
+                    <dl class="grid gap-4 text-sm text-gray-600 dark:text-gray-300">
+                        <div class="flex items-center justify-between rounded-2xl bg-gray-50/70 px-4 py-3 dark:bg-gray-800/60">
+                            <dt class="font-medium text-gray-500 dark:text-gray-400">Marka / modelis</dt>
+                            <dd class="font-semibold text-gray-900 dark:text-white">{{ $listing->marka }} {{ $listing->modelis }}</dd>
                         </div>
-                        <div class="flex items-center justify-between rounded-2xl bg-gray-50/70 px-4 py-3">
-                            <dt class="font-medium text-gray-500">Izlaiduma gads</dt>
-                            <dd class="font-semibold text-gray-900">{{ $listing->gads }}</dd>
+                        <div class="flex items-center justify-between rounded-2xl bg-gray-50/70 px-4 py-3 dark:bg-gray-800/60">
+                            <dt class="font-medium text-gray-500 dark:text-gray-400">Izlaiduma gads</dt>
+                            <dd class="font-semibold text-gray-900 dark:text-white">{{ $listing->gads }}</dd>
                         </div>
-                        <div class="flex items-center justify-between rounded-2xl bg-gray-50/70 px-4 py-3">
-                            <dt class="font-medium text-gray-500">Nobraukums</dt>
-                            <dd class="font-semibold text-gray-900">{{ number_format($listing->nobraukums, 0, '.', ' ') }} km</dd>
+                        <div class="flex items-center justify-between rounded-2xl bg-gray-50/70 px-4 py-3 dark:bg-gray-800/60">
+                            <dt class="font-medium text-gray-500 dark:text-gray-400">Nobraukums</dt>
+                            <dd class="font-semibold text-gray-900 dark:text-white">{{ number_format($listing->nobraukums, 0, '.', ' ') }} km</dd>
                         </div>
                     </dl>
 
                     @if($listing->apraksts)
                         <div class="space-y-2">
-                            <h3 class="text-base font-semibold text-gray-900">Apraksts</h3>
-                            <p class="text-sm leading-relaxed text-gray-600">{{ $listing->apraksts }}</p>
+                            <h3 class="text-base font-semibold text-gray-900 dark:text-white">Apraksts</h3>
+                            <p class="text-sm leading-relaxed text-gray-600 dark:text-gray-300">{{ $listing->apraksts }}</p>
                         </div>
                     @endif
                 </div>
 
+                @if($listing->show_contact && $listing->contact_info)
+                    <div class="rounded-3xl border border-indigo-200 bg-indigo-50 p-6 shadow-sm dark:border-indigo-500/30 dark:bg-indigo-500/10">
+                        <h3 class="text-base font-semibold text-indigo-700 dark:text-indigo-200">Kontakta informācija</h3>
+                        <p class="mt-2 whitespace-pre-line text-sm text-indigo-900 dark:text-indigo-100">{{ $listing->contact_info }}</p>
+                    </div>
+                @endif
+
+                <div x-data="{ open: false }" class="rounded-3xl bg-white/80 p-6 shadow ring-1 ring-gray-100 dark:bg-gray-900/70 dark:ring-gray-800">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-base font-semibold text-gray-900 dark:text-white">Ziņot par pārkāpumu</h3>
+                        <button type="button" @click="open = ! open" class="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-semibold text-gray-600 shadow-sm transition hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700">
+                            <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                <path fill-rule="evenodd" d="M9 3a1 1 0 0 1 2 0v7a1 1 0 0 1-2 0V3Zm1 12.75a1.25 1.25 0 1 0 0-2.5 1.25 1.25 0 0 0 0 2.5Z" clip-rule="evenodd" />
+                            </svg>
+                            Ziņot
+                        </button>
+                    </div>
+
+                    <p class="mt-3 text-sm text-gray-500 dark:text-gray-300">Informē administratoru, ja sludinājums pārkāpj noteikumus. Tavs ziņojums paliek konfidenciāls.</p>
+
+                    <form x-show="open" x-cloak method="POST" action="{{ route('listings.report', $listing) }}" class="mt-4 space-y-3">
+                        @csrf
+                        <textarea name="reason" rows="3" required class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200" placeholder="Apraksti pārkāpumu vai maldinošu informāciju"></textarea>
+                        <button type="submit" class="inline-flex items-center justify-center rounded-xl bg-rose-600 px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-rose-700 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-2">Nosūtīt ziņojumu</button>
+                    </form>
+                </div>
+
                 @if(auth()->check() && (auth()->user()->id === $listing->user_id || auth()->user()->is_admin))
-                    <div class="flex flex-col gap-3 rounded-3xl bg-white/80 p-6 shadow ring-1 ring-gray-100 sm:flex-row sm:items-center sm:justify-between">
+                    <div class="flex flex-col gap-3 rounded-3xl bg-white/80 p-6 shadow ring-1 ring-gray-100 dark:bg-gray-900/70 dark:ring-gray-800 sm:flex-row sm:items-center sm:justify-between">
                         <a href="{{ route('listings.edit', $listing->id) }}" class="inline-flex w-full items-center justify-center rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-md transition hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto">
                             Rediģēt sludinājumu
                         </a>
