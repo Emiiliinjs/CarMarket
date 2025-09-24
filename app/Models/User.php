@@ -21,6 +21,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'is_admin',
+        'is_blocked',
     ];
 
     /**
@@ -43,6 +45,23 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_admin' => 'boolean',
+            'is_blocked' => 'boolean',
         ];
+    }
+
+    public function listings()
+    {
+        return $this->hasMany(Listing::class);
+    }
+
+    public function favoriteListings()
+    {
+        return $this->belongsToMany(Listing::class, 'favorite_listings')->withTimestamps();
+    }
+
+    public function hasFavorited(Listing $listing): bool
+    {
+        return $this->favoriteListings->contains($listing->id);
     }
 }
