@@ -151,6 +151,7 @@
             return {
                 files: [],
                 dragover: false,
+                fileBuffer: new DataTransfer(),
                 handleDrop(event) {
                     const droppedFiles = Array.from(event.dataTransfer.files);
                     this.addFiles(droppedFiles);
@@ -159,15 +160,47 @@
                 handleFiles(event) {
                     const selectedFiles = Array.from(event.target.files);
                     this.addFiles(selectedFiles);
+                    event.target.value = '';
                 },
                 addFiles(newFiles) {
                     newFiles.forEach(file => {
-                        file.url = URL.createObjectURL(file);
-                        this.files.push(file);
+                        if (! file.type.startsWith('image/')) {
+                            return;
+                        }
+
+                        const exists = this.files.some(({ file: existing }) => existing.name === file.name && existing.size === file.size);
+
+                        if (exists) {
+                            return;
+                        }
+
+                        const preview = {
+                            file,
+                            url: URL.createObjectURL(file),
+                        };
+
+                        this.files.push(preview);
+                        this.fileBuffer.items.add(file);
                     });
+
+                    this.updateFileInput();
                 },
                 remove(index) {
-                    this.files.splice(index, 1);
+                    const [removed] = this.files.splice(index, 1);
+
+                    if (removed) {
+                        URL.revokeObjectURL(removed.url);
+                    }
+
+                    const dataTransfer = new DataTransfer();
+
+                    this.files.forEach(({ file }) => dataTransfer.items.add(file));
+
+                    this.fileBuffer = dataTransfer;
+                    this.updateFileInput();
+                },
+                updateFileInput() {
+                    this.$refs.fileInput.files = this.fileBuffer.files;
                 }
             }
         }
