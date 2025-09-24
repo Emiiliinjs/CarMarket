@@ -138,18 +138,15 @@
                                 <div class="group relative overflow-hidden rounded-2xl bg-gray-100 shadow-sm">
                                     <img src="{{ route('listing-images.show', $image) }}" alt="Esoša auto bilde" class="h-32 w-full object-cover transition duration-200 group-hover:scale-105">
 
-                                    <form
-                                        method="POST"
-                                        action="{{ route('listing-images.destroy', $image) }}"
-                                        class="absolute inset-x-2 bottom-2 flex justify-end"
-                                        onsubmit="return confirm('Vai tiešām dzēst šo attēlu?');"
+                                    <button
+                                        type="button"
+                                        class="absolute inset-x-2 bottom-2 flex justify-end bg-transparent focus:outline-none"
+                                        onclick="if(confirm('Vai tiešām dzēst šo attēlu?')) document.getElementById('delete-image-form-{{ $image->id }}').submit();"
                                     >
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="inline-flex items-center gap-1 rounded-full bg-black/65 px-3 py-1 text-xs font-semibold text-white backdrop-blur transition hover:bg-black/80">
+                                        <span class="inline-flex items-center gap-1 rounded-full bg-black/65 px-3 py-1 text-xs font-semibold text-white backdrop-blur transition hover:bg-black/80">
                                             Dzēst
-                                        </button>
-                                    </form>
+                                        </span>
+                                    </button>
                                 </div>
                             @endforeach
                         </div>
@@ -210,6 +207,15 @@
                     </button>
                 </div>
             </form>
+
+            @if($listing->galleryImages->count())
+                @foreach($listing->galleryImages as $image)
+                    <form id="delete-image-form-{{ $image->id }}" method="POST" action="{{ route('listing-images.destroy', $image) }}" class="hidden">
+                        @csrf
+                        @method('DELETE')
+                    </form>
+                @endforeach
+            @endif
         </div>
     </div>
 
