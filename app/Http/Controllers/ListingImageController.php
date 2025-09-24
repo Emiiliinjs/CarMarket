@@ -6,23 +6,36 @@ use App\Models\ListingImage;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ListingImageController extends Controller
 {
     /**
      * Serve a stored listing image via the public disk.
      */
-    public function show(ListingImage $image): BinaryFileResponse
+    public function show(ListingImage $image): StreamedResponse
     {
-        if (! Storage::disk('public')->exists($image->filename)) {
+        $disk = Storage::disk('public');
+
+        if (! $disk->exists($image->filename)) {
             abort(404);
         }
 
-        $path = Storage::disk('public')->path($image->filename);
+        $stream = $disk->readStream($image->filename);
 
-        return response()->file($path, [
+        if ($stream === false) {
+            abort(404);
+        }
+
+        return response()->stream(function () use ($stream) {
+            fpassthru($stream);
+
+            if (is_resource($stream)) {
+                fclose($stream);
+            }
+        }, 200, [
             'Cache-Control' => 'public, max-age='.(60 * 60 * 24 * 30),
+            'Content-Type' => $disk->mimeType($image->filename) ?? 'image/jpeg',
         ]);
     }
 
