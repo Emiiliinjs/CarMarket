@@ -25,6 +25,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/listings/{listing}/edit', [ListingController::class, 'edit'])->name('listings.edit');
     Route::put('/listings/{listing}', [ListingController::class, 'update'])->name('listings.update');
     Route::delete('/listings/{listing}', [ListingController::class, 'destroy'])->name('listings.destroy');
+
+    Route::delete('/listing-images/{image}', [ListingImageController::class, 'destroy'])->name('listing-images.destroy');
 });
 
 // Sludinājuma detaļas (skatīt jebkurš) — jābūt **pēc create/edit maršrutiem**

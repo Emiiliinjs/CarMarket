@@ -95,13 +95,29 @@
                 @if($listing->galleryImages->count())
                     <section class="space-y-4">
                         <div class="flex items-center justify-between">
-                            <h3 class="text-lg font-semibold text-gray-900">Esošās bildes</h3>
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900">Esošās bildes</h3>
+                                <p class="text-sm text-gray-500">Vari dzēst nevajadzīgās bildes – tās tiks noņemtas gan no galerijas, gan glabātuves.</p>
+                            </div>
                             <span class="text-sm text-gray-500">Kopā {{ $listing->galleryImages->count() }} {{ $listing->galleryImages->count() === 1 ? 'bilde' : 'bildes' }}</span>
                         </div>
                         <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
                             @foreach($listing->galleryImages as $image)
-                                <div class="overflow-hidden rounded-2xl bg-gray-100 shadow-sm">
-                                    <img src="{{ asset('storage/'.$image->filename) }}" alt="Esoša auto bilde" class="h-32 w-full object-cover">
+                                <div class="group relative overflow-hidden rounded-2xl bg-gray-100 shadow-sm">
+                                    <img src="{{ route('listing-images.show', $image) }}" alt="Esoša auto bilde" class="h-32 w-full object-cover transition duration-200 group-hover:scale-105">
+
+                                    <form
+                                        method="POST"
+                                        action="{{ route('listing-images.destroy', $image) }}"
+                                        class="absolute inset-x-2 bottom-2 flex justify-end"
+                                        onsubmit="return confirm('Vai tiešām dzēst šo attēlu?');"
+                                    >
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="inline-flex items-center gap-1 rounded-full bg-black/65 px-3 py-1 text-xs font-semibold text-white backdrop-blur transition hover:bg-black/80">
+                                            Dzēst
+                                        </button>
+                                    </form>
                                 </div>
                             @endforeach
                         </div>
@@ -170,6 +186,7 @@
             return {
                 files: [],
                 dragover: false,
+                fileBuffer: new DataTransfer(),
                 handleDrop(event) {
                     const droppedFiles = Array.from(event.dataTransfer.files);
                     this.addFiles(droppedFiles);
@@ -178,15 +195,47 @@
                 handleFiles(event) {
                     const selectedFiles = Array.from(event.target.files);
                     this.addFiles(selectedFiles);
+                    event.target.value = '';
                 },
                 addFiles(newFiles) {
                     newFiles.forEach(file => {
-                        file.url = URL.createObjectURL(file);
-                        this.files.push(file);
+                        if (! file.type.startsWith('image/')) {
+                            return;
+                        }
+
+                        const exists = this.files.some(({ file: existing }) => existing.name === file.name && existing.size === file.size);
+
+                        if (exists) {
+                            return;
+                        }
+
+                        const preview = {
+                            file,
+                            url: URL.createObjectURL(file),
+                        };
+
+                        this.files.push(preview);
+                        this.fileBuffer.items.add(file);
                     });
+
+                    this.updateFileInput();
                 },
                 remove(index) {
-                    this.files.splice(index, 1);
+                    const [removed] = this.files.splice(index, 1);
+
+                    if (removed) {
+                        URL.revokeObjectURL(removed.url);
+                    }
+
+                    const dataTransfer = new DataTransfer();
+
+                    this.files.forEach(({ file }) => dataTransfer.items.add(file));
+
+                    this.fileBuffer = dataTransfer;
+                    this.updateFileInput();
+                },
+                updateFileInput() {
+                    this.$refs.fileInput.files = this.fileBuffer.files;
                 }
             }
         }
