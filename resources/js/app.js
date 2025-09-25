@@ -2,6 +2,34 @@ import './bootstrap';
 
 import Alpine from 'alpinejs';
 
+const createDataTransfer = () => {
+    if (typeof window === 'undefined') {
+        return null;
+    }
+
+    if (typeof window.DataTransfer === 'function') {
+        try {
+            return new window.DataTransfer();
+        } catch (error) {
+            console.warn('DataTransfer nav pieejams:', error);
+        }
+    }
+
+    if (typeof window.ClipboardEvent === 'function') {
+        try {
+            const clipboardEvent = new window.ClipboardEvent('copy');
+
+            if (clipboardEvent.clipboardData) {
+                return clipboardEvent.clipboardData;
+            }
+        } catch (error) {
+            console.warn('ClipboardData nav pieejams:', error);
+        }
+    }
+
+    return null;
+};
+
 const parseCarModelDataset = () => {
     if (typeof document === 'undefined') {
         return {};
@@ -41,7 +69,7 @@ const carModelsData = () => {
 const imageUpload = () => ({
     files: [],
     dragover: false,
-    fileBuffer: new DataTransfer(),
+    fileBuffer: createDataTransfer(),
     handleDrop(event) {
         const droppedFiles = Array.from(event.dataTransfer.files);
         this.addFiles(droppedFiles);
@@ -50,7 +78,10 @@ const imageUpload = () => ({
     handleFiles(event) {
         const selectedFiles = Array.from(event.target.files);
         this.addFiles(selectedFiles);
-        event.target.value = '';
+
+        if (this.fileBuffer) {
+            event.target.value = '';
+        }
     },
     addFiles(newFiles) {
         newFiles.forEach(file => {
@@ -70,7 +101,14 @@ const imageUpload = () => ({
             };
 
             this.files.push(preview);
-            this.fileBuffer.items.add(file);
+
+            if (!this.fileBuffer) {
+                this.fileBuffer = createDataTransfer();
+            }
+
+            if (this.fileBuffer?.items?.add) {
+                this.fileBuffer.items.add(file);
+            }
         });
 
         this.updateFileInput();
@@ -82,15 +120,28 @@ const imageUpload = () => ({
             URL.revokeObjectURL(removed.url);
         }
 
-        const dataTransfer = new DataTransfer();
+        if (!this.fileBuffer) {
+            if (this.$refs?.fileInput) {
+                this.$refs.fileInput.value = '';
+            }
 
-        this.files.forEach(({ file }) => dataTransfer.items.add(file));
+            return;
+        }
 
-        this.fileBuffer = dataTransfer;
+        const dataTransfer = createDataTransfer();
+
+        if (dataTransfer?.items?.add) {
+            this.files.forEach(({ file }) => dataTransfer.items.add(file));
+
+            this.fileBuffer = dataTransfer;
+        } else {
+            this.fileBuffer = null;
+        }
+
         this.updateFileInput();
     },
     updateFileInput() {
-        if (this.$refs?.fileInput) {
+        if (this.$refs?.fileInput && this.fileBuffer?.files) {
             this.$refs.fileInput.files = this.fileBuffer.files;
         }
     },
