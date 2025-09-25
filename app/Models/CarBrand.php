@@ -2,25 +2,12 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class CarBrand extends Model
-{
-    use HasFactory;
+class CarBrand extends Model {
+    protected $fillable = ['name'];
 
-    public $timestamps = false;
-
-    protected $fillable = [
-        'name',
-    ];
-
-    /**
-     * @return HasMany<CarModel>
-     */
-    public function models(): HasMany
-    {
-        return $this->hasMany(CarModel::class);
+    public function models() {
+        return $this->hasMany(CarModel::class, 'brand_id');
     }
 }
