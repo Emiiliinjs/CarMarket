@@ -231,9 +231,8 @@ const listingForm = (carData, initialBrand = '', initialModel = '') => ({
     ...carSelection(carData, initialBrand, initialModel),
 });
 
-const listingsPage = (carData, initialBrand = '', initialModel = '', initialFiltersVisible = false) => ({
+const listingsPage = (carData, initialBrand = '', initialModel = '') => ({
     compare: [],
-    showFilters: initialFiltersVisible,
     ...carSelection(carData, initialBrand, initialModel),
 });
 
