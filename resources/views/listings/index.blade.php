@@ -14,7 +14,7 @@
 
     <div
         class="space-y-8"
-        x-data="listingsPage(@json($carData), @json($filters['marka'] ?? ''), @json($filters['modelis'] ?? ''))"
+        x-data="listingsPage(null, @json($filters['marka'] ?? ''), @json($filters['modelis'] ?? ''))"
     >
         <div class="flex justify-end">
             <button

@@ -1,4 +1,28 @@
+<script type="application/json" id="car-models-data">
+    {!! json_encode($carData ?? [], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!}
+</script>
+
 <script>
+    window.__carModels = window.__carModels ?? (() => {
+        const dataElement = document.getElementById('car-models-data');
+
+        if (! dataElement) {
+            return {};
+        }
+
+        try {
+            return JSON.parse(dataElement.textContent || '{}') || {};
+        } catch (error) {
+            console.error('Neizdevās nolasīt auto marku datus:', error);
+
+            return {};
+        }
+    })();
+
+    function carModelsData() {
+        return JSON.parse(JSON.stringify(window.__carModels || {}));
+    }
+
     function imageUpload() {
         return {
             files: [],
@@ -60,7 +84,13 @@
     }
 
     function carSelection(carData, initialBrand = '', initialModel = '') {
-        const normalized = JSON.parse(JSON.stringify(carData || {}));
+        const normalized = (() => {
+            if (carData && Object.keys(carData).length > 0) {
+                return JSON.parse(JSON.stringify(carData));
+            }
+
+            return carModelsData();
+        })();
 
         return {
             carData: normalized,
