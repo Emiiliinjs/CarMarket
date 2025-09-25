@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CarBrand;
 use App\Models\Listing;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
@@ -220,27 +221,22 @@ class ListingController extends Controller
             return $this->carDataCache;
         }
 
-        $path = base_path('car_models_full.json');
+        $brands = CarBrand::query()
+            ->with(['models' => fn ($query) => $query->orderBy('name')])
+            ->get();
 
-        if (! file_exists($path)) {
-            return $this->carDataCache = [];
-        }
+        $normalized = $brands
+            ->map(function (CarBrand $brand) {
+                $name = trim((string) $brand->name);
 
-        $raw = json_decode(file_get_contents($path), true);
-
-        if (! is_array($raw)) {
-            return $this->carDataCache = [];
-        }
-
-        $normalized = collect($raw)
-            ->filter(fn ($item) => filled($item['brand'] ?? null))
-            ->map(function ($item) {
-                $brand = trim($item['brand']);
+                if ($name === '') {
+                    return null;
+                }
 
                 return [
-                    'brand' => $brand,
-                    'models' => collect($item['models'] ?? [])
-                        ->pluck('title')
+                    'brand' => $name,
+                    'models' => $brand->models
+                        ->pluck('name')
                         ->map(fn ($value) => is_string($value) ? trim($value) : $value)
                         ->filter(fn ($value) => filled($value))
                         ->unique(fn ($value) => mb_strtolower($value))
@@ -249,7 +245,7 @@ class ListingController extends Controller
                         ->all(),
                 ];
             })
-            ->filter(fn ($item) => filled($item['brand']))
+            ->filter()
             ->sortBy('brand', SORT_NATURAL | SORT_FLAG_CASE)
             ->mapWithKeys(fn ($item) => [$item['brand'] => $item['models']])
             ->toArray();
