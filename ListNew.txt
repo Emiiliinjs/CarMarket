@@ -1,6 +1,8 @@
-safixot logo
 Dabut json masinam
 Api google maps 
 Bidding
 Epastus suta
 varbut valoda 
+title logo 
+uztaisit ta lai uzklikskino uz masinas bildites
+atveras sludinajums nevis uz skatit detalas pogas
