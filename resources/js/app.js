@@ -147,7 +147,7 @@ const imageUpload = () => ({
     },
 });
 
-const carSelection = (carData, initialBrand = '', initialModel = '') => {
+const carSelection = (carData, initialBrand = '', initialModel = '', initialSearch = '') => {
     const normalized = (() => {
         if (carData && Object.keys(carData).length > 0) {
             try {
@@ -164,8 +164,10 @@ const carSelection = (carData, initialBrand = '', initialModel = '') => {
         carData: normalized,
         selectedBrand: initialBrand ?? '',
         selectedModel: initialModel ?? '',
+        searchQuery: typeof initialSearch === 'string' ? initialSearch : '',
         availableBrands: [],
         availableModels: [],
+        searchOptions: [],
         init() {
             this.normalizeSelections();
             this.$watch('selectedBrand', () => this.normalizeSelections());
@@ -216,12 +218,47 @@ const carSelection = (carData, initialBrand = '', initialModel = '') => {
             }
 
             this.availableBrands = Object.keys(this.carData);
+            this.updateSearchOptions();
         },
         sortCarData() {
             const sorted = Object.entries(this.carData)
                 .sort((a, b) => a[0].localeCompare(b[0], 'lv', { sensitivity: 'base', numeric: true }));
 
             this.carData = Object.fromEntries(sorted);
+        },
+        updateSearchOptions() {
+            const unique = new Map();
+
+            Object.entries(this.carData).forEach(([brand, models]) => {
+                const normalizedBrand = typeof brand === 'string' ? brand.trim() : '';
+
+                if (normalizedBrand !== '') {
+                    unique.set(normalizedBrand.toLocaleLowerCase('lv'), normalizedBrand);
+                }
+
+                (Array.isArray(models) ? models : []).forEach((model) => {
+                    if (typeof model !== 'string') {
+                        return;
+                    }
+
+                    const normalizedModel = model.trim();
+
+                    if (normalizedModel === '') {
+                        return;
+                    }
+
+                    unique.set(normalizedModel.toLocaleLowerCase('lv'), normalizedModel);
+
+                    const combined = `${normalizedBrand} ${normalizedModel}`.trim();
+
+                    if (combined !== '') {
+                        unique.set(combined.toLocaleLowerCase('lv'), combined);
+                    }
+                });
+            });
+
+            this.searchOptions = Array.from(unique.values())
+                .sort((a, b) => a.localeCompare(b, 'lv', { sensitivity: 'base', numeric: true }));
         },
     };
 };
@@ -231,9 +268,9 @@ const listingForm = (carData, initialBrand = '', initialModel = '') => ({
     ...carSelection(carData, initialBrand, initialModel),
 });
 
-const listingsPage = (carData, initialBrand = '', initialModel = '') => ({
+const listingsPage = (carData, initialBrand = '', initialModel = '', initialSearch = '') => ({
     compare: [],
-    ...carSelection(carData, initialBrand, initialModel),
+    ...carSelection(carData, initialBrand, initialModel, initialSearch),
 });
 
 window.__carModels = window.__carModels ?? {};
