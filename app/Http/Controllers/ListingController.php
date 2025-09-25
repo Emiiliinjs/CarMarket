@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\CarBrand;
 use App\Models\Listing;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
@@ -10,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use JsonException;
 
 class ListingController extends Controller
 {
@@ -221,36 +221,79 @@ class ListingController extends Controller
             return $this->carDataCache;
         }
 
-        $brands = CarBrand::query()
-            ->with(['models' => fn ($query) => $query->orderBy('name')])
-            ->get();
+        $path = database_path('data/car_models_full.json');
 
-        $normalized = $brands
-            ->map(function (CarBrand $brand) {
-                $name = trim((string) $brand->name);
+        if (! is_file($path)) {
+            return $this->carDataCache = [];
+        }
 
-                if ($name === '') {
-                    return null;
+        try {
+            $contents = file_get_contents($path);
+            $rawData = json_decode($contents ?: '[]', true, 512, JSON_THROW_ON_ERROR);
+        } catch (JsonException $exception) {
+            report($exception);
+
+            return $this->carDataCache = [];
+        }
+
+        if (! is_array($rawData)) {
+            return $this->carDataCache = [];
+        }
+
+        $brands = [];
+
+        foreach ($rawData as $entry) {
+            if (! is_array($entry)) {
+                continue;
+            }
+
+            $brand = $entry['brand'] ?? null;
+
+            if (! is_string($brand)) {
+                continue;
+            }
+
+            $brand = trim($brand);
+
+            if ($brand === '') {
+                continue;
+            }
+
+            $models = [];
+
+            if (isset($entry['models']) && is_array($entry['models'])) {
+                foreach ($entry['models'] as $model) {
+                    if (is_array($model)) {
+                        $model = $model['title'] ?? $model['name'] ?? null;
+                    }
+
+                    if (! is_string($model)) {
+                        continue;
+                    }
+
+                    $model = trim($model);
+
+                    if ($model === '') {
+                        continue;
+                    }
+
+                    $models[] = $model;
                 }
+            }
 
-                return [
-                    'brand' => $name,
-                    'models' => $brand->models
-                        ->pluck('name')
-                        ->map(fn ($value) => is_string($value) ? trim($value) : $value)
-                        ->filter(fn ($value) => filled($value))
-                        ->unique(fn ($value) => mb_strtolower($value))
-                        ->sort(fn ($a, $b) => strnatcasecmp($a, $b))
-                        ->values()
-                        ->all(),
-                ];
-            })
-            ->filter()
-            ->sortBy('brand', SORT_NATURAL | SORT_FLAG_CASE)
-            ->mapWithKeys(fn ($item) => [$item['brand'] => $item['models']])
-            ->toArray();
+            $models = collect($models)
+                ->filter(fn ($value) => filled($value))
+                ->unique(fn ($value) => mb_strtolower($value, 'UTF-8'))
+                ->sort(fn ($a, $b) => strnatcasecmp($a, $b))
+                ->values()
+                ->all();
 
-        return $this->carDataCache = $normalized;
+            $brands[$brand] = $models;
+        }
+
+        ksort($brands, SORT_NATURAL | SORT_FLAG_CASE);
+
+        return $this->carDataCache = $brands;
     }
 
     protected function ensureBrandModel(array $data, ?string $brand, ?string $model): array
