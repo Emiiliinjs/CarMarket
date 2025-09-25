@@ -3,7 +3,7 @@
 </script>
 
 <script>
-    window.__carModels = window.__carModels ?? (() => {
+    function parseCarModelDataset() {
         const dataElement = document.getElementById('car-models-data');
 
         if (! dataElement) {
@@ -11,15 +11,23 @@
         }
 
         try {
-            return JSON.parse(dataElement.textContent || '{}') || {};
+            const parsed = JSON.parse(dataElement.textContent || '{}') || {};
+
+            return parsed && typeof parsed === 'object' ? parsed : {};
         } catch (error) {
             console.error('Neizdevās nolasīt auto marku datus:', error);
 
             return {};
         }
-    })();
+    }
+
+    window.__carModels = window.__carModels ?? parseCarModelDataset();
 
     function carModelsData() {
+        if (! window.__carModels || Object.keys(window.__carModels).length === 0) {
+            window.__carModels = parseCarModelDataset();
+        }
+
         return JSON.parse(JSON.stringify(window.__carModels || {}));
     }
 
