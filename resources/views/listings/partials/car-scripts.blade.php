@@ -96,17 +96,16 @@
             carData: normalized,
             selectedBrand: initialBrand ?? '',
             selectedModel: initialModel ?? '',
+            availableBrands: [],
+            availableModels: [],
             init() {
                 this.normalizeSelections();
                 this.$watch('selectedBrand', () => this.normalizeSelections());
-            },
-            get availableBrands() {
-                return Object.keys(this.carData);
-            },
-            get availableModels() {
-                return this.selectedBrand && Array.isArray(this.carData[this.selectedBrand])
-                    ? this.carData[this.selectedBrand]
-                    : [];
+                this.$watch('selectedModel', () => {
+                    if (typeof this.selectedModel === 'string') {
+                        this.selectedModel = this.selectedModel.trim();
+                    }
+                });
             },
             normalizeSelections() {
                 if (typeof this.selectedBrand === 'string') {
@@ -139,12 +138,16 @@
                         [this.selectedBrand]: current,
                     };
 
+                    this.availableModels = [...current];
                     if (! current.includes(this.selectedModel)) {
                         this.selectedModel = '';
                     }
                 } else {
                     this.selectedModel = '';
+                    this.availableModels = [];
                 }
+
+                this.availableBrands = Object.keys(this.carData);
             },
             sortCarData() {
                 const sorted = Object.entries(this.carData)
