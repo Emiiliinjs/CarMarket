@@ -32,6 +32,7 @@
                 @json($filters['modelis'] ?? ''),
                 @json($filters['search'] ?? '')
             )"
+            x-init="init()"
         >
             <div class="grid gap-6 md:grid-cols-5">
                 <div class="md:col-span-2">

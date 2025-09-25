@@ -168,7 +168,14 @@ const carSelection = (carData, initialBrand = '', initialModel = '', initialSear
         availableBrands: [],
         availableModels: [],
         searchOptions: [],
+        isInitialized: false,
         init() {
+            if (this.isInitialized) {
+                return;
+            }
+
+            this.isInitialized = true;
+
             this.normalizeSelections();
             this.$watch('selectedBrand', () => this.normalizeSelections());
             this.$watch('selectedModel', () => {
@@ -217,7 +224,8 @@ const carSelection = (carData, initialBrand = '', initialModel = '', initialSear
                 this.availableModels = [];
             }
 
-            this.availableBrands = Object.keys(this.carData);
+            this.availableBrands = Object.keys(this.carData)
+                .sort((a, b) => a.localeCompare(b, 'lv', { sensitivity: 'base', numeric: true }));
             this.updateSearchOptions();
         },
         sortCarData() {

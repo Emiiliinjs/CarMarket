@@ -20,6 +20,7 @@
             @json($filters['modelis'] ?? ''),
             @json($filters['search'] ?? '')
         )"
+        x-init="init()"
     >
         <form
             method="GET"

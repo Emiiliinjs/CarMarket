@@ -18,6 +18,7 @@
                 enctype="multipart/form-data"
                 class="space-y-10"
                 x-data="listingForm(null, @json(old('marka')), @json(old('modelis')))"
+                x-init="init()"
             >
                 @csrf
 

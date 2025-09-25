@@ -20,6 +20,7 @@
                 enctype="multipart/form-data"
                 class="space-y-10"
                 x-data="listingForm(null, @json(old('marka', $listing->marka)), @json(old('modelis', $listing->modelis)))"
+                x-init="init()"
             >
                 @csrf
                 @method('PUT')
