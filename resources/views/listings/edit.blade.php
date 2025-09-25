@@ -14,7 +14,13 @@
 
     <div class="mx-auto w-full max-w-5xl">
         <div class="space-y-10 rounded-3xl bg-white/80 p-8 shadow-xl ring-1 ring-gray-100 backdrop-blur">
-            <form method="POST" action="{{ route('listings.update', $listing->id) }}" enctype="multipart/form-data" class="space-y-10" x-data="imageUpload()">
+            <form
+                method="POST"
+                action="{{ route('listings.update', $listing->id) }}"
+                enctype="multipart/form-data"
+                class="space-y-10"
+                x-data="listingForm(@json($carData), @json(old('marka', $listing->marka)), @json(old('modelis', $listing->modelis)))"
+            >
                 @csrf
                 @method('PUT')
 
@@ -22,7 +28,18 @@
                     <div class="grid gap-6 md:grid-cols-2">
                         <div>
                             <label class="text-sm font-semibold text-gray-700" for="marka">Marka</label>
-                            <input id="marka" type="text" name="marka" value="{{ old('marka', $listing->marka) }}" class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/30" required>
+                            <select
+                                id="marka"
+                                name="marka"
+                                x-model="selectedBrand"
+                                class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
+                                required
+                            >
+                                <option value="">Izvēlies marku</option>
+                                <template x-for="brand in availableBrands" :key="brand">
+                                    <option :value="brand" x-text="brand"></option>
+                                </template>
+                            </select>
                             @error('marka')
                                 <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                             @enderror
@@ -30,7 +47,19 @@
 
                         <div>
                             <label class="text-sm font-semibold text-gray-700" for="modelis">Modelis</label>
-                            <input id="modelis" type="text" name="modelis" value="{{ old('modelis', $listing->modelis) }}" class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/30" required>
+                            <select
+                                id="modelis"
+                                name="modelis"
+                                x-model="selectedModel"
+                                :disabled="! selectedBrand"
+                                class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 disabled:cursor-not-allowed disabled:bg-gray-100"
+                                required
+                            >
+                                <option value="">Izvēlies modeli</option>
+                                <template x-for="model in availableModels" :key="model">
+                                    <option :value="model" x-text="model"></option>
+                                </template>
+                            </select>
                             @error('modelis')
                                 <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                             @enderror
@@ -219,63 +248,5 @@
         </div>
     </div>
 
-    <script>
-        function imageUpload() {
-            return {
-                files: [],
-                dragover: false,
-                fileBuffer: new DataTransfer(),
-                handleDrop(event) {
-                    const droppedFiles = Array.from(event.dataTransfer.files);
-                    this.addFiles(droppedFiles);
-                    this.dragover = false;
-                },
-                handleFiles(event) {
-                    const selectedFiles = Array.from(event.target.files);
-                    this.addFiles(selectedFiles);
-                    event.target.value = '';
-                },
-                addFiles(newFiles) {
-                    newFiles.forEach(file => {
-                        if (! file.type.startsWith('image/')) {
-                            return;
-                        }
-
-                        const exists = this.files.some(({ file: existing }) => existing.name === file.name && existing.size === file.size);
-
-                        if (exists) {
-                            return;
-                        }
-
-                        const preview = {
-                            file,
-                            url: URL.createObjectURL(file),
-                        };
-
-                        this.files.push(preview);
-                        this.fileBuffer.items.add(file);
-                    });
-
-                    this.updateFileInput();
-                },
-                remove(index) {
-                    const [removed] = this.files.splice(index, 1);
-
-                    if (removed) {
-                        URL.revokeObjectURL(removed.url);
-                    }
-
-                    const dataTransfer = new DataTransfer();
-
-                    this.files.forEach(({ file }) => dataTransfer.items.add(file));
-
-                    this.fileBuffer = dataTransfer;
-                    this.updateFileInput();
-                },
-                updateFileInput() {
-                    this.$refs.fileInput.files = this.fileBuffer.files;
-                }
-            }
-        }
-    </script>
+    @include('listings.partials.car-scripts')
 </x-app-layout>
