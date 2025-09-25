@@ -26,7 +26,7 @@
         <form
             method="GET"
             class="rounded-3xl border border-gray-200 bg-white/80 p-6 shadow-sm dark:border-gray-700 dark:bg-gray-900/70"
-            x-data="carSelection(null, @json($filters['marka'] ?? ''), @json($filters['modelis'] ?? ''))"
+            x-data="carSelection(@json($carData), @json($filters['marka'] ?? ''), @json($filters['modelis'] ?? ''))"
         >
             <div class="grid gap-6 md:grid-cols-5">
                 <div class="md:col-span-2">
