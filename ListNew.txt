@@ -1,8 +1,8 @@
-Dabut json masinam
+Safixot visu JSON
 Api google maps 
 Bidding
-Epastus suta
-varbut valoda 
-title logo 
+Epastus sutA
+varbut valoda
+title logo
 uztaisit ta lai uzklikskino uz masinas bildites
 atveras sludinajums nevis uz skatit detalas pogas
