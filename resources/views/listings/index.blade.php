@@ -14,7 +14,7 @@
 
     <div
         class="space-y-8"
-        x-data="listingsPage(@json($carData), @json($filters['marka'] ?? ''), @json($filters['modelis'] ?? ''))"
+        x-data="listingsPage(@json($carData), @json($filters['marka'] ?? ''), @json($filters['modelis'] ?? ''), @json($activeFilters->isNotEmpty()))"
     >
         <div class="flex justify-end">
             <button
@@ -63,7 +63,6 @@
             x-transition:leave-start="opacity-100 translate-y-0"
             x-transition:leave-end="opacity-0 -translate-y-2"
             x-cloak
-            style="display: none;"
             id="filters-panel"
             class="rounded-3xl border border-gray-200 bg-white/80 p-6 shadow-sm dark:border-gray-700 dark:bg-gray-900/70"
         >
