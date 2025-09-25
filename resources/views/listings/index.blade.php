@@ -58,21 +58,14 @@
                             x-model="selectedBrand"
                             class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200"
                         >
-                            <option value="">Visas markas</option>
-                            @foreach(array_keys($carData) as $brand)
-                                <option
-                                    value="{{ $brand }}"
-                                    @selected(($filters['marka'] ?? '') === $brand)
-                                    x-bind:hidden="availableBrands.length"
-                                    x-bind:disabled="availableBrands.length"
-                                >
-                                    {{ $brand }}
-                                </option>
-                            @endforeach
+                            <option value="">Izvēlies marku</option>
                             <template x-for="brand in availableBrands" :key="brand">
                                 <option :value="brand" x-text="brand"></option>
                             </template>
                         </select>
+                        @error('marka')
+                            <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
                     </div>
 
                     <div class="lg:col-span-2">
