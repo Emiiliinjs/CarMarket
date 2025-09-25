@@ -17,7 +17,7 @@
                 action="{{ route('listings.store') }}"
                 enctype="multipart/form-data"
                 class="space-y-10"
-                x-data="listingForm(@json($carData), @json(old('marka')), @json(old('modelis')))"
+                x-data="listingForm(null, @json(old('marka')), @json(old('modelis')))"
             >
                 @csrf
 

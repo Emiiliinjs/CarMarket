@@ -19,7 +19,7 @@
                 action="{{ route('listings.update', $listing->id) }}"
                 enctype="multipart/form-data"
                 class="space-y-10"
-                x-data="listingForm(@json($carData), @json(old('marka', $listing->marka)), @json(old('modelis', $listing->modelis)))"
+                x-data="listingForm(null, @json(old('marka', $listing->marka)), @json(old('modelis', $listing->modelis)))"
             >
                 @csrf
                 @method('PUT')
