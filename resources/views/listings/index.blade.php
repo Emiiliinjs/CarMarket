@@ -14,7 +14,12 @@
 
     <div
         class="space-y-8"
-        x-data="listingsPage(@json($carData), @json($filters['marka'] ?? ''), @json($filters['modelis'] ?? ''))"
+        x-data="listingsPage(
+            @json($carData),
+            @json($filters['marka'] ?? ''),
+            @json($filters['modelis'] ?? ''),
+            @json($filters['search'] ?? '')
+        )"
     >
         <form
             method="GET"
@@ -25,9 +30,22 @@
                 <div class="lg:col-span-4">
                     <label for="search" class="text-sm font-semibold text-gray-700 dark:text-gray-200">Meklēt pēc atslēgvārda</label>
                     <div class="mt-2 flex rounded-xl border border-gray-200 bg-white shadow-sm focus-within:border-indigo-500 focus-within:ring-2 focus-within:ring-indigo-500/20 dark:border-gray-700 dark:bg-gray-800">
-                        <input id="search" name="search" type="text" value="{{ $filters['search'] ?? '' }}" placeholder="Meklēt pēc markas, modeļa vai apraksta" class="w-full rounded-xl border-0 bg-transparent px-4 py-2.5 text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none dark:text-gray-200" />
+                        <input
+                            id="search"
+                            name="search"
+                            type="text"
+                            x-model="searchQuery"
+                            list="listings-search-options"
+                            placeholder="Meklēt pēc markas, modeļa vai apraksta"
+                            class="w-full rounded-xl border-0 bg-transparent px-4 py-2.5 text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none dark:text-gray-200"
+                        />
                         <button type="submit" class="me-2 inline-flex items-center justify-center rounded-lg bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">Meklēt</button>
                     </div>
+                    <datalist id="listings-search-options">
+                        <template x-for="option in searchOptions" :key="option">
+                            <option :value="option"></option>
+                        </template>
+                    </datalist>
                 </div>
 
                 <div class="grid gap-6 lg:col-span-8 lg:grid-cols-6">
