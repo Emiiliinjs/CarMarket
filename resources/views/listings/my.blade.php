@@ -23,8 +23,12 @@
     @endphp
 
     <div class="space-y-8">
-        <form method="GET" class="rounded-3xl border border-gray-200 bg-white/80 p-6 shadow-sm dark:border-gray-700 dark:bg-gray-900/70">
-            <div class="grid gap-6 md:grid-cols-4">
+        <form
+            method="GET"
+            class="rounded-3xl border border-gray-200 bg-white/80 p-6 shadow-sm dark:border-gray-700 dark:bg-gray-900/70"
+            x-data="carSelection(@json($carData), @json($filters['marka'] ?? ''), @json($filters['modelis'] ?? ''))"
+        >
+            <div class="grid gap-6 md:grid-cols-5">
                 <div class="md:col-span-2">
                     <label for="search" class="text-sm font-semibold text-gray-700 dark:text-gray-200">Meklēt</label>
                     <input id="search" name="search" type="text" value="{{ $filters['search'] ?? '' }}" placeholder="Meklēt pēc markas, modeļa vai apraksta" class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200">
@@ -32,7 +36,33 @@
 
                 <div>
                     <label for="marka" class="text-sm font-semibold text-gray-700 dark:text-gray-200">Marka</label>
-                    <input id="marka" name="marka" type="text" value="{{ $filters['marka'] ?? '' }}" class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200">
+                    <select
+                        id="marka"
+                        name="marka"
+                        x-model="selectedBrand"
+                        class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200"
+                    >
+                        <option value="">Visas markas</option>
+                        <template x-for="brand in availableBrands" :key="brand">
+                            <option :value="brand" x-text="brand"></option>
+                        </template>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="modelis" class="text-sm font-semibold text-gray-700 dark:text-gray-200">Modelis</label>
+                    <select
+                        id="modelis"
+                        name="modelis"
+                        x-model="selectedModel"
+                        :disabled="! selectedBrand"
+                        class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 disabled:cursor-not-allowed disabled:bg-gray-100 dark:disabled:bg-gray-800/60"
+                    >
+                        <option value="">Visi modeļi</option>
+                        <template x-for="model in availableModels" :key="model">
+                            <option :value="model" x-text="model"></option>
+                        </template>
+                    </select>
                 </div>
 
                 <div>
@@ -91,4 +121,5 @@
             </div>
         @endif
     </div>
+    @include('listings.partials.car-scripts')
 </x-app-layout>
