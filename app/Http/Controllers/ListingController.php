@@ -12,6 +12,8 @@ use Illuminate\Validation\ValidationException;
 
 class ListingController extends Controller
 {
+    protected ?array $carDataCache = null;
+
     // Rāda visus sludinājumus ar filtriem, kārtošanu un meklēšanu
     public function index(Request $request)
     {
@@ -67,6 +69,11 @@ class ListingController extends Controller
             'statusOptions' => $statusOptions,
             'fuelOptions' => $fuelOptions,
             'favoriteIds' => $favoriteIds,
+            'carData' => $this->ensureBrandModel(
+                $this->getCarData(),
+                $filters['marka'] ?? null,
+                $filters['modelis'] ?? null,
+            ),
         ]);
     }
 
@@ -90,7 +97,9 @@ class ListingController extends Controller
     // Forma jaunam sludinājumam
     public function create()
     {
-        return view('listings.create');
+        return view('listings.create', [
+            'carData' => $this->getCarData(),
+        ]);
     }
 
     // Saglabā jaunu sludinājumu ar bildēm
@@ -136,7 +145,14 @@ class ListingController extends Controller
             abort(403, 'Nav atļauts rediģēt šo sludinājumu.');
         }
 
-        return view('listings.edit', compact('listing'));
+        return view('listings.edit', [
+            'listing' => $listing,
+            'carData' => $this->ensureBrandModel(
+                $this->getCarData(),
+                $listing->marka,
+                $listing->modelis,
+            ),
+        ]);
     }
 
     // Saglabā izmaiņas
@@ -198,6 +214,76 @@ class ListingController extends Controller
                          ->with('success', 'Sludinājums veiksmīgi dzēsts!');
     }
 
+    protected function getCarData(): array
+    {
+        if ($this->carDataCache !== null) {
+            return $this->carDataCache;
+        }
+
+        $path = base_path('car_models_full.json');
+
+        if (! file_exists($path)) {
+            return $this->carDataCache = [];
+        }
+
+        $raw = json_decode(file_get_contents($path), true);
+
+        if (! is_array($raw)) {
+            return $this->carDataCache = [];
+        }
+
+        $normalized = collect($raw)
+            ->filter(fn ($item) => filled($item['brand'] ?? null))
+            ->map(function ($item) {
+                $brand = trim($item['brand']);
+
+                return [
+                    'brand' => $brand,
+                    'models' => collect($item['models'] ?? [])
+                        ->pluck('title')
+                        ->map(fn ($value) => is_string($value) ? trim($value) : $value)
+                        ->filter(fn ($value) => filled($value))
+                        ->unique(fn ($value) => mb_strtolower($value))
+                        ->sort(fn ($a, $b) => strnatcasecmp($a, $b))
+                        ->values()
+                        ->all(),
+                ];
+            })
+            ->filter(fn ($item) => filled($item['brand']))
+            ->sortBy('brand', SORT_NATURAL | SORT_FLAG_CASE)
+            ->mapWithKeys(fn ($item) => [$item['brand'] => $item['models']])
+            ->toArray();
+
+        return $this->carDataCache = $normalized;
+    }
+
+    protected function ensureBrandModel(array $data, ?string $brand, ?string $model): array
+    {
+        $brand = is_string($brand) ? trim($brand) : '';
+
+        if ($brand === '') {
+            return $data;
+        }
+
+        $models = collect($data[$brand] ?? [])
+            ->map(fn ($value) => is_string($value) ? trim($value) : $value)
+            ->filter(fn ($value) => filled($value));
+
+        if (filled($model)) {
+            $models->push(trim($model));
+        }
+
+        $data[$brand] = $models
+            ->unique(fn ($value) => mb_strtolower($value))
+            ->sort(fn ($a, $b) => strnatcasecmp($a, $b))
+            ->values()
+            ->all();
+
+        ksort($data, SORT_NATURAL | SORT_FLAG_CASE);
+
+        return $data;
+    }
+
     public function myListings(Request $request)
     {
         $filters = $request->only([
@@ -225,6 +311,11 @@ class ListingController extends Controller
             'filters' => $filters,
             'statusOptions' => $statusOptions,
             'favoriteIds' => $request->user()->favoriteListings()->pluck('listings.id')->all(),
+            'carData' => $this->ensureBrandModel(
+                $this->getCarData(),
+                $filters['marka'] ?? null,
+                $filters['modelis'] ?? null,
+            ),
         ]);
     }
 
