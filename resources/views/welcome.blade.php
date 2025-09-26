@@ -117,7 +117,7 @@
             <section class="rounded-[2.5rem] border border-dashed border-white/60 bg-white/80 p-16 text-center shadow-xl backdrop-blur dark:border-slate-700 dark:bg-slate-900/70">
                 <h2 class="text-2xl font-semibold text-slate-700 dark:text-slate-100">Nav neviena sludinājuma... pagaidām.</h2>
                 <p class="mt-3 text-sm text-slate-500 dark:text-slate-300">Esi pirmais un pievieno auto galeriju ar dažiem klikšķiem – Tailwind parūpēsies par stilu.</p>
-                <a href="{{ route('listings.create') }}" class="mt-6 inline-flex items-center justify-center rounded-full bg-indigo-600 px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-indigo-500/30 transition hover:-translate-y-0.5 hover:bg-indigo-500">
+                <a href="{{ route('listings.create') }}" class="btn btn-primary mt-6 rounded-full shadow-lg shadow-indigo-500/30 hover:-translate-y-0.5">
                     Izveidot sludinājumu
                 </a>
             </section>
