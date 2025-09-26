@@ -2,6 +2,41 @@ import './bootstrap';
 
 import Alpine from 'alpinejs';
 
+const ensureArray = (value) => (Array.isArray(value) ? value : []);
+
+const normalizeString = (value) => (typeof value === 'string' ? value.trim() : '');
+
+const sortLatvianStrings = (a, b) => a.localeCompare(b, 'lv', { sensitivity: 'base', numeric: true });
+
+const uniqueSortedStrings = (values) => {
+    const unique = new Map();
+
+    ensureArray(values).forEach((item) => {
+        const normalized = normalizeString(item);
+
+        if (normalized === '') {
+            return;
+        }
+
+        const key = normalized.toLocaleLowerCase('lv');
+
+        if (!unique.has(key)) {
+            unique.set(key, normalized);
+        }
+    });
+
+    return Array.from(unique.values()).sort(sortLatvianStrings);
+};
+
+const sanitizeModelList = (models, ...additional) => {
+    const extras = additional.flatMap((item) => (Array.isArray(item) ? item : [item]));
+
+    return uniqueSortedStrings([
+        ...ensureArray(models),
+        ...extras,
+    ]);
+};
+
 const createDataTransfer = () => {
     if (typeof window === 'undefined') {
         return null;
@@ -148,7 +183,7 @@ const imageUpload = () => ({
 });
 
 const carSelection = (carData, initialBrand = '', initialModel = '', initialSearch = '') => {
-    const normalized = (() => {
+    const initialData = (() => {
         if (carData && Object.keys(carData).length > 0) {
             try {
                 return JSON.parse(JSON.stringify(carData));
@@ -160,10 +195,22 @@ const carSelection = (carData, initialBrand = '', initialModel = '', initialSear
         return carModelsData();
     })();
 
+    const normalizedData = Object.entries(initialData || {}).reduce((accumulator, [brand, models]) => {
+        const normalizedBrand = normalizeString(brand);
+
+        if (normalizedBrand === '') {
+            return accumulator;
+        }
+
+        accumulator[normalizedBrand] = sanitizeModelList(models);
+
+        return accumulator;
+    }, {});
+
     return {
-        carData: normalized,
-        selectedBrand: initialBrand ?? '',
-        selectedModel: initialModel ?? '',
+        carData: normalizedData,
+        selectedBrand: normalizeString(initialBrand),
+        selectedModel: normalizeString(initialModel),
         searchQuery: typeof initialSearch === 'string' ? initialSearch : '',
         availableBrands: [],
         availableModels: [],
@@ -176,97 +223,100 @@ const carSelection = (carData, initialBrand = '', initialModel = '', initialSear
 
             this.isInitialized = true;
 
-            this.normalizeSelections();
-            this.$watch('selectedBrand', () => this.normalizeSelections());
-            this.$watch('selectedModel', () => {
-                if (typeof this.selectedModel === 'string') {
-                    this.selectedModel = this.selectedModel.trim();
+            this.availableBrands = uniqueSortedStrings(Object.keys(this.carData));
+            this.syncBrandData(this.selectedBrand);
+
+            this.$watch('selectedBrand', (value) => {
+                const normalizedBrand = normalizeString(value);
+
+                if (normalizedBrand !== value) {
+                    this.selectedBrand = normalizedBrand;
+
+                    return;
                 }
+
+                this.syncBrandData(normalizedBrand);
+            });
+
+            this.$watch('selectedModel', (value) => {
+                const normalizedModel = normalizeString(value);
+
+                if (normalizedModel !== value) {
+                    this.selectedModel = normalizedModel;
+
+                    return;
+                }
+
+                if (!this.selectedBrand) {
+                    return;
+                }
+
+                const models = sanitizeModelList(this.carData[this.selectedBrand], normalizedModel);
+
+                this.carData = {
+                    ...this.carData,
+                    [this.selectedBrand]: models,
+                };
+
+                this.availableModels = [...models];
+
+                this.updateSearchOptions();
             });
         },
-        normalizeSelections() {
-            if (typeof this.selectedBrand === 'string') {
-                this.selectedBrand = this.selectedBrand.trim();
-            }
+        syncBrandData(brand) {
+            const normalizedBrand = normalizeString(brand);
 
-            if (typeof this.selectedModel === 'string') {
-                this.selectedModel = this.selectedModel.trim();
-            }
-
-            if (this.selectedBrand && !Object.prototype.hasOwnProperty.call(this.carData, this.selectedBrand)) {
-                this.carData = {
-                    ...this.carData,
-                    [this.selectedBrand]: this.selectedModel ? [this.selectedModel] : [],
-                };
-                this.sortCarData();
-            }
-
-            if (this.selectedBrand) {
-                const current = Array.isArray(this.carData[this.selectedBrand]) ? [...this.carData[this.selectedBrand]] : [];
-
-                if (this.selectedModel && !current.includes(this.selectedModel)) {
-                    current.push(this.selectedModel);
-                }
-
-                current.sort((a, b) => a.localeCompare(b, 'lv', { sensitivity: 'base', numeric: true }));
-
-                this.carData = {
-                    ...this.carData,
-                    [this.selectedBrand]: current,
-                };
-
-                this.availableModels = [...current];
-                if (!current.includes(this.selectedModel)) {
-                    this.selectedModel = '';
-                }
-            } else {
-                this.selectedModel = '';
+            if (normalizedBrand === '') {
                 this.availableModels = [];
+                this.selectedModel = '';
+                this.availableBrands = uniqueSortedStrings(Object.keys(this.carData));
+                this.updateSearchOptions();
+
+                return;
             }
 
-            this.availableBrands = Object.keys(this.carData)
-                .sort((a, b) => a.localeCompare(b, 'lv', { sensitivity: 'base', numeric: true }));
+            const models = sanitizeModelList(this.carData[normalizedBrand] ?? [], this.selectedModel);
+
+            this.carData = {
+                ...this.carData,
+                [normalizedBrand]: models,
+            };
+
+            this.availableModels = [...models];
+
+            if (this.selectedModel && !this.availableModels.includes(this.selectedModel)) {
+                this.selectedModel = '';
+            }
+
+            this.availableBrands = uniqueSortedStrings(Object.keys(this.carData));
             this.updateSearchOptions();
         },
-        sortCarData() {
-            const sorted = Object.entries(this.carData)
-                .sort((a, b) => a[0].localeCompare(b[0], 'lv', { sensitivity: 'base', numeric: true }));
-
-            this.carData = Object.fromEntries(sorted);
-        },
         updateSearchOptions() {
-            const unique = new Map();
+            const combined = [];
 
             Object.entries(this.carData).forEach(([brand, models]) => {
-                const normalizedBrand = typeof brand === 'string' ? brand.trim() : '';
+                const normalizedBrand = normalizeString(brand);
 
                 if (normalizedBrand !== '') {
-                    unique.set(normalizedBrand.toLocaleLowerCase('lv'), normalizedBrand);
+                    combined.push(normalizedBrand);
                 }
 
-                (Array.isArray(models) ? models : []).forEach((model) => {
-                    if (typeof model !== 'string') {
-                        return;
-                    }
-
-                    const normalizedModel = model.trim();
+                ensureArray(models).forEach((model) => {
+                    const normalizedModel = normalizeString(model);
 
                     if (normalizedModel === '') {
                         return;
                     }
 
-                    unique.set(normalizedModel.toLocaleLowerCase('lv'), normalizedModel);
+                    combined.push(normalizedModel);
 
-                    const combined = `${normalizedBrand} ${normalizedModel}`.trim();
-
-                    if (combined !== '') {
-                        unique.set(combined.toLocaleLowerCase('lv'), combined);
+                    if (normalizedBrand !== '') {
+                        combined.push(`${normalizedBrand} ${normalizedModel}`);
                     }
                 });
             });
 
-            this.searchOptions = Array.from(unique.values())
-                .sort((a, b) => a.localeCompare(b, 'lv', { sensitivity: 'base', numeric: true }));
+            this.searchOptions = uniqueSortedStrings(combined);
         },
     };
 };
