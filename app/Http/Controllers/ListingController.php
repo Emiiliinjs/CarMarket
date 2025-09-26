@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use Illuminate\View\View;
 
 class ListingController extends Controller
 {
@@ -94,6 +95,23 @@ class ListingController extends Controller
         return view('listings.show', [
             'listing' => $listing,
             'isFavorite' => $isFavorite,
+        ]);
+    }
+
+    public function liveBid(Listing $listing): View
+    {
+        if (! $listing->is_approved && Auth::id() !== $listing->user_id && ! Auth::user()?->is_admin) {
+            abort(404);
+        }
+
+        $state = $listing->biddingState();
+
+        return view('listings.bid', [
+            'listing' => $listing,
+            'minIncrement' => $state['minIncrement'],
+            'currentBid' => $state['currentBid'],
+            'nextBidAmount' => $state['nextBidAmount'],
+            'recentBids' => $state['bids'],
         ]);
     }
 
