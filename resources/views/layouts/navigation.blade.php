@@ -13,7 +13,7 @@
                 >
                     <x-application-logo class="block h-8 w-auto fill-current text-indigo-600 dark:text-indigo-400" />
                     <span class="hidden text-sm font-semibold tracking-wide text-slate-700 dark:text-slate-200 sm:inline">
-                        {{ config('app.name', 'CarMarket') }}
+                        {{ config('app.name', default: 'CarMarket') }}
                     </span>
                 </a>
             </div>
