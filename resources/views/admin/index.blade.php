@@ -36,15 +36,15 @@
                             <p class="text-xs uppercase tracking-wide text-gray-400 dark:text-gray-500">{{ $listing->user->email }}</p>
                         </div>
                         <div class="flex gap-2">
-                            <a href="{{ route('listings.show', $listing) }}" class="inline-flex items-center justify-center rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs font-semibold text-gray-600 shadow-sm transition hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200">Skatīt</a>
+                            <a href="{{ route('listings.show', $listing) }}" class="btn btn-secondary px-3 py-2 text-xs">Skatīt</a>
                             <form method="POST" action="{{ route('admin.listings.approve', $listing) }}">
                                 @csrf
-                                <button type="submit" class="inline-flex items-center justify-center rounded-lg bg-emerald-600 px-3 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-emerald-700">Apstiprināt</button>
+                                <button type="submit" class="btn btn-success px-3 py-2 text-xs">Apstiprināt</button>
                             </form>
                             <form method="POST" action="{{ route('admin.listings.destroy', $listing) }}" onsubmit="return confirm('Dzēst šo sludinājumu?');">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="inline-flex items-center justify-center rounded-lg bg-rose-600 px-3 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-rose-700">Dzēst</button>
+                                <button type="submit" class="btn btn-danger px-3 py-2 text-xs">Dzēst</button>
                             </form>
                         </div>
                     </div>
@@ -67,15 +67,15 @@
                         <p class="text-xs text-gray-500 dark:text-gray-400">Ziņoja: {{ $report->user?->email ?? 'Anonīmi' }} • {{ $report->created_at->diffForHumans() }}</p>
                     </div>
                     <div class="flex flex-wrap gap-2">
-                        <a href="{{ route('listings.show', $report->listing) }}" class="inline-flex items-center justify-center rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs font-semibold text-gray-600 shadow-sm transition hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200">Skatīt sludinājumu</a>
+                        <a href="{{ route('listings.show', $report->listing) }}" class="btn btn-secondary px-3 py-2 text-xs">Skatīt sludinājumu</a>
                         <form method="POST" action="{{ route('admin.reports.resolve', $report) }}">
                             @csrf
-                            <button type="submit" class="inline-flex items-center justify-center rounded-lg bg-emerald-600 px-3 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-emerald-700">Atzīmēt kā atrisinātu</button>
+                            <button type="submit" class="btn btn-success px-3 py-2 text-xs">Atzīmēt kā atrisinātu</button>
                         </form>
                         <form method="POST" action="{{ route('admin.listings.destroy', $report->listing) }}" onsubmit="return confirm('Dzēst ziņoto sludinājumu?');">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="inline-flex items-center justify-center rounded-lg bg-rose-600 px-3 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-rose-700">Dzēst sludinājumu</button>
+                            <button type="submit" class="btn btn-danger px-3 py-2 text-xs">Dzēst sludinājumu</button>
                         </form>
                     </div>
                 </article>
@@ -99,7 +99,7 @@
                 </div>
                 <form method="POST" action="{{ route('admin.users.toggle-block', $user) }}">
                     @csrf
-                    <button type="submit" class="inline-flex items-center justify-center rounded-lg bg-emerald-600 px-4 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-emerald-700">Atbloķēt lietotāju</button>
+                    <button type="submit" class="btn btn-success px-4 py-2 text-xs">Atbloķēt lietotāju</button>
                 </form>
             </div>
         @empty

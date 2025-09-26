@@ -157,7 +157,7 @@
                             <h3 class="text-lg font-semibold text-gray-900">Auto bildes</h3>
                             <p class="text-sm text-gray-500">Velc un nomet bildes vai izvēlies tās no ierīces. Tās automātiski tiks samazinātas līdz optimālam izmēram.</p>
                         </div>
-                        <button type="button" @click="$refs.fileInput.click()" class="inline-flex items-center rounded-xl bg-indigo-50 px-4 py-2 text-sm font-semibold text-indigo-600 transition hover:bg-indigo-100">
+                        <button type="button" @click="$refs.fileInput.click()" class="btn btn-light">
                             Pievienot bildes
                         </button>
                     </div>
@@ -200,7 +200,7 @@
 
                 <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <p class="text-sm text-gray-500">Ar augšupielādi tu apliecini, ka bilde nepārkāpj autortiesības.</p>
-                    <button type="submit" class="inline-flex items-center justify-center rounded-xl bg-indigo-600 px-8 py-3 text-base font-semibold text-white shadow-lg transition hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                    <button type="submit" class="btn btn-primary text-base">
                         Ievietot sludinājumu
                     </button>
                 </div>

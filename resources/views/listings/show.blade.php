@@ -29,7 +29,7 @@
                             @method('DELETE')
                         @endif
 
-                        <button type="submit" class="inline-flex items-center gap-2 rounded-full border border-rose-200 bg-white px-4 py-2 text-sm font-semibold text-rose-600 shadow-sm transition hover:bg-rose-50 dark:border-rose-500/40 dark:bg-gray-900/60 dark:text-rose-200">
+                        <button type="submit" class="btn btn-secondary rounded-full border-rose-200 px-4 text-rose-600 hover:bg-rose-50 dark:border-rose-500/40 dark:bg-gray-900/60 dark:text-rose-200">
                             <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                                 <path d="M3.172 5.172a4 4 0 0 1 5.656 0L10 6.343l1.172-1.171a4 4 0 0 1 5.656 5.656L10 17.657l-6.828-6.829a4 4 0 0 1 0-5.656Z" @if(! $isFavorite) fill="none" stroke="currentColor" stroke-width="1.5" @endif />
                             </svg>
@@ -37,7 +37,7 @@
                         </button>
                     </form>
                 @else
-                    <a href="{{ route('login') }}" class="inline-flex items-center gap-2 rounded-full border border-indigo-200 bg-white px-4 py-2 text-sm font-semibold text-indigo-600 shadow-sm transition hover:bg-indigo-50 dark:border-indigo-500/30 dark:bg-gray-900/60 dark:text-indigo-200">
+                    <a href="{{ route('login') }}" class="btn btn-secondary rounded-full border-indigo-200 px-4 text-indigo-600 hover:bg-indigo-50 dark:border-indigo-500/30 dark:bg-gray-900/60 dark:text-indigo-200">
                         <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                             <path d="M3.172 5.172a4 4 0 0 1 5.656 0L10 6.343l1.172-1.171a4 4 0 0 1 5.656 5.656L10 17.657l-6.828-6.829a4 4 0 0 1 0-5.656Z" fill="none" stroke="currentColor" stroke-width="1.5" />
                         </svg>
@@ -155,7 +155,7 @@
                 <div x-data="{ open: false }" class="rounded-3xl bg-white/80 p-6 shadow ring-1 ring-gray-100 dark:bg-gray-900/70 dark:ring-gray-800">
                     <div class="flex items-center justify-between">
                         <h3 class="text-base font-semibold text-gray-900 dark:text-white">Ziņot par pārkāpumu</h3>
-                        <button type="button" @click="open = ! open" class="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-semibold text-gray-600 shadow-sm transition hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700">
+                        <button type="button" @click="open = ! open" class="btn btn-secondary rounded-lg px-3 py-1.5 text-xs">
                             <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                                 <path fill-rule="evenodd" d="M9 3a1 1 0 0 1 2 0v7a1 1 0 0 1-2 0V3Zm1 12.75a1.25 1.25 0 1 0 0-2.5 1.25 1.25 0 0 0 0 2.5Z" clip-rule="evenodd" />
                             </svg>
@@ -168,20 +168,20 @@
                     <form x-show="open" x-cloak method="POST" action="{{ route('listings.report', $listing) }}" class="mt-4 space-y-3">
                         @csrf
                         <textarea name="reason" rows="3" required class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200" placeholder="Apraksti pārkāpumu vai maldinošu informāciju"></textarea>
-                        <button type="submit" class="inline-flex items-center justify-center rounded-xl bg-rose-600 px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-rose-700 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-2">Nosūtīt ziņojumu</button>
+                        <button type="submit" class="btn btn-danger">Nosūtīt ziņojumu</button>
                     </form>
                 </div>
 
                 @if(auth()->check() && (auth()->user()->id === $listing->user_id || auth()->user()->is_admin))
                     <div class="flex flex-col gap-3 rounded-3xl bg-white/80 p-6 shadow ring-1 ring-gray-100 dark:bg-gray-900/70 dark:ring-gray-800 sm:flex-row sm:items-center sm:justify-between">
-                        <a href="{{ route('listings.edit', $listing->id) }}" class="inline-flex w-full items-center justify-center rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-md transition hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto">
+                        <a href="{{ route('listings.edit', $listing->id) }}" class="btn btn-primary w-full sm:w-auto">
                             Rediģēt sludinājumu
                         </a>
 
                         <form action="{{ route('listings.destroy', $listing->id) }}" method="POST" class="w-full sm:w-auto" onsubmit="return confirm('Vai tiešām dzēst šo sludinājumu?');">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="inline-flex w-full items-center justify-center rounded-xl bg-rose-600 px-5 py-2.5 text-sm font-semibold text-white shadow-md transition hover:bg-rose-700 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-2">
+                            <button type="submit" class="btn btn-danger w-full">
                                 Dzēst sludinājumu
                             </button>
                         </form>

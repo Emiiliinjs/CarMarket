@@ -98,7 +98,7 @@
                 Salīdzināt
             </label>
 
-            <a href="{{ route('listings.show', $listing->id) }}" class="inline-flex w-full items-center justify-center rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-md transition hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+            <a href="{{ route('listings.show', $listing->id) }}" class="btn btn-primary w-full">
                 Skatīt detaļas
             </a>
         </div>

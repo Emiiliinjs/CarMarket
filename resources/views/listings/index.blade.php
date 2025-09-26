@@ -40,7 +40,7 @@
                             placeholder="Meklēt pēc markas, modeļa vai apraksta"
                             class="w-full rounded-xl border-0 bg-transparent px-4 py-2.5 text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none dark:text-gray-200"
                         />
-                        <button type="submit" class="me-2 inline-flex items-center justify-center rounded-lg bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">Meklēt</button>
+                        <button type="submit" class="btn btn-primary me-2 px-4">Meklēt</button>
                     </div>
                     <datalist id="listings-search-options">
                         <template x-for="option in searchOptions" :key="option">
@@ -148,8 +148,8 @@
                 </div>
 
                 <div class="flex gap-3">
-                    <a href="{{ route('listings.index') }}" class="inline-flex items-center justify-center rounded-xl border border-gray-200 bg-white px-5 py-2 text-sm font-semibold text-gray-600 shadow-sm transition hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700">Notīrīt</a>
-                    <button type="submit" class="inline-flex items-center justify-center rounded-xl bg-indigo-600 px-6 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">Atlasīt</button>
+                    <a href="{{ route('listings.index') }}" class="btn btn-secondary">Notīrīt</a>
+                    <button type="submit" class="btn btn-primary">Atlasīt</button>
                 </div>
             </div>
         </form>
@@ -189,7 +189,7 @@
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Salīdzināšanas rīks</h3>
                     <p class="text-sm text-gray-500 dark:text-gray-300">Atķeksē līdz 3 sludinājumiem, lai salīdzinātu cenu un specifikāciju.</p>
                 </div>
-                <button type="button" id="compare-clear" class="inline-flex items-center justify-center rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-gray-600 shadow-sm transition hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700">Notīrīt izvēli</button>
+                <button type="button" id="compare-clear" class="btn btn-secondary">Notīrīt izvēli</button>
             </div>
 
             <div class="mt-4 overflow-x-auto">

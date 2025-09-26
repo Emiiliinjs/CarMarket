@@ -5,7 +5,7 @@
                 <h2 class="text-2xl font-semibold leading-tight text-gray-900 dark:text-white">Mani sludinājumi</h2>
                 <p class="text-sm text-gray-500 dark:text-gray-300">Pārvaldi savus auto piedāvājumus, seko apstiprinājuma statusam un atjauno informāciju jebkurā brīdī.</p>
             </div>
-            <a href="{{ route('listings.create') }}" class="inline-flex items-center justify-center rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+            <a href="{{ route('listings.create') }}" class="btn btn-primary">
                 Pievienot jaunu sludinājumu
             </a>
         </div>
@@ -129,7 +129,7 @@
 
                 <div class="flex gap-3">
                     <a href="{{ route('listings.mine') }}" class="inline-flex items-center justify-center rounded-xl border border-gray-200 bg-white px-5 py-2 text-sm font-semibold text-gray-600 shadow-sm transition hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700">Notīrīt</a>
-                    <button type="submit" class="inline-flex items-center justify-center rounded-xl bg-indigo-600 px-6 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">Atlasīt</button>
+                    <button type="submit" class="btn btn-primary">Atlasīt</button>
                 </div>
             </div>
         </form>
