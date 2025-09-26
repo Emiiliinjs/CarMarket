@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\FavoriteController;
+use App\Http\Controllers\ListingBidController;
 use App\Http\Controllers\ListingController;
 use App\Http\Controllers\ListingImageController;
 use App\Http\Controllers\ListingReportController;
@@ -36,6 +37,10 @@ Route::middleware(['auth', 'active-user'])->group(function () {
     Route::get('/favorites', [FavoriteController::class, 'index'])->name('favorites.index');
     Route::post('/favorites/{listing}', [FavoriteController::class, 'store'])->name('favorites.store');
     Route::delete('/favorites/{listing}', [FavoriteController::class, 'destroy'])->name('favorites.destroy');
+
+    Route::get('/listings/{listing}/live-bid', [ListingController::class, 'liveBid'])->name('listings.live-bid');
+    Route::get('/listings/{listing}/bids', [ListingBidController::class, 'index'])->name('listings.bids.index');
+    Route::post('/listings/{listing}/bids', [ListingBidController::class, 'store'])->name('listings.bids.store');
 });
 
 // Sludinājuma detaļas (skatīt jebkurš) — jābūt **pēc create/edit maršrutiem**

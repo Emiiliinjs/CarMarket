@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Listing extends Model
 {
@@ -71,6 +72,11 @@ class Listing extends Model
         return $this->hasMany(ListingReport::class);
     }
 
+    public function bids(): HasMany
+    {
+        return $this->hasMany(ListingBid::class);
+    }
+
     public function scopeApproved($query)
     {
         return $query->where('is_approved', true);
@@ -107,5 +113,40 @@ class Listing extends Model
             self::STATUS_SOLD => 'Pārdots',
             default => 'Pieejams',
         };
+    }
+
+    public function biddingState(int $limit = 20): array
+    {
+        $increment = ListingBid::MINIMUM_INCREMENT;
+
+        $highestBidAmount = $this->bids()
+            ->orderByDesc('amount')
+            ->value('amount');
+
+        $currentBid = round(max((float) ($highestBidAmount ?? 0), (float) $this->cena), 2);
+        $nextBid = round($currentBid + $increment, 2);
+
+        $history = $this->bids()
+            ->with('user:id,name')
+            ->latest()
+            ->take($limit)
+            ->get()
+            ->map(function (ListingBid $bid) {
+                return [
+                    'id' => $bid->id,
+                    'amount' => (float) $bid->amount,
+                    'user' => $bid->user?->name ?? __('Anonīms solītājs'),
+                    'created_at' => $bid->created_at->toIso8601String(),
+                    'created_at_human' => $bid->created_at->diffForHumans(),
+                ];
+            })
+            ->values();
+
+        return [
+            'minIncrement' => $increment,
+            'currentBid' => $currentBid,
+            'nextBidAmount' => $nextBid,
+            'bids' => $history,
+        ];
     }
 }
