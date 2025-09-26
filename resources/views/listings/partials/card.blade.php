@@ -22,7 +22,7 @@
     data-degviela="{{ $listing->degviela }}"
     data-parnesumkarba="{{ $listing->parnesumkarba }}"
     data-status="{{ $listing->status_label }}"
-    class="group flex flex-col overflow-hidden rounded-3xl bg-white/80 shadow-lg ring-1 ring-gray-100 transition duration-300 hover:-translate-y-1 hover:shadow-2xl dark:bg-gray-900/70 dark:ring-gray-800"
+    class="group flex flex-col overflow-hidden rounded-3xl bg-white/80 backdrop-blur shadow-lg ring-1 ring-white/60 transition duration-300 hover:-translate-y-1 hover:shadow-2xl dark:bg-slate-900/70 dark:ring-slate-800"
 >
     <div class="relative aspect-[4/3] overflow-hidden">
         <img src="{{ $imageUrl }}" alt="{{ $listing->marka }} {{ $listing->modelis }}" class="h-full w-full object-cover transition duration-300 group-hover:scale-105" loading="lazy">
@@ -63,7 +63,7 @@
         @endif
     </div>
 
-    <div class="flex flex-1 flex-col justify-between p-5 dark:bg-gray-900/40">
+    <div class="flex flex-1 flex-col justify-between bg-gradient-to-b from-white/70 via-white/60 to-white/70 p-6 dark:from-slate-900/60 dark:via-slate-900/40 dark:to-slate-900/60">
         <div class="space-y-4">
             <div class="flex items-start justify-between gap-2">
                 <div>
