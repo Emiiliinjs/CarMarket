@@ -3,17 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Models\Listing;
+use App\Support\CarModelRepository;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
-use JsonException;
 
 class ListingController extends Controller
 {
-    protected ?array $carDataCache = null;
+    public function __construct(
+        private readonly CarModelRepository $carModels,
+    ) {
+    }
 
     // Rāda visus sludinājumus ar filtriem, kārtošanu un meklēšanu
     public function index(Request $request)
@@ -70,8 +73,7 @@ class ListingController extends Controller
             'statusOptions' => $statusOptions,
             'fuelOptions' => $fuelOptions,
             'favoriteIds' => $favoriteIds,
-            'carData' => $this->ensureBrandModel(
-                $this->getCarData(),
+            'carData' => $this->carModels->withBrand(
                 $filters['marka'] ?? null,
                 $filters['modelis'] ?? null,
             ),
@@ -99,7 +101,7 @@ class ListingController extends Controller
     public function create()
     {
         return view('listings.create', [
-            'carData' => $this->getCarData(),
+            'carData' => $this->carModels->all(),
         ]);
     }
 
@@ -148,8 +150,7 @@ class ListingController extends Controller
 
         return view('listings.edit', [
             'listing' => $listing,
-            'carData' => $this->ensureBrandModel(
-                $this->getCarData(),
+            'carData' => $this->carModels->withBrand(
                 $listing->marka,
                 $listing->modelis,
             ),
@@ -215,113 +216,6 @@ class ListingController extends Controller
                          ->with('success', 'Sludinājums veiksmīgi dzēsts!');
     }
 
-    protected function getCarData(): array
-    {
-        if ($this->carDataCache !== null) {
-            return $this->carDataCache;
-        }
-
-        $path = database_path('data/car_models_full.json');
-
-        if (! is_file($path)) {
-            return $this->carDataCache = [];
-        }
-
-        try {
-            $contents = file_get_contents($path);
-            $rawData = json_decode($contents ?: '[]', true, 512, JSON_THROW_ON_ERROR);
-        } catch (JsonException $exception) {
-            report($exception);
-
-            return $this->carDataCache = [];
-        }
-
-        if (! is_array($rawData)) {
-            return $this->carDataCache = [];
-        }
-
-        $brands = [];
-
-        foreach ($rawData as $entry) {
-            if (! is_array($entry)) {
-                continue;
-            }
-
-            $brand = $entry['brand'] ?? null;
-
-            if (! is_string($brand)) {
-                continue;
-            }
-
-            $brand = trim($brand);
-
-            if ($brand === '') {
-                continue;
-            }
-
-            $models = [];
-
-            if (isset($entry['models']) && is_array($entry['models'])) {
-                foreach ($entry['models'] as $model) {
-                    if (is_array($model)) {
-                        $model = $model['title'] ?? $model['name'] ?? null;
-                    }
-
-                    if (! is_string($model)) {
-                        continue;
-                    }
-
-                    $model = trim($model);
-
-                    if ($model === '') {
-                        continue;
-                    }
-
-                    $models[] = $model;
-                }
-            }
-
-            $models = collect($models)
-                ->filter(fn ($value) => filled($value))
-                ->unique(fn ($value) => mb_strtolower($value, 'UTF-8'))
-                ->sort(fn ($a, $b) => strnatcasecmp($a, $b))
-                ->values()
-                ->all();
-
-            $brands[$brand] = $models;
-        }
-
-        ksort($brands, SORT_NATURAL | SORT_FLAG_CASE);
-
-        return $this->carDataCache = $brands;
-    }
-
-    protected function ensureBrandModel(array $data, ?string $brand, ?string $model): array
-    {
-        $brand = is_string($brand) ? trim($brand) : '';
-
-        if ($brand === '') {
-            return $data;
-        }
-
-        $models = collect($data[$brand] ?? [])
-            ->map(fn ($value) => is_string($value) ? trim($value) : $value)
-            ->filter(fn ($value) => filled($value));
-
-        if (filled($model)) {
-            $models->push(trim($model));
-        }
-
-        $data[$brand] = $models
-            ->unique(fn ($value) => mb_strtolower($value))
-            ->sort(fn ($a, $b) => strnatcasecmp($a, $b))
-            ->values()
-            ->all();
-
-        ksort($data, SORT_NATURAL | SORT_FLAG_CASE);
-
-        return $data;
-    }
 
     public function myListings(Request $request)
     {
@@ -350,8 +244,7 @@ class ListingController extends Controller
             'filters' => $filters,
             'statusOptions' => $statusOptions,
             'favoriteIds' => $request->user()->favoriteListings()->pluck('listings.id')->all(),
-            'carData' => $this->ensureBrandModel(
-                $this->getCarData(),
+            'carData' => $this->carModels->withBrand(
                 $filters['marka'] ?? null,
                 $filters['modelis'] ?? null,
             ),
