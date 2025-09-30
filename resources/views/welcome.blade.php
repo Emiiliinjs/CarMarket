@@ -1,55 +1,50 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-indigo-500 via-purple-500 to-sky-500 p-10 text-white shadow-2xl">
-            <div class="absolute -right-10 -top-10 h-48 w-48 rounded-full bg-white/20 blur-2xl"></div>
-            <div class="absolute -bottom-20 -left-6 h-64 w-64 rounded-full bg-sky-400/30 blur-3xl"></div>
-
-            <div class="relative z-10 grid gap-10 lg:grid-cols-[1.15fr,1fr]">
+        <div class="rounded-3xl border border-slate-200 bg-gradient-to-br from-indigo-50 via-white to-white px-6 py-8 shadow-sm sm:px-10 sm:py-12 dark:border-slate-800 dark:from-slate-900/70 dark:via-slate-950">
+            <div class="grid gap-8 lg:grid-cols-[1.1fr,1fr]">
                 <div class="space-y-6">
-                    <span class="inline-flex items-center gap-2 rounded-full bg-white/20 px-4 py-1 text-sm font-semibold uppercase tracking-wide text-white/90">
-                        <span class="h-2 w-2 rounded-full bg-emerald-300"></span>
-                        Jaunākās kolekcijas
+                    <span class="inline-flex items-center gap-2 rounded-full bg-white/70 px-4 py-1 text-xs font-semibold uppercase tracking-wide text-indigo-600 shadow-sm shadow-indigo-100 dark:bg-slate-900/60 dark:text-indigo-300">
+                        Jaunākie piedāvājumi
                     </span>
 
-                    <h1 class="text-3xl font-bold leading-tight sm:text-4xl lg:text-5xl">
-                        Atrodi savu nākamo auto ar galeriju, kas vienmēr izskatās <span class="text-white/90">perfekti</span>.
+                    <h1 class="text-3xl font-semibold leading-snug text-slate-900 sm:text-4xl dark:text-white">
+                        Atrodi savu nākamo auto vienkāršā, bet izteiksmīgā galerijā.
                     </h1>
 
-                    <p class="text-base text-white/80 sm:text-lg">
-                        CarMarket piedāvā vienmērīgi apstrādātas galerijas un Tailwind modernu dizainu katram sludinājumam.
-                        Iepazīsti svaigākos piedāvājumus un saglabā favorītus vienā klikšķī.
+                    <p class="max-w-xl text-sm text-slate-600 sm:text-base dark:text-slate-300">
+                        CarMarket apvieno skaidru struktūru ar gaumīgu Tailwind stilu – pievieno, filtrē un saglabā auto sludinājumus vienuviet.
                     </p>
 
                     <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
-                        <a href="{{ route('listings.index') }}" class="inline-flex items-center justify-center rounded-full bg-white px-6 py-3 text-sm font-semibold text-indigo-600 shadow-lg shadow-indigo-500/30 transition hover:-translate-y-0.5">
-                            Pārlūkot visus auto
+                        <a href="{{ route('listings.index') }}" class="inline-flex items-center justify-center rounded-xl bg-indigo-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-indigo-500">
+                            Pārlūkot auto
                         </a>
-                        <div class="flex items-center gap-4 text-sm text-white/80">
-                            <div class="flex flex-col">
-                                <span class="text-xl font-semibold text-white">{{ number_format($listings->count()) }}</span>
-                                <span>Aktīvie piedāvājumi</span>
+                        <div class="flex items-center gap-6 text-sm text-slate-500 dark:text-slate-300">
+                            <div>
+                                <p class="text-lg font-semibold text-slate-900 dark:text-white">{{ number_format($listings->count()) }}</p>
+                                <p>Aktīvie piedāvājumi</p>
                             </div>
-                            <div class="hidden h-10 w-px bg-white/30 sm:block"></div>
-                            <div class="hidden flex-col sm:flex">
-                                <span class="text-xl font-semibold text-white">100%</span>
-                                <span>Responsīva galerija</span>
+                            <div class="hidden h-10 w-px bg-slate-200 dark:bg-slate-700 sm:block"></div>
+                            <div class="hidden sm:block">
+                                <p class="text-lg font-semibold text-slate-900 dark:text-white">100%</p>
+                                <p>Responsīvas galerijas</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="grid gap-4 text-sm">
-                    <div class="rounded-3xl bg-white/15 p-6 shadow-lg backdrop-blur">
-                        <h3 class="text-lg font-semibold text-white">Pilnībā responsīvs dizains</h3>
-                        <p class="mt-2 text-white/80">Katra galerija pielāgojas ierīcei – no mobilā līdz 4K monitoram.</p>
+                <div class="grid gap-4">
+                    <div class="rounded-2xl border border-slate-200 bg-white/90 p-5 text-sm shadow-sm dark:border-slate-800 dark:bg-slate-900/70">
+                        <h3 class="text-base font-semibold text-slate-900 dark:text-white">Vieglā pārvaldība</h3>
+                        <p class="mt-2 text-slate-600 dark:text-slate-300">Administrē sludinājumus un attēlus bez liekas sarežģītības – viss sakārtots vienā panelī.</p>
                     </div>
-                    <div class="rounded-3xl bg-white/10 p-6 shadow-lg backdrop-blur">
-                        <h3 class="text-lg font-semibold text-white">Viedie favorīti</h3>
-                        <p class="mt-2 text-white/80">Pievieno favorītiem savus top auto un saglabā tos personalizētā sarakstā.</p>
+                    <div class="rounded-2xl border border-slate-200 bg-white/90 p-5 text-sm shadow-sm dark:border-slate-800 dark:bg-slate-900/70">
+                        <h3 class="text-base font-semibold text-slate-900 dark:text-white">Favorīti vienā vietā</h3>
+                        <p class="mt-2 text-slate-600 dark:text-slate-300">Saglabā savus iecienītos auto un salīdzini tos pēc svarīgākajiem parametriem.</p>
                     </div>
-                    <div class="rounded-3xl bg-white/10 p-6 shadow-lg backdrop-blur">
-                        <h3 class="text-lg font-semibold text-white">Droša pārvaldība</h3>
-                        <p class="mt-2 text-white/80">Admin panelis ar statusu kontroles iespējām un moderēšanas rīkiem.</p>
+                    <div class="rounded-2xl border border-slate-200 bg-white/90 p-5 text-sm shadow-sm dark:border-slate-800 dark:bg-slate-900/70">
+                        <h3 class="text-base font-semibold text-slate-900 dark:text-white">Mūsdienīgs Tailwind dizains</h3>
+                        <p class="mt-2 text-slate-600 dark:text-slate-300">Izvēlies mierīgu, bet joprojām stilīgu interfeisu, kas pielāgojas jebkurai ierīcei.</p>
                     </div>
                 </div>
             </div>
@@ -57,34 +52,22 @@
     </x-slot>
 
     <div class="space-y-12">
-        <section class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            <div class="rounded-3xl bg-white/80 p-6 shadow-xl ring-1 ring-white/60 transition hover:-translate-y-1 hover:shadow-2xl dark:bg-slate-900/70 dark:ring-slate-800">
-                <div class="flex items-center justify-between">
-                    <h3 class="text-sm font-semibold text-slate-600 dark:text-slate-300">Instant filtrēšana</h3>
-                    <span class="text-xs font-semibold uppercase text-indigo-500">Live</span>
-                </div>
-                <p class="mt-3 text-sm text-slate-500 dark:text-slate-400">Izmanto detalizētus filtrus un datu sarakstus, lai ātri sameklētu vēlamo modeli.</p>
+        <section class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900/70">
+                <h3 class="text-sm font-semibold text-slate-900 dark:text-white">Intuitīvi filtri</h3>
+                <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">Atrast vajadzīgo modeli ir viegli ar pārskatāmu filtru un kārtošanas sistēmu.</p>
             </div>
-            <div class="rounded-3xl bg-white/80 p-6 shadow-xl ring-1 ring-white/60 transition hover:-translate-y-1 hover:shadow-2xl dark:bg-slate-900/70 dark:ring-slate-800">
-                <div class="flex items-center justify-between">
-                    <h3 class="text-sm font-semibold text-slate-600 dark:text-slate-300">Galerijas optimizācija</h3>
-                    <span class="text-xs font-semibold uppercase text-emerald-500">HDR</span>
-                </div>
-                <p class="mt-3 text-sm text-slate-500 dark:text-slate-400">Visas bildes tiek standartizētas, lai galerija saglabātu vienotu stilu.</p>
+            <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900/70">
+                <h3 class="text-sm font-semibold text-slate-900 dark:text-white">Stabila galerija</h3>
+                <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">Bildes tiek apstrādātas, lai katrs sludinājums izskatītos sakopts un vienots.</p>
             </div>
-            <div class="rounded-3xl bg-white/80 p-6 shadow-xl ring-1 ring-white/60 transition hover:-translate-y-1 hover:shadow-2xl dark:bg-slate-900/70 dark:ring-slate-800">
-                <div class="flex items-center justify-between">
-                    <h3 class="text-sm font-semibold text-slate-600 dark:text-slate-300">Tumšais režīms</h3>
-                    <span class="text-xs font-semibold uppercase text-purple-500">Pro</span>
-                </div>
-                <p class="mt-3 text-sm text-slate-500 dark:text-slate-400">Glancēta pieredze naktī un dienā, pateicoties gudram Tailwind režīmu pārslēdzējam.</p>
+            <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900/70">
+                <h3 class="text-sm font-semibold text-slate-900 dark:text-white">Tumšais režīms</h3>
+                <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">Pielāgo interfeisu savai videi – tikai viens klikšķis, lai pārslēgtos.</p>
             </div>
-            <div class="rounded-3xl bg-white/80 p-6 shadow-xl ring-1 ring-white/60 transition hover:-translate-y-1 hover:shadow-2xl dark:bg-slate-900/70 dark:ring-slate-800">
-                <div class="flex items-center justify-between">
-                    <h3 class="text-sm font-semibold text-slate-600 dark:text-slate-300">Salīdzināšanas panelis</h3>
-                    <span class="text-xs font-semibold uppercase text-rose-500">Beta</span>
-                </div>
-                <p class="mt-3 text-sm text-slate-500 dark:text-slate-400">Atķeksē līdz trim auto, lai salīdzinātu cenu un specifikācijas vienuviet.</p>
+            <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900/70">
+                <h3 class="text-sm font-semibold text-slate-900 dark:text-white">Salīdzināšanas rīks</h3>
+                <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">Atzīmē līdz trim auto un salīdzini tos vienuviet, izmantojot tīru tabulu.</p>
             </div>
         </section>
 
@@ -93,7 +76,7 @@
                 <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                         <h2 class="text-2xl font-semibold text-slate-900 dark:text-white">Izcelti auto piedāvājumi</h2>
-                        <p class="text-sm text-slate-500 dark:text-slate-300">Pievilcīgas galerijas ar dinamisku hover efektu katrā kartītē.</p>
+                        <p class="text-sm text-slate-600 dark:text-slate-300">Vienkāršas, bet modernas kartītes ar visiem svarīgākajiem datiem.</p>
                     </div>
                     <a href="{{ route('favorites.index') }}" class="inline-flex items-center gap-2 text-sm font-semibold text-indigo-600 transition hover:text-indigo-500 dark:text-indigo-300 dark:hover:text-indigo-200">
                         Apskatīt favorītus
@@ -103,7 +86,7 @@
                     </a>
                 </div>
 
-                <div class="grid gap-8 sm:grid-cols-2 xl:grid-cols-3">
+                <div class="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
                     @foreach($listings as $listing)
                         @include('listings.partials.card', ['listing' => $listing])
                     @endforeach
@@ -114,12 +97,10 @@
                 </div>
             </section>
         @else
-            <section class="rounded-[2.5rem] border border-dashed border-white/60 bg-white/80 p-16 text-center shadow-xl backdrop-blur dark:border-slate-700 dark:bg-slate-900/70">
-                <h2 class="text-2xl font-semibold text-slate-700 dark:text-slate-100">Nav neviena sludinājuma... pagaidām.</h2>
-                <p class="mt-3 text-sm text-slate-500 dark:text-slate-300">Esi pirmais un pievieno auto galeriju ar dažiem klikšķiem – Tailwind parūpēsies par stilu.</p>
-                <a href="{{ route('listings.create') }}" class="btn btn-primary mt-6 rounded-full shadow-lg shadow-indigo-500/30 hover:-translate-y-0.5">
-                    Izveidot sludinājumu
-                </a>
+            <section class="rounded-3xl border border-dashed border-slate-300 bg-white/80 p-12 text-center shadow-sm dark:border-slate-700 dark:bg-slate-900/60">
+                <h2 class="text-2xl font-semibold text-slate-700 dark:text-slate-100">Nav pieejamu sludinājumu.</h2>
+                <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">Esi pirmais un pievieno savu auto galeriju ar dažiem klikšķiem.</p>
+                <a href="{{ route('listings.create') }}" class="btn btn-primary mt-6">Izveidot sludinājumu</a>
             </section>
         @endif
     </div>
