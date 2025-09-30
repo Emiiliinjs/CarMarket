@@ -2,227 +2,104 @@
 
 namespace App\Support;
 
-use JsonException;
-use Throwable;
-
 class CarModelRepository
 {
-    private ?array $cache = null;
+    private array $data;
 
-    public function all(): array
-    {
-        if ($this->cache !== null) {
-            return $this->cache;
-        }
-
-        $rawData = $this->loadFromCardata() ?? $this->loadFromLegacyJson();
-
-        return $this->cache = $this->normalizeRawData($rawData);
-    }
-
-    public function withBrand(?string $brand, ?string $model): array
-    {
-        return $this->ensureBrandModel($this->all(), $brand, $model);
-    }
-
-    public function toJson(?array $data = null): string
-    {
-        $payload = $data ?? $this->all();
-
-        $encoded = json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-
-        return $encoded === false ? '{}' : $encoded;
-    }
-
-    private function loadFromCardata(): ?array
-    {
-        $path = base_path('Cardata.json');
-
-        if (! is_file($path)) {
-            return null;
-        }
-
-        try {
-            $contents = file_get_contents($path);
-            $payload = json_decode($contents ?: '{}', true, 512, JSON_THROW_ON_ERROR);
-        } catch (JsonException $exception) {
-            if (function_exists('report')) {
-                report($exception);
-            }
-
-            return null;
-        }
-
-        $raw = $payload['content'] ?? null;
-
-        if (! is_string($raw)) {
-            return null;
-        }
-
-        return $this->parsePhpArray($raw);
-    }
-
-    private function parsePhpArray(string $code): ?array
-    {
-        $normalized = trim($code);
-
-        if ($normalized === '') {
-            return null;
-        }
-
-        $normalized = preg_replace('/^\$[A-Za-z_][A-Za-z0-9_]*\s*=\s*/', '', $normalized, 1);
-
-        if (! is_string($normalized)) {
-            return null;
-        }
-
-        $normalized = trim($normalized);
-
-        if ($normalized === '') {
-            return null;
-        }
-
-        if (str_contains($normalized, '<?') || str_contains($normalized, '?>')) {
-            return null;
-        }
-
-        $normalized = rtrim($normalized, ";\n\r\t ");
-
-        if ($normalized === '') {
-            return null;
-        }
-
-        $expression = 'return ' . $normalized . ';';
-
-        try {
-            /** @var mixed $result */
-            $result = eval($expression);
-        } catch (Throwable $exception) {
-            if (function_exists('report')) {
-                report($exception);
-            }
-
-            return null;
-        }
-
-        return is_array($result) ? $result : null;
-    }
-
-    private function loadFromLegacyJson(): array
+    public function __construct()
     {
         $path = database_path('data/car_models_full.json');
 
-        if (! is_file($path)) {
-            return [];
+        if (! file_exists($path)) {
+            throw new \RuntimeException("Car models file not found at {$path}");
         }
 
-        try {
-            $contents = file_get_contents($path);
-            $rawData = json_decode($contents ?: '[]', true, 512, JSON_THROW_ON_ERROR);
-        } catch (JsonException $exception) {
-            if (function_exists('report')) {
-                report($exception);
-            }
+        $raw = json_decode(file_get_contents($path), true);
 
-            return [];
+        if (! is_array($raw)) {
+            throw new \RuntimeException("Car models JSON is invalid.");
         }
 
-        return is_array($rawData) ? $rawData : [];
+        $this->data = $this->normalizeRawData($raw);
     }
 
-    private function normalizeRawData(?array $rawData): array
+    /**
+     * Atgriež visas markas un modeļus.
+     */
+    public function all(): array
     {
-        if (! is_array($rawData)) {
-            return [];
-        }
-
-        $brands = [];
-
-        foreach ($rawData as $entry) {
-            if (! is_array($entry)) {
-                continue;
-            }
-
-            $brand = $entry['brand'] ?? null;
-
-            if (! is_string($brand)) {
-                continue;
-            }
-
-            $brand = trim($brand);
-
-            if ($brand === '') {
-                continue;
-            }
-
-            $models = $this->normalizeModelList($entry['models'] ?? []);
-
-            $brands[$brand] = $models;
-        }
-
-        ksort($brands, SORT_NATURAL | SORT_FLAG_CASE);
-
-        return $brands;
+        return $this->data;
     }
 
-    private function normalizeModelList(mixed $models): array
+    /**
+     * Atgriež modeļus konkrētai markai.
+     */
+    public function getModelsForBrand(string $brand): array
     {
-        if (! is_array($models)) {
-            return [];
-        }
+        return $this->data[$brand] ?? [];
+    }
 
+    /**
+     * Atgriež JSON priekš frontend.
+     */
+    public function toJson(): string
+    {
+        return json_encode($this->data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+    }
+
+    /**
+     * Normalizē izejas datus no JSON faila.
+     *
+     * Piemēri:
+     * [
+     *   {"brand":"Audi","models":["A3","A4"]},
+     *   {"brand":"BMW","models":[{"name":"320"},{"title":"X5"}]},
+     *   "AC"
+     * ]
+     *
+     * → ["Audi"=>["A3","A4"], "BMW"=>["320","X5"], "AC"=>[]]
+     */
+    private function normalizeRawData(array $rawData): array
+    {
         $normalized = [];
 
-        foreach ($models as $model) {
-            if (is_array($model)) {
-                $model = $model['title'] ?? $model['name'] ?? null;
+        foreach ($rawData as $item) {
+            // Ja objekts ar brand + models
+            if (is_array($item) && isset($item['brand'])) {
+                $brand = trim($item['brand']);
+                $models = $item['models'] ?? [];
+                $normalized[$brand] = $this->normalizeModelList($models);
             }
-
-            if (! is_string($model)) {
-                continue;
+            // Ja tikai string (marka bez modeļiem)
+            elseif (is_string($item)) {
+                $normalized[trim($item)] = [];
             }
-
-            $model = trim($model);
-
-            if ($model === '') {
-                continue;
-            }
-
-            $normalized[] = $model;
         }
 
-        return collect($normalized)
-            ->filter(fn ($value) => filled($value))
-            ->unique(fn ($value) => mb_strtolower($value, 'UTF-8'))
-            ->sort(fn ($a, $b) => strnatcasecmp($a, $b))
-            ->values()
-            ->all();
+        // Sakārto markas alfabētiski
+        ksort($normalized, SORT_STRING | SORT_FLAG_CASE);
+
+        return $normalized;
     }
 
-    private function ensureBrandModel(array $data, ?string $brand, ?string $model): array
+    /**
+     * Normalizē modeļu sarakstu (atbalsta stringus, objektus ar 'name' vai 'title').
+     */
+    private function normalizeModelList(array $models): array
     {
-        $brand = is_string($brand) ? trim($brand) : '';
+        $clean = [];
 
-        if ($brand === '') {
-            return $data;
+        foreach ($models as $model) {
+            if (is_string($model)) {
+                $clean[] = trim($model);
+            } elseif (is_array($model) && isset($model['name'])) {
+                $clean[] = trim($model['name']);
+            } elseif (is_array($model) && isset($model['title'])) {
+                $clean[] = trim($model['title']);
+            }
         }
 
-        $models = collect($data[$brand] ?? [])
-            ->map(fn ($value) => is_string($value) ? trim($value) : $value)
-            ->filter(fn ($value) => filled($value));
-
-        if (filled($model)) {
-            $models->push(trim($model));
-        }
-
-        $data[$brand] = $models
-            ->unique(fn ($value) => mb_strtolower($value, 'UTF-8'))
-            ->sort(fn ($a, $b) => strnatcasecmp($a, $b))
-            ->values()
-            ->all();
-
-        ksort($data, SORT_NATURAL | SORT_FLAG_CASE);
-
-        return $data;
+        // Izfiltrē tukšos un atgriež indeksētu masīvu
+        return array_values(array_filter($clean));
     }
 }

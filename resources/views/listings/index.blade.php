@@ -15,11 +15,11 @@
     <div
         class="space-y-8"
         x-data="listingsPage(
-            @json($carData),
-            @json($filters['marka'] ?? ''),
-            @json($filters['modelis'] ?? ''),
-            @json($filters['search'] ?? '')
-        )"
+    @json($carModels->all()),
+    @json($filters['marka'] ?? ''),
+    @json($filters['modelis'] ?? ''),
+    @json($filters['search'] ?? '')
+)"
         x-init="init()"
     >
         <form

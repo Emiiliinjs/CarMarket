@@ -3,7 +3,9 @@
         <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div>
                 <h2 class="text-2xl font-semibold leading-tight text-gray-900 dark:text-white">Mani sludinājumi</h2>
-                <p class="text-sm text-gray-500 dark:text-gray-300">Pārvaldi savus auto piedāvājumus, seko apstiprinājuma statusam un atjauno informāciju jebkurā brīdī.</p>
+                <p class="text-sm text-gray-500 dark:text-gray-300">
+                    Pārvaldi savus auto piedāvājumus, seko apstiprinājuma statusam un atjauno informāciju jebkurā brīdī.
+                </p>
             </div>
             <a href="{{ route('listings.create') }}" class="btn btn-primary">
                 Pievienot jaunu sludinājumu
@@ -26,8 +28,8 @@
         <form
             method="GET"
             class="rounded-3xl border border-gray-200 bg-white/80 p-6 shadow-sm dark:border-gray-700 dark:bg-gray-900/70"
-            x-data="carSelection(
-                @json($carData),
+            x-data="listingsPage(
+                @json($carModels->all()),
                 @json($filters['marka'] ?? ''),
                 @json($filters['modelis'] ?? ''),
                 @json($filters['search'] ?? '')
@@ -63,16 +65,6 @@
                         class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200"
                     >
                         <option value="">Visas markas</option>
-                        @foreach(array_keys($carData) as $brand)
-                            <option
-                                value="{{ $brand }}"
-                                @selected(($filters['marka'] ?? '') === $brand)
-                                x-bind:hidden="availableBrands.length"
-                                x-bind:disabled="availableBrands.length"
-                            >
-                                {{ $brand }}
-                            </option>
-                        @endforeach
                         <template x-for="brand in availableBrands" :key="brand">
                             <option :value="brand" x-text="brand"></option>
                         </template>
@@ -120,7 +112,9 @@
                     @if($activeFilters->isNotEmpty())
                         <span class="rounded-full bg-indigo-50 px-3 py-1 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-200">Aktīvie filtri:</span>
                         @foreach($activeFilters as $key => $value)
-                            <span class="rounded-full bg-gray-100 px-3 py-1 text-gray-600 dark:bg-gray-800 dark:text-gray-200">{{ ucfirst(str_replace('_', ' ', $key)) }}: <strong>{{ $value }}</strong></span>
+                            <span class="rounded-full bg-gray-100 px-3 py-1 text-gray-600 dark:bg-gray-800 dark:text-gray-200">
+                                {{ ucfirst(str_replace('_', ' ', $key)) }}: <strong>{{ $value }}</strong>
+                            </span>
                         @endforeach
                     @else
                         <span>Filtri nav piemēroti.</span>
@@ -128,7 +122,10 @@
                 </div>
 
                 <div class="flex gap-3">
-                    <a href="{{ route('listings.mine') }}" class="inline-flex items-center justify-center rounded-xl border border-gray-200 bg-white px-5 py-2 text-sm font-semibold text-gray-600 shadow-sm transition hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700">Notīrīt</a>
+                    <a href="{{ route('listings.mine') }}"
+                       class="inline-flex items-center justify-center rounded-xl border border-gray-200 bg-white px-5 py-2 text-sm font-semibold text-gray-600 shadow-sm transition hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700">
+                        Notīrīt
+                    </a>
                     <button type="submit" class="btn btn-primary">Atlasīt</button>
                 </div>
             </div>
@@ -137,7 +134,10 @@
         @if($listings->count())
             <div class="grid gap-8 sm:grid-cols-2 xl:grid-cols-3">
                 @foreach($listings as $listing)
-                    @include('listings.partials.card', ['listing' => $listing, 'favoriteIds' => $favoriteIds ?? []])
+                    @include('listings.partials.card', [
+                        'listing' => $listing,
+                        'favoriteIds' => $favoriteIds ?? []
+                    ])
                 @endforeach
             </div>
 
@@ -146,10 +146,15 @@
             </div>
         @else
             <div class="rounded-3xl border border-dashed border-gray-300 bg-white/70 p-12 text-center shadow-sm dark:border-gray-700 dark:bg-gray-900/60">
-                <p class="text-lg font-semibold text-gray-700 dark:text-gray-100">Te vēl nav neviena sludinājuma.</p>
-                <p class="mt-2 text-sm text-gray-500 dark:text-gray-300">Sāc ar jaunu sludinājumu – augšupielādētās bildes un informācija būs redzama šajā sarakstā.</p>
+                <p class="text-lg font-semibold text-gray-700 dark:text-gray-100">
+                    Te vēl nav neviena sludinājuma.
+                </p>
+                <p class="mt-2 text-sm text-gray-500 dark:text-gray-300">
+                    Sāc ar jaunu sludinājumu – augšupielādētās bildes un informācija būs redzama šajā sarakstā.
+                </p>
             </div>
         @endif
     </div>
+
     @include('listings.partials.car-scripts')
 </x-app-layout>

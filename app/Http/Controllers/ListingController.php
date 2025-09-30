@@ -45,11 +45,9 @@ class ListingController extends Controller
 
         $listings = $query->paginate(9)->withQueryString();
 
-        $favoriteIds = [];
-
-        if ($request->user()) {
-            $favoriteIds = $request->user()->favoriteListings()->pluck('listings.id')->all();
-        }
+        $favoriteIds = $request->user()
+            ? $request->user()->favoriteListings()->pluck('listings.id')->all()
+            : [];
 
         $fuelOptions = ['Benzīns', 'Dīzelis', 'Elektriska', 'Hibrīds'];
 
@@ -68,16 +66,13 @@ class ListingController extends Controller
         ];
 
         return view('listings.index', [
-            'listings' => $listings,
-            'filters' => $filters,
-            'sortOptions' => $sortOptions,
+            'listings'      => $listings,
+            'filters'       => $filters,
+            'sortOptions'   => $sortOptions,
             'statusOptions' => $statusOptions,
-            'fuelOptions' => $fuelOptions,
-            'favoriteIds' => $favoriteIds,
-            'carData' => $this->carModels->withBrand(
-                $filters['marka'] ?? null,
-                $filters['modelis'] ?? null,
-            ),
+            'fuelOptions'   => $fuelOptions,
+            'favoriteIds'   => $favoriteIds,
+            'carModels'     => $this->carModels, // <<<< padod visu repository
         ]);
     }
 
@@ -119,11 +114,11 @@ class ListingController extends Controller
     public function create()
     {
         return view('listings.create', [
-            'carData' => $this->carModels->all(),
+            'carModels' => $this->carModels, // <<<< nevis carData
         ]);
     }
 
-    // Saglabā jaunu sludinājumu ar bildēm
+    // Saglabā jaunu sludinājumu
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -139,7 +134,7 @@ class ListingController extends Controller
             'contact_info' => 'nullable|string|max:1000',
             'show_contact' => 'nullable|boolean',
             'images' => 'nullable|array',
-            'images.*' => 'image|max:2048', // katra bilde max 2MB
+            'images.*' => 'image|max:2048',
         ]);
 
         $validated['user_id'] = Auth::id();
@@ -149,36 +144,31 @@ class ListingController extends Controller
 
         $listing = Listing::create($validated);
 
-        // Saglabā bildes, ja augšupielādētas
         if ($request->hasFile('images')) {
             $this->storeListingImages($listing, $request->file('images'));
         }
 
         return redirect()->route('listings.show', $listing->id)
-                         ->with('success', 'Sludinājums veiksmīgi pievienots!');
+            ->with('success', 'Sludinājums veiksmīgi pievienots!');
     }
 
     // Rediģēšanas forma
     public function edit(Listing $listing)
     {
-        // Atļauj tikai autoram vai adminam
-        if (Auth::id() !== $listing->user_id && !Auth::user()->is_admin) {
+        if (Auth::id() !== $listing->user_id && !Auth::user()?->is_admin) {
             abort(403, 'Nav atļauts rediģēt šo sludinājumu.');
         }
 
         return view('listings.edit', [
             'listing' => $listing,
-            'carData' => $this->carModels->withBrand(
-                $listing->marka,
-                $listing->modelis,
-            ),
+            'carModels' => $this->carModels, // <<<<
         ]);
     }
 
     // Saglabā izmaiņas
     public function update(Request $request, Listing $listing)
     {
-        if (Auth::id() !== $listing->user_id && !Auth::user()->is_admin) {
+        if (Auth::id() !== $listing->user_id && !Auth::user()?->is_admin) {
             abort(403, 'Nav atļauts rediģēt šo sludinājumu.');
         }
 
@@ -206,23 +196,21 @@ class ListingController extends Controller
 
         $listing->update($validated);
 
-        // Saglabā jaunas bildes
         if ($request->hasFile('images')) {
             $this->storeListingImages($listing, $request->file('images'));
         }
 
         return redirect()->route('listings.show', $listing->id)
-                         ->with('success', 'Sludinājums veiksmīgi atjaunināts!');
+            ->with('success', 'Sludinājums veiksmīgi atjaunināts!');
     }
 
-    // Dzēst sludinājumu
+    // Dzēš sludinājumu
     public function destroy(Listing $listing)
     {
-        if (Auth::id() !== $listing->user_id && !Auth::user()->is_admin) {
+        if (Auth::id() !== $listing->user_id && !Auth::user()?->is_admin) {
             abort(403, 'Nav atļauts dzēst šo sludinājumu.');
         }
 
-        // Dzēst arī bildes no storage
         foreach ($listing->galleryImages as $image) {
             \Storage::disk('public')->delete($image->filename);
             $image->delete();
@@ -231,9 +219,8 @@ class ListingController extends Controller
         $listing->delete();
 
         return redirect()->route('listings.index')
-                         ->with('success', 'Sludinājums veiksmīgi dzēsts!');
+            ->with('success', 'Sludinājums veiksmīgi dzēsts!');
     }
-
 
     public function myListings(Request $request)
     {
@@ -258,14 +245,11 @@ class ListingController extends Controller
         ];
 
         return view('listings.my', [
-            'listings' => $listings,
-            'filters' => $filters,
+            'listings'      => $listings,
+            'filters'       => $filters,
             'statusOptions' => $statusOptions,
-            'favoriteIds' => $request->user()->favoriteListings()->pluck('listings.id')->all(),
-            'carData' => $this->carModels->withBrand(
-                $filters['marka'] ?? null,
-                $filters['modelis'] ?? null,
-            ),
+            'favoriteIds'   => $request->user()->favoriteListings()->pluck('listings.id')->all(),
+            'carModels'     => $this->carModels, // <<<<
         ]);
     }
 
@@ -280,9 +264,6 @@ class ListingController extends Controller
         };
     }
 
-    /**
-     * Kompresē un saglabā augšupielādētās bildes vienotā kvalitātē.
-     */
     private function storeListingImages(Listing $listing, array $images): void
     {
         foreach ($images as $image) {
@@ -295,9 +276,6 @@ class ListingController extends Controller
         }
     }
 
-    /**
-     * Samazina bildes izmērus, kompresē un saglabā to Storage mapē.
-     */
     private function compressAndStoreImage(UploadedFile $image): string
     {
         $resource = @imagecreatefromstring(file_get_contents($image->getRealPath()));
@@ -325,12 +303,6 @@ class ListingController extends Controller
         return $path;
     }
 
-    /**
-     * Pielāgo bildes izmērus, nepārsniedzot norādītos maksimālos izmērus.
-     *
-     * @param  resource  $resource
-     * @return resource
-     */
     private function resizeImage($resource, int $maxWidth, int $maxHeight)
     {
         $width = imagesx($resource);
@@ -356,11 +328,6 @@ class ListingController extends Controller
         return $resized;
     }
 
-    /**
-     * Kodē bildi WebP formātā (vai PNG rezerves gadījumā) un saglabā Storage diskā.
-     *
-     * @param  resource  $resource
-     */
     private function encodeAndStore($resource): string
     {
         if (function_exists('imagewebp')) {
