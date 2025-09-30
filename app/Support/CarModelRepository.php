@@ -3,6 +3,7 @@
 namespace App\Support;
 
 use JsonException;
+use Throwable;
 
 class CarModelRepository
 {
@@ -14,10 +15,105 @@ class CarModelRepository
             return $this->cache;
         }
 
+        $rawData = $this->loadFromCardata() ?? $this->loadFromLegacyJson();
+
+        return $this->cache = $this->normalizeRawData($rawData);
+    }
+
+    public function withBrand(?string $brand, ?string $model): array
+    {
+        return $this->ensureBrandModel($this->all(), $brand, $model);
+    }
+
+    public function toJson(?array $data = null): string
+    {
+        $payload = $data ?? $this->all();
+
+        $encoded = json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+
+        return $encoded === false ? '{}' : $encoded;
+    }
+
+    private function loadFromCardata(): ?array
+    {
+        $path = base_path('Cardata.json');
+
+        if (! is_file($path)) {
+            return null;
+        }
+
+        try {
+            $contents = file_get_contents($path);
+            $payload = json_decode($contents ?: '{}', true, 512, JSON_THROW_ON_ERROR);
+        } catch (JsonException $exception) {
+            if (function_exists('report')) {
+                report($exception);
+            }
+
+            return null;
+        }
+
+        $raw = $payload['content'] ?? null;
+
+        if (! is_string($raw)) {
+            return null;
+        }
+
+        return $this->parsePhpArray($raw);
+    }
+
+    private function parsePhpArray(string $code): ?array
+    {
+        $normalized = trim($code);
+
+        if ($normalized === '') {
+            return null;
+        }
+
+        $normalized = preg_replace('/^\$[A-Za-z_][A-Za-z0-9_]*\s*=\s*/', '', $normalized, 1);
+
+        if (! is_string($normalized)) {
+            return null;
+        }
+
+        $normalized = trim($normalized);
+
+        if ($normalized === '') {
+            return null;
+        }
+
+        if (str_contains($normalized, '<?') || str_contains($normalized, '?>')) {
+            return null;
+        }
+
+        $normalized = rtrim($normalized, ";\n\r\t ");
+
+        if ($normalized === '') {
+            return null;
+        }
+
+        $expression = 'return ' . $normalized . ';';
+
+        try {
+            /** @var mixed $result */
+            $result = eval($expression);
+        } catch (Throwable $exception) {
+            if (function_exists('report')) {
+                report($exception);
+            }
+
+            return null;
+        }
+
+        return is_array($result) ? $result : null;
+    }
+
+    private function loadFromLegacyJson(): array
+    {
         $path = database_path('data/car_models_full.json');
 
         if (! is_file($path)) {
-            return $this->cache = [];
+            return [];
         }
 
         try {
@@ -28,11 +124,16 @@ class CarModelRepository
                 report($exception);
             }
 
-            return $this->cache = [];
+            return [];
         }
 
+        return is_array($rawData) ? $rawData : [];
+    }
+
+    private function normalizeRawData(?array $rawData): array
+    {
         if (! is_array($rawData)) {
-            return $this->cache = [];
+            return [];
         }
 
         $brands = [];
@@ -54,55 +155,48 @@ class CarModelRepository
                 continue;
             }
 
-            $models = [];
-
-            if (isset($entry['models']) && is_array($entry['models'])) {
-                foreach ($entry['models'] as $model) {
-                    if (is_array($model)) {
-                        $model = $model['title'] ?? $model['name'] ?? null;
-                    }
-
-                    if (! is_string($model)) {
-                        continue;
-                    }
-
-                    $model = trim($model);
-
-                    if ($model === '') {
-                        continue;
-                    }
-
-                    $models[] = $model;
-                }
-            }
-
-            $models = collect($models)
-                ->filter(fn ($value) => filled($value))
-                ->unique(fn ($value) => mb_strtolower($value, 'UTF-8'))
-                ->sort(fn ($a, $b) => strnatcasecmp($a, $b))
-                ->values()
-                ->all();
+            $models = $this->normalizeModelList($entry['models'] ?? []);
 
             $brands[$brand] = $models;
         }
 
         ksort($brands, SORT_NATURAL | SORT_FLAG_CASE);
 
-        return $this->cache = $brands;
+        return $brands;
     }
 
-    public function withBrand(?string $brand, ?string $model): array
+    private function normalizeModelList(mixed $models): array
     {
-        return $this->ensureBrandModel($this->all(), $brand, $model);
-    }
+        if (! is_array($models)) {
+            return [];
+        }
 
-    public function toJson(?array $data = null): string
-    {
-        $payload = $data ?? $this->all();
+        $normalized = [];
 
-        $encoded = json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        foreach ($models as $model) {
+            if (is_array($model)) {
+                $model = $model['title'] ?? $model['name'] ?? null;
+            }
 
-        return $encoded === false ? '{}' : $encoded;
+            if (! is_string($model)) {
+                continue;
+            }
+
+            $model = trim($model);
+
+            if ($model === '') {
+                continue;
+            }
+
+            $normalized[] = $model;
+        }
+
+        return collect($normalized)
+            ->filter(fn ($value) => filled($value))
+            ->unique(fn ($value) => mb_strtolower($value, 'UTF-8'))
+            ->sort(fn ($a, $b) => strnatcasecmp($a, $b))
+            ->values()
+            ->all();
     }
 
     private function ensureBrandModel(array $data, ?string $brand, ?string $model): array
