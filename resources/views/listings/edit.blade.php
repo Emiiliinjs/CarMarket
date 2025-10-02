@@ -22,8 +22,9 @@
                 enctype="multipart/form-data"
                 class="space-y-10"
                 x-data="listingForm(
-                    '{{ old('marka', $listing->marka) }}',
-                    '{{ old('modelis', $listing->modelis) }}'
+                    @json($carModels->all()),
+                    @js(old('marka', $listing->marka)),
+                    @js(old('modelis', $listing->modelis))
                 )"
                 x-init="init()"
             >
@@ -39,7 +40,6 @@
                                 id="marka"
                                 name="marka"
                                 x-model="selectedBrand"
-                                @change="updateModels()"
                                 class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-gray-700 shadow-sm
                                        focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
                                 required
