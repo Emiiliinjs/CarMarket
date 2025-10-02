@@ -3,7 +3,7 @@
         <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div>
                 <h2 class="text-2xl font-semibold leading-tight text-gray-900 dark:text-white">Visi auto sludinājumi</h2>
-                <p class="text-sm text-gray-500 dark:text-gray-300">Apskati svaigākos piedāvājumus – bildes tiek optimizētas, lai ielāde būtu ātra jebkurā ierīcē.</p>
+                <p class="text-sm text-gray-500 dark:text-gray-300">Apskati svaigākos piedāvājumus.</p>
             </div>
         </div>
     </x-slot>

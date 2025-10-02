@@ -22,9 +22,8 @@
                 enctype="multipart/form-data"
                 class="space-y-10"
                 x-data="listingForm(
-                    @json($carModels->all()),
-                    @js(old('marka', $listing->marka)),
-                    @js(old('modelis', $listing->modelis))
+                    '{{ old('marka', $listing->marka) }}',
+                    '{{ old('modelis', $listing->modelis) }}'
                 )"
                 x-init="init()"
             >
