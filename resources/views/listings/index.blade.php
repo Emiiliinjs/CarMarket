@@ -12,16 +12,16 @@
         $activeFilters = collect($filters ?? [])->filter(fn ($value, $key) => filled($value) && $key !== 'sort');
     @endphp
 
-    <div
-        class="space-y-8"
-        x-data="listingsPage(
-    @json($carModels->all()),
-    @json($filters['marka'] ?? ''),
-    @json($filters['modelis'] ?? ''),
-    @json($filters['search'] ?? '')
-)"
-        x-init="init()"
-    >
+<div
+    class="space-y-8"
+    x-data="listingsPage(
+        @json($carModels),
+        @json($filters['marka'] ?? ''),
+        @json($filters['modelis'] ?? ''),
+        @json($filters['search'] ?? '')
+    )"
+    x-init="init()"
+>
         <form
             method="GET"
             id="filters-panel"
@@ -53,16 +53,19 @@
                     <div class="lg:col-span-2">
                         <label for="marka" class="text-sm font-semibold text-gray-700 dark:text-gray-200">Marka</label>
                         <select
-                            id="marka"
-                            name="marka"
-                            x-model="selectedBrand"
-                            class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200"
-                        >
-                            <option value="">Izvēlies marku</option>
-                            <template x-for="brand in availableBrands" :key="brand">
-                                <option :value="brand" x-text="brand"></option>
-                            </template>
-                        </select>
+    id="marka"
+    name="marka"
+    x-model="selectedBrand"
+    @change="updateModels()" 
+    class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-700 shadow-sm 
+           focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 
+           dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200"
+>
+    <option value="">Izvēlies marku</option>
+    <template x-for="brand in availableBrands" :key="brand">
+        <option :value="brand" x-text="brand"></option>
+    </template>
+</select>
                         @error('marka')
                             <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                         @enderror
@@ -71,17 +74,21 @@
                     <div class="lg:col-span-2">
                         <label for="modelis" class="text-sm font-semibold text-gray-700 dark:text-gray-200">Modelis</label>
                         <select
-                            id="modelis"
-                            name="modelis"
-                            x-model="selectedModel"
-                            :disabled="! selectedBrand"
-                            class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 disabled:cursor-not-allowed disabled:bg-gray-100 dark:disabled:bg-gray-800/60"
-                        >
-                            <option value="">Visi modeļi</option>
-                            <template x-for="model in availableModels" :key="model">
-                                <option :value="model" x-text="model"></option>
-                            </template>
-                        </select>
+    id="modelis"
+    name="modelis"
+    x-model="selectedModel"
+    :disabled="availableModels.length === 0"
+    class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-700 shadow-sm 
+           focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 
+           dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 
+           disabled:cursor-not-allowed disabled:bg-gray-100 dark:disabled:bg-gray-800/60"
+>
+    <option value="">Visi modeļi</option>
+    <template x-for="model in availableModels" :key="model">
+        <option :value="model" x-text="model"></option>
+    </template>
+</select>
+
                     </div>
 
                     <div class="lg:col-span-1">
