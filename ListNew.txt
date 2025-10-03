@@ -6,3 +6,5 @@ varbut valoda
 title logo
 uztaisit ta lai uzklikskino uz masinas bildites
 atveras sludinajums nevis uz skatit detalas pogas
+
+php artisan make:admin ipb22.e.darzins@vtdt.edu.lv

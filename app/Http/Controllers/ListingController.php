@@ -19,25 +19,18 @@ class ListingController extends Controller
     ) {
     }
 
-    // Rāda visus sludinājumus ar filtriem, kārtošanu un meklēšanu
+    // Rāda visus sludinājumus
     public function index(Request $request)
     {
         $filters = $request->only([
-            'marka',
-            'modelis',
-            'price_min',
-            'price_max',
-            'year_from',
-            'year_to',
-            'degviela',
-            'status',
-            'search',
-            'sort',
+            'marka','modelis','price_min','price_max',
+            'year_from','year_to','degviela','status',
+            'search','sort',
         ]);
 
         $query = Listing::query()
             ->approved()
-            ->whereHas('user', fn ($builder) => $builder->where('is_blocked', false))
+            ->whereHas('user', fn ($q) => $q->where('is_blocked', false))
             ->filter($filters);
 
         $sort = $filters['sort'] ?? 'newest';
@@ -45,57 +38,45 @@ class ListingController extends Controller
 
         $listings = $query->paginate(9)->withQueryString();
 
-        $favoriteIds = $request->user()
-            ? $request->user()->favoriteListings()->pluck('listings.id')->all()
-            : [];
-
-        $fuelOptions = ['Benzīns', 'Dīzelis', 'Elektriska', 'Hibrīds'];
-
-        $sortOptions = [
-            'newest' => 'Jaunākie sludinājumi',
-            'price_asc' => 'Cena: no zemākās',
-            'price_desc' => 'Cena: no augstākās',
-            'year_desc' => 'Gads: jaunākie',
-            'year_asc' => 'Gads: vecākie',
-        ];
-
-        $statusOptions = [
-            Listing::STATUS_AVAILABLE => 'Pieejams',
-            Listing::STATUS_RESERVED => 'Rezervēts',
-            Listing::STATUS_SOLD => 'Pārdots',
-        ];
-
         return view('listings.index', [
             'listings'      => $listings,
             'filters'       => $filters,
-            'sortOptions'   => $sortOptions,
-            'statusOptions' => $statusOptions,
-            'fuelOptions'   => $fuelOptions,
-            'favoriteIds'   => $favoriteIds,
-            'carModels'     => $this->carModels, // <<<< padod visu repository
+            'sortOptions'   => [
+                'newest' => 'Jaunākie sludinājumi',
+                'price_asc' => 'Cena: no zemākās',
+                'price_desc' => 'Cena: no augstākās',
+                'year_desc' => 'Gads: jaunākie',
+                'year_asc' => 'Gads: vecākie',
+            ],
+            'statusOptions' => [
+                Listing::STATUS_AVAILABLE => 'Pieejams',
+                Listing::STATUS_RESERVED => 'Rezervēts',
+                Listing::STATUS_SOLD     => 'Pārdots',
+            ],
+            'fuelOptions'   => ['Benzīns','Dīzelis','Elektriska','Hibrīds'],
+            'favoriteIds'   => $request->user()
+                ? $request->user()->favoriteListings()->pluck('listings.id')->all()
+                : [],
+            'carModels'     => $this->carModels,
         ]);
     }
 
-    // Rāda konkrēta sludinājuma detaļas
     public function show(Listing $listing)
     {
-        if (! $listing->is_approved && Auth::id() !== $listing->user_id && ! Auth::user()?->is_admin) {
+        if (!$listing->is_approved && Auth::id() !== $listing->user_id && !Auth::user()?->is_admin) {
             abort(404);
         }
 
         $isFavorite = Auth::check()
-            ? Auth::user()->favoriteListings()->where('listings.id', $listing->id)->exists()
+            ? Auth::user()->favoriteListings()->where('listings.id',$listing->id)->exists()
             : false;
 
-        return view('listings.show', [
-            'listing' => $listing,
-            'isFavorite' => $isFavorite,
-        ]);
+        return view('listings.show', compact('listing','isFavorite'));
     }
 
     public function liveBid(Listing $listing): View
     {
-        if (! $listing->is_approved && Auth::id() !== $listing->user_id && ! Auth::user()?->is_admin) {
+        if (!$listing->is_approved && Auth::id() !== $listing->user_id && !Auth::user()?->is_admin) {
             abort(404);
         }
 
@@ -104,33 +85,31 @@ class ListingController extends Controller
         return view('listings.bid', [
             'listing' => $listing,
             'minIncrement' => $state['minIncrement'],
-            'currentBid' => $state['currentBid'],
-            'nextBidAmount' => $state['nextBidAmount'],
-            'recentBids' => $state['bids'],
+            'currentBid'   => $state['currentBid'],
+            'nextBidAmount'=> $state['nextBidAmount'],
+            'recentBids'   => $state['bids'],
         ]);
     }
 
-    // Forma jaunam sludinājumam
     public function create()
     {
         return view('listings.create', [
-            'carModels' => $this->carModels, // <<<< nevis carData
+            'carModels' => $this->carModels,
         ]);
     }
 
-    // Saglabā jaunu sludinājumu
     public function store(Request $request)
     {
         $validated = $request->validate([
             'marka' => 'required|string|max:255',
             'modelis' => 'required|string|max:255',
-            'gads' => 'required|digits:4|integer|min:1900|max:' . (date('Y') + 1),
+            'gads' => 'required|digits:4|integer|min:1900|max:'.(date('Y')+1),
             'nobraukums' => 'required|integer|min:0',
             'cena' => 'required|numeric|min:0',
             'degviela' => 'required|string',
             'parnesumkarba' => 'required|string',
             'apraksts' => 'nullable|string',
-            'status' => 'required|in:' . implode(',', Listing::STATUSES),
+            'status' => 'required|in:'.implode(',', Listing::STATUSES),
             'contact_info' => 'nullable|string|max:1000',
             'show_contact' => 'nullable|boolean',
             'images' => 'nullable|array',
@@ -148,181 +127,175 @@ class ListingController extends Controller
             $this->storeListingImages($listing, $request->file('images'));
         }
 
-        return redirect()->route('listings.show', $listing->id)
-            ->with('success', 'Sludinājums veiksmīgi pievienots!');
+        return redirect()->route('listings.show',$listing->id)
+            ->with('success','Sludinājums veiksmīgi pievienots!');
     }
 
-    // Rediģēšanas forma
     public function edit(Listing $listing)
     {
         if (Auth::id() !== $listing->user_id && !Auth::user()?->is_admin) {
-            abort(403, 'Nav atļauts rediģēt šo sludinājumu.');
+            abort(403,'Nav atļauts rediģēt šo sludinājumu.');
         }
 
         return view('listings.edit', [
-            'listing' => $listing,
-            'carModels' => $this->carModels, // <<<<
+            'listing'   => $listing,
+            'carModels' => $this->carModels,
         ]);
     }
 
-    // Saglabā izmaiņas
     public function update(Request $request, Listing $listing)
     {
         if (Auth::id() !== $listing->user_id && !Auth::user()?->is_admin) {
-            abort(403, 'Nav atļauts rediģēt šo sludinājumu.');
+            abort(403,'Nav atļauts rediģēt šo sludinājumu.');
         }
 
         $validated = $request->validate([
             'marka' => 'required|string|max:255',
             'modelis' => 'required|string|max:255',
-            'gads' => 'required|digits:4|integer|min:1900|max:' . (date('Y') + 1),
+            'gads' => 'required|digits:4|integer|min:1900|max:'.(date('Y')+1),
             'nobraukums' => 'required|integer|min:0',
             'cena' => 'required|numeric|min:0',
             'degviela' => 'required|string',
             'parnesumkarba' => 'required|string',
             'apraksts' => 'nullable|string',
-            'status' => 'required|in:' . implode(',', Listing::STATUSES),
+            'status' => 'required|in:'.implode(',', Listing::STATUSES),
             'contact_info' => 'nullable|string|max:1000',
             'show_contact' => 'nullable|boolean',
             'images' => 'nullable|array',
             'images.*' => 'image|max:2048',
+            'remove_images' => 'nullable|array',
         ]);
 
-        unset($validated['images']);
+        unset($validated['images'],$validated['remove_images']);
         $validated['show_contact'] = $request->boolean('show_contact', false);
-        if (! Auth::user()->is_admin) {
+
+        if (!Auth::user()->is_admin) {
             $validated['is_approved'] = false;
         }
 
         $listing->update($validated);
 
+        // Dzēst atzīmētās bildes
+        if ($request->filled('remove_images')) {
+            foreach ($request->input('remove_images') as $imageId) {
+                $img = $listing->galleryImages()->find($imageId);
+                if ($img) {
+                    Storage::disk('public')->delete($img->filename);
+                    $img->delete();
+                }
+            }
+        }
+
+        // Pievienot jaunas bildes
         if ($request->hasFile('images')) {
             $this->storeListingImages($listing, $request->file('images'));
         }
 
-        return redirect()->route('listings.show', $listing->id)
-            ->with('success', 'Sludinājums veiksmīgi atjaunināts!');
+        return redirect()->route('listings.show',$listing->id)
+            ->with('success','Sludinājums veiksmīgi atjaunināts!');
     }
 
-    // Dzēš sludinājumu
     public function destroy(Listing $listing)
     {
         if (Auth::id() !== $listing->user_id && !Auth::user()?->is_admin) {
-            abort(403, 'Nav atļauts dzēst šo sludinājumu.');
+            abort(403,'Nav atļauts dzēst šo sludinājumu.');
         }
 
         foreach ($listing->galleryImages as $image) {
-            \Storage::disk('public')->delete($image->filename);
+            Storage::disk('public')->delete($image->filename);
             $image->delete();
         }
 
         $listing->delete();
 
         return redirect()->route('listings.index')
-            ->with('success', 'Sludinājums veiksmīgi dzēsts!');
+            ->with('success','Sludinājums veiksmīgi dzēsts!');
     }
 
     public function myListings(Request $request)
     {
-        $filters = $request->only([
-            'marka',
-            'modelis',
-            'status',
-            'search',
-        ]);
-
-        $query = $request->user()->listings()->with(['galleryImages'])->filter($filters);
-
-        $sort = $request->input('sort', 'newest');
-        $query = $this->applySorting($query, $sort);
+        $filters = $request->only(['marka','modelis','status','search']);
+        $query = $request->user()->listings()->with('galleryImages')->filter($filters);
+        $sort = $request->input('sort','newest');
+        $query = $this->applySorting($query,$sort);
 
         $listings = $query->paginate(9)->withQueryString();
-
-        $statusOptions = [
-            Listing::STATUS_AVAILABLE => 'Pieejams',
-            Listing::STATUS_RESERVED => 'Rezervēts',
-            Listing::STATUS_SOLD => 'Pārdots',
-        ];
 
         return view('listings.my', [
             'listings'      => $listings,
             'filters'       => $filters,
-            'statusOptions' => $statusOptions,
+            'statusOptions' => [
+                Listing::STATUS_AVAILABLE => 'Pieejams',
+                Listing::STATUS_RESERVED => 'Rezervēts',
+                Listing::STATUS_SOLD     => 'Pārdots',
+            ],
             'favoriteIds'   => $request->user()->favoriteListings()->pluck('listings.id')->all(),
-            'carModels'     => $this->carModels, // <<<<
+            'carModels'     => $this->carModels,
         ]);
     }
 
-    private function applySorting($query, string $sort)
+    private function applySorting($query,string $sort)
     {
-        return match ($sort) {
-            'price_asc' => $query->orderBy('cena', 'asc'),
-            'price_desc' => $query->orderBy('cena', 'desc'),
-            'year_asc' => $query->orderBy('gads', 'asc'),
-            'year_desc' => $query->orderBy('gads', 'desc'),
-            default => $query->latest(),
+        return match($sort){
+            'price_asc' => $query->orderBy('cena','asc'),
+            'price_desc'=> $query->orderBy('cena','desc'),
+            'year_asc'  => $query->orderBy('gads','asc'),
+            'year_desc' => $query->orderBy('gads','desc'),
+            default     => $query->latest(),
         };
     }
 
-    private function storeListingImages(Listing $listing, array $images): void
+    private function storeListingImages(Listing $listing,array $images): void
     {
         foreach ($images as $image) {
-            if (! $image instanceof UploadedFile || ! $image->isValid()) {
-                continue;
-            }
-
+            if (!$image instanceof UploadedFile || !$image->isValid()) continue;
             $path = $this->compressAndStoreImage($image);
-            $listing->galleryImages()->create(['filename' => $path]);
+            $listing->galleryImages()->create(['filename'=>$path]);
         }
     }
 
     private function compressAndStoreImage(UploadedFile $image): string
     {
         $resource = @imagecreatefromstring(file_get_contents($image->getRealPath()));
-
         if ($resource === false) {
             throw ValidationException::withMessages([
-                'images' => 'Neizdevās apstrādāt vienu no augšupielādētajām bildēm.',
+                'images'=>'Neizdevās apstrādāt vienu no augšupielādētajām bildēm.',
             ]);
         }
 
-        if (function_exists('imagepalettetotruecolor') && ! imageistruecolor($resource)) {
+        if (function_exists('imagepalettetotruecolor') && !imageistruecolor($resource)) {
             imagepalettetotruecolor($resource);
         }
 
-        imagealphablending($resource, false);
-        imagesavealpha($resource, true);
+        imagealphablending($resource,false);
+        imagesavealpha($resource,true);
 
-        $resource = $this->resizeImage($resource, 1600, 1600);
-        imageinterlace($resource, true);
+        $resource = $this->resizeImage($resource,1600,1600);
+        imageinterlace($resource,true);
 
         $path = $this->encodeAndStore($resource);
 
         imagedestroy($resource);
-
         return $path;
     }
 
-    private function resizeImage($resource, int $maxWidth, int $maxHeight)
+    private function resizeImage($resource,int $maxWidth,int $maxHeight)
     {
         $width = imagesx($resource);
-        $height = imagesy($resource);
+        $height= imagesy($resource);
 
-        $ratio = min($maxWidth / $width, $maxHeight / $height, 1);
+        $ratio = min($maxWidth/$width,$maxHeight/$height,1);
 
-        if ($ratio >= 1) {
-            return $resource;
-        }
+        if ($ratio >= 1) return $resource;
 
-        $newWidth = max(1, (int) round($width * $ratio));
-        $newHeight = max(1, (int) round($height * $ratio));
+        $newWidth = max(1,(int)round($width*$ratio));
+        $newHeight= max(1,(int)round($height*$ratio));
 
-        $resized = imagecreatetruecolor($newWidth, $newHeight);
-        imagealphablending($resized, false);
-        imagesavealpha($resized, true);
+        $resized = imagecreatetruecolor($newWidth,$newHeight);
+        imagealphablending($resized,false);
+        imagesavealpha($resized,true);
 
-        imagecopyresampled($resized, $resource, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
-
+        imagecopyresampled($resized,$resource,0,0,0,0,$newWidth,$newHeight,$width,$height);
         imagedestroy($resource);
 
         return $resized;
@@ -332,30 +305,27 @@ class ListingController extends Controller
     {
         if (function_exists('imagewebp')) {
             ob_start();
-            $encoded = imagewebp($resource, null, 80);
-            $binary = ob_get_clean();
+            $encoded = imagewebp($resource,null,80);
+            $binary  = ob_get_clean();
 
             if ($encoded && $binary !== false) {
-                $filename = 'listings/' . Str::uuid() . '.webp';
-                Storage::disk('public')->put($filename, $binary);
-
+                $filename = 'listings/'.Str::uuid().'.webp';
+                Storage::disk('public')->put($filename,$binary);
                 return $filename;
             }
         }
 
         ob_start();
-        imagepng($resource, null, 6);
+        imagepng($resource,null,6);
         $binary = ob_get_clean();
-
         if ($binary === false) {
             throw ValidationException::withMessages([
-                'images' => 'Neizdevās saglabāt apstrādāto bildi.',
+                'images'=>'Neizdevās saglabāt apstrādāto bildi.',
             ]);
         }
 
-        $filename = 'listings/' . Str::uuid() . '.png';
-        Storage::disk('public')->put($filename, $binary);
-
+        $filename = 'listings/'.Str::uuid().'.png';
+        Storage::disk('public')->put($filename,$binary);
         return $filename;
     }
 }
