@@ -186,7 +186,7 @@
         @else
             <div class="rounded-3xl border border-dashed border-gray-300 bg-white/70 p-12 text-center shadow-sm dark:border-gray-700 dark:bg-gray-900/60">
                 <p class="text-lg font-semibold text-gray-700 dark:text-gray-100">Nav neviena sludinājuma.</p>
-                <p class="mt-2 text-sm text-gray-500 dark:text-gray-300">Sāc ar pirmo auto – pievieno sludinājumu un augšupielādētās bildes tiks saglabātas galerijā.</p>
+                <p class="mt-2 text-sm text-gray-500 dark:text-gray-300">Sāc ar pirmo auto – pievieno sludinājumu.</p>
             </div>
         @endif
 

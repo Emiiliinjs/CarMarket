@@ -34,7 +34,7 @@
         </main>
 
         <footer class="mt-auto border-t border-slate-200/70 bg-white/80 px-4 py-6 text-center text-sm text-slate-500 backdrop-blur-sm dark:border-slate-800/70 dark:bg-slate-900/60 dark:text-slate-400 sm:px-6 lg:px-8">
-            © {{ now()->year }} {{ config('app.name', 'CarMarket') }}Platforma auto pirkšanai un pārdošanai — ērti, droši, saprotami.
+            © {{ now()->year }} {{ config('app.name', 'CarMarket') }} auto pirkšanai un pārdošanai — ērti, droši, saprotami.
         </footer>
     </div>
 </body>

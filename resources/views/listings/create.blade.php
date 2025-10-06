@@ -49,8 +49,8 @@
                             @enderror
 
                             <!-- Debug -->
-                            <p class="mt-1 text-xs text-gray-500">selectedBrand: <span x-text="selectedBrand"></span></p>
-                            <p class="mt-1 text-xs text-gray-500">availableBrands: <span x-text="availableBrands.length"></span></p>
+                            <p class="mt-1 text-xs text-gray-500">Izvēlētā marka: <span x-text="selectedBrand"></span></p>
+                            <p class="mt-1 text-xs text-gray-500">Pieejamā marka: <span x-text="availableBrands.length"></span></p>
                         </div>
 
                         <!-- Modelis -->
@@ -76,8 +76,8 @@
                             @enderror
 
                             <!-- Debug -->
-                            <p class="mt-1 text-xs text-gray-500">selectedModel: <span x-text="selectedModel"></span></p>
-                            <p class="mt-1 text-xs text-gray-500">availableModels: <span x-text="availableModels.length"></span></p>
+                            <p class="mt-1 text-xs text-gray-500">Izvēlētais modelis: <span x-text="selectedModel"></span></p>
+                            <p class="mt-1 text-xs text-gray-500">Pieejamais modelis: <span x-text="availableModels.length"></span></p>
                         </div>
 
                         <!-- Gads -->
