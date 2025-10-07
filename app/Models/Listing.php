@@ -34,6 +34,7 @@ class Listing extends Model
         'is_approved',
         'contact_info',
         'show_contact',
+        'is_admin_bidding',
     ];
 
     // Automātiski ielādē galerijas bildes, ja vajadzīgs
@@ -42,6 +43,7 @@ class Listing extends Model
     protected $casts = [
         'is_approved' => 'boolean',
         'show_contact' => 'boolean',
+        'is_admin_bidding' => 'boolean',
     ];
 
     protected $appends = ['status_label'];
@@ -80,6 +82,11 @@ class Listing extends Model
     public function scopeApproved($query)
     {
         return $query->where('is_approved', true);
+    }
+
+    public function scopeAdminBidding($query)
+    {
+        return $query->where('is_admin_bidding', true);
     }
 
     public function scopeFilter($query, array $filters)

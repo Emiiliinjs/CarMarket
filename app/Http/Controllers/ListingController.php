@@ -4,16 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Models\Listing;
 use App\Support\CarModelRepository;
+use App\Support\HandlesListingImages;
 use Illuminate\Http\Request;
-use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
-use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 class ListingController extends Controller
 {
+    use HandlesListingImages;
     /**
      * Rāda visus sludinājumus ar filtriem un kārtošanu
      */
@@ -27,6 +26,7 @@ class ListingController extends Controller
 
         $query = Listing::query()
             ->approved()
+            ->where('is_admin_bidding', false)
             ->whereHas('user', fn ($q) => $q->where('is_blocked', false))
             ->filter($filters);
 
@@ -38,6 +38,7 @@ class ListingController extends Controller
         // Tikai markas + modeļi, kas reāli eksistē DB
         $carModels = Listing::query()
             ->select('marka', 'modelis')
+            ->where('is_admin_bidding', false)
             ->whereNotNull('marka')
             ->whereNotNull('modelis')
             ->get()
@@ -73,7 +74,11 @@ class ListingController extends Controller
      */
     public function show(Listing $listing)
     {
-        if (!$listing->is_approved && Auth::id() !== $listing->user_id && !Auth::user()?->is_admin) {
+        if ($listing->is_admin_bidding && ! Auth::user()?->is_admin) {
+            abort(404);
+        }
+
+        if (! $listing->is_approved && Auth::id() !== $listing->user_id && ! Auth::user()?->is_admin) {
             abort(404);
         }
 
@@ -89,7 +94,15 @@ class ListingController extends Controller
      */
     public function liveBid(Listing $listing): View
     {
-        if (!$listing->is_approved && Auth::id() !== $listing->user_id && !Auth::user()?->is_admin) {
+        if (! $listing->is_admin_bidding) {
+            abort(404);
+        }
+
+        if (! Auth::user()?->is_admin) {
+            abort(403);
+        }
+
+        if (! $listing->is_approved && Auth::id() !== $listing->user_id && ! Auth::user()?->is_admin) {
             abort(404);
         }
 
@@ -246,7 +259,10 @@ class ListingController extends Controller
     public function myListings(Request $request)
     {
         $filters = $request->only(['marka','modelis','status','search']);
-        $query   = $request->user()->listings()->with('galleryImages')->filter($filters);
+        $query   = $request->user()->listings()
+            ->where('is_admin_bidding', false)
+            ->with('galleryImages')
+            ->filter($filters);
 
         $sort = $request->input('sort','newest');
         $query = $this->applySorting($query,$sort);
@@ -255,6 +271,7 @@ class ListingController extends Controller
 
         // Tikai markas + modeļi no šī lietotāja sludinājumiem
         $carModels = $request->user()->listings()
+            ->where('is_admin_bidding', false)
             ->select('marka','modelis')
             ->distinct()
             ->get()
@@ -288,99 +305,4 @@ class ListingController extends Controller
         };
     }
 
-    /**
-     * Saglabā bildes
-     */
-    private function storeListingImages(Listing $listing,array $images): void
-    {
-        foreach ($images as $image) {
-            if (!$image instanceof UploadedFile || !$image->isValid()) continue;
-            $path = $this->compressAndStoreImage($image);
-            $listing->galleryImages()->create(['filename'=>$path]);
-        }
-    }
-
-    /**
-     * Saspaida un saglabā bildi
-     */
-    private function compressAndStoreImage(UploadedFile $image): string
-    {
-        $resource = @imagecreatefromstring(file_get_contents($image->getRealPath()));
-        if ($resource === false) {
-            throw ValidationException::withMessages([
-                'images'=>'Neizdevās apstrādāt vienu no augšupielādētajām bildēm.',
-            ]);
-        }
-
-        if (function_exists('imagepalettetotruecolor') && !imageistruecolor($resource)) {
-            imagepalettetotruecolor($resource);
-        }
-
-        imagealphablending($resource,false);
-        imagesavealpha($resource,true);
-
-        $resource = $this->resizeImage($resource,1600,1600);
-        imageinterlace($resource,true);
-
-        $path = $this->encodeAndStore($resource);
-
-        imagedestroy($resource);
-        return $path;
-    }
-
-    /**
-     * Maina izmērus
-     */
-    private function resizeImage($resource,int $maxWidth,int $maxHeight)
-    {
-        $width  = imagesx($resource);
-        $height = imagesy($resource);
-
-        $ratio = min($maxWidth/$width,$maxHeight/$height,1);
-
-        if ($ratio >= 1) return $resource;
-
-        $newWidth  = max(1,(int)round($width*$ratio));
-        $newHeight = max(1,(int)round($height*$ratio));
-
-        $resized = imagecreatetruecolor($newWidth,$newHeight);
-        imagealphablending($resized,false);
-        imagesavealpha($resized,true);
-
-        imagecopyresampled($resized,$resource,0,0,0,0,$newWidth,$newHeight,$width,$height);
-        imagedestroy($resource);
-
-        return $resized;
-    }
-
-    /**
-     * Saglabā WebP vai PNG
-     */
-    private function encodeAndStore($resource): string
-    {
-        if (function_exists('imagewebp')) {
-            ob_start();
-            $encoded = imagewebp($resource,null,80);
-            $binary  = ob_get_clean();
-
-            if ($encoded && $binary !== false) {
-                $filename = 'listings/'.Str::uuid().'.webp';
-                Storage::disk('public')->put($filename,$binary);
-                return $filename;
-            }
-        }
-
-        ob_start();
-        imagepng($resource,null,6);
-        $binary = ob_get_clean();
-        if ($binary === false) {
-            throw ValidationException::withMessages([
-                'images'=>'Neizdevās saglabāt apstrādāto bildi.',
-            ]);
-        }
-
-        $filename = 'listings/'.Str::uuid().'.png';
-        Storage::disk('public')->put($filename,$binary);
-        return $filename;
-    }
 }
