@@ -449,6 +449,7 @@ const liveBid = (config = {}) => {
                     headers: {
                         Accept: 'application/json',
                     },
+                    credentials: 'same-origin',
                 });
 
                 if (!response.ok) {
@@ -485,6 +486,7 @@ const liveBid = (config = {}) => {
                         'X-Requested-With': 'XMLHttpRequest',
                         'X-CSRF-TOKEN': token,
                     },
+                    credentials: 'same-origin',
                     body: JSON.stringify({
                         amount: this.amount,
                     }),
