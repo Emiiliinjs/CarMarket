@@ -1,5 +1,3 @@
-@php use Illuminate\Support\Facades\Storage; @endphp
-
 <x-app-layout>
     <x-slot name="header">
         <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -81,7 +79,7 @@
                     @if($listing->galleryImages->isNotEmpty())
                         <div class="grid gap-3 sm:grid-cols-3">
                             @foreach($listing->galleryImages->take(3) as $image)
-                                <img src="{{ Storage::disk('public')->url($image->filename) }}" alt="Foto" class="h-40 w-full rounded-2xl object-cover">
+                                <img src="{{ route('listing-images.show', $image) }}" alt="Foto" class="h-40 w-full rounded-2xl object-cover">
                             @endforeach
                         </div>
                     @endif
