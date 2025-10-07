@@ -22,8 +22,9 @@
                 enctype="multipart/form-data"
                 class="space-y-10"
                 x-data="listingForm(
-                    '{{ old('marka', $listing->marka) }}',
-                    '{{ old('modelis', $listing->modelis) }}'
+                    @json($carModels),
+                    @js(old('marka', $listing->marka)),
+                    @js(old('modelis', $listing->modelis))
                 )"
                 x-init="init()"
             >
@@ -48,8 +49,6 @@
                             </select>
                             @error('marka') <p class="mt-2 text-sm text-red-600">{{ $message }}</p> @enderror
 
-                            <!-- Debug -->
-                            <p class="mt-1 text-xs text-gray-500">selectedBrand: <span x-text="selectedBrand"></span></p>
                         </div>
 
                         <!-- Modelis -->
@@ -68,8 +67,6 @@
                             </select>
                             @error('modelis') <p class="mt-2 text-sm text-red-600">{{ $message }}</p> @enderror
 
-                            <!-- Debug -->
-                            <p class="mt-1 text-xs text-gray-500">selectedModel: <span x-text="selectedModel"></span></p>
                         </div>
 
                         <!-- Gads -->
