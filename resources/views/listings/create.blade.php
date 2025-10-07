@@ -19,7 +19,11 @@
                 action="{{ route('listings.store') }}"
                 enctype="multipart/form-data"
                 class="space-y-10"
-                x-data="listingForm('{{ old('marka') }}', '{{ old('modelis') }}')"
+                x-data="listingForm(
+                    @json($carModels),
+                    @js(old('marka')),
+                    @js(old('modelis'))
+                )"
                 x-init="init()"
             >
                 @csrf
@@ -48,9 +52,6 @@
                                 <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                             @enderror
 
-                            <!-- Debug -->
-                            <p class="mt-1 text-xs text-gray-500">Izvēlētā marka: <span x-text="selectedBrand"></span></p>
-                            <p class="mt-1 text-xs text-gray-500">Pieejamā marka: <span x-text="availableBrands.length"></span></p>
                         </div>
 
                         <!-- Modelis -->
@@ -75,9 +76,6 @@
                                 <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                             @enderror
 
-                            <!-- Debug -->
-                            <p class="mt-1 text-xs text-gray-500">Izvēlētais modelis: <span x-text="selectedModel"></span></p>
-                            <p class="mt-1 text-xs text-gray-500">Pieejamais modelis: <span x-text="availableModels.length"></span></p>
                         </div>
 
                         <!-- Gads -->
