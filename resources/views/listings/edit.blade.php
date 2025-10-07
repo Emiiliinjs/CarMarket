@@ -185,7 +185,7 @@
                 @endif
 
                 <!-- ======================== Jaunas bildes ======================== -->
-                <section class="space-y-4" x-data="{ dragover:false, files: [] }"
+                <section class="space-y-4"
                          @dragover.prevent="dragover = true"
                          @dragleave.prevent="dragover = false"
                          @drop.prevent="handleDrop($event)">
