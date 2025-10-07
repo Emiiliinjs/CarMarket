@@ -95,6 +95,10 @@ class ListingBidController extends Controller
     {
         $user = $request->user();
 
+        if ($listing->is_admin_bidding && ! $user?->is_admin) {
+            abort(403);
+        }
+
         if (! $listing->is_approved && $user?->id !== $listing->user_id && ! $user?->is_admin) {
             abort(404);
         }
