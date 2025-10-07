@@ -38,7 +38,30 @@ const sanitizeModelList = (models, ...additional) => {
 };
 
 const toNumber = (value, fallback = 0) => {
-    const numeric = Number(value);
+    let source = value;
+
+    if (typeof source === 'string') {
+        const trimmed = source.trim().replace(/\u2212/g, '-');
+        const hasComma = trimmed.includes(',');
+        const hasDot = trimmed.includes('.');
+        let sanitized = trimmed.replace(/\s+/g, '');
+
+        if (hasComma && hasDot) {
+            if (trimmed.lastIndexOf(',') > trimmed.lastIndexOf('.')) {
+                sanitized = sanitized.replace(/\./g, '').replace(/,/g, '.');
+            } else {
+                sanitized = sanitized.replace(/,/g, '');
+            }
+        } else if (hasComma) {
+            sanitized = sanitized.replace(/\./g, '').replace(/,/g, '.');
+        } else {
+            sanitized = sanitized.replace(/,/g, '');
+        }
+
+        source = sanitized;
+    }
+
+    const numeric = Number(source);
 
     return Number.isFinite(numeric) ? numeric : fallback;
 };
@@ -414,13 +437,22 @@ const liveBid = (config = {}) => {
             return candidate < minimum ? minimum : candidate;
         },
         increase() {
-            this.amount = this.normalizeAmount(this.amount + this.minIncrement);
+            const current = this.normalizeAmount(this.amount);
+
+            this.amount = this.normalizeAmount(current + this.minIncrement);
         },
         decrease() {
+            const normalized = this.normalizeAmount(this.amount);
             const minimum = Math.max(this.nextBidAmount, this.currentBid + this.minIncrement);
-            const candidate = this.amount - this.minIncrement;
+            const candidate = normalized - this.minIncrement;
 
             this.amount = candidate < minimum ? minimum : this.normalizeAmount(candidate);
+        },
+        handleManualInput(event) {
+            const value = event?.target?.value ?? this.amount;
+            const normalized = this.normalizeAmount(value);
+
+            this.amount = normalized;
         },
         format(value) {
             return this.formatter.format(toNumber(value, 0));
@@ -470,6 +502,8 @@ const liveBid = (config = {}) => {
             if (!this.storeUrl) {
                 return;
             }
+
+            this.amount = this.normalizeAmount(this.amount);
 
             this.loading = true;
             this.error = '';
