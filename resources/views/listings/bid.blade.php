@@ -40,7 +40,11 @@
 
     <div
         x-data="liveBid(@json($componentConfig))"
-        x-init="init()"
+        x-init="init(); $nextTick(() => {
+            if ($refs.serverHistory) {
+                $refs.serverHistory.remove();
+            }
+        })"
         x-cloak
         class="grid gap-8 lg:grid-cols-5"
     >
@@ -121,68 +125,74 @@
                 </div>
                 <p class="text-sm text-gray-500 dark:text-gray-300">Katrs solis tiek apstiprināts nekavējoties un tiek translēts visiem dalībniekiem.</p>
 
-                <form
-                    method="POST"
-                    action="{{ route('listings.bids.store', $listing) }}"
-                    x-on:submit.prevent="placeBid($event)"
-                    class="space-y-4"
-                >
-                    @csrf
-                    <div class="space-y-3">
-                        <label for="bid-amount" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tavs solis (€)</label>
-                        <div class="flex items-center gap-2">
-                            <button
-                                type="button"
-                                class="btn btn-secondary shrink-0 px-3 py-2 text-sm"
-                                x-on:click="decrease()"
-                                :disabled="loading || amount <= nextBidAmount"
-                            >
-                                −{{ number_format($minIncrement, 0, '.', ' ') }}
-                            </button>
-
-                            <input
-                                id="bid-amount"
-                                name="amount"
-                                type="number"
-                                inputmode="decimal"
-                                min="{{ $nextBidAmount }}"
-                                step="{{ $minIncrement }}"
-                                value="{{ $nextBidAmount }}"
-                                x-model.number="amount"
-                                x-bind:min="nextBidAmount"
-                                x-bind:step="minIncrement"
-                                x-bind:disabled="loading"
-                                x-on:blur="handleManualInput($event)"
-                                x-on:change="handleManualInput($event)"
-                                class="flex-1 rounded-2xl border border-gray-200 bg-white px-4 py-2 text-center text-lg font-semibold text-gray-900 shadow-sm focus:border-[#2B7A78] focus:outline-none focus:ring-2 focus:ring-[#2B7A78]/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
-                                required
-                            >
-
-                            <button
-                                type="button"
-                                class="btn btn-secondary shrink-0 px-3 py-2 text-sm"
-                                x-on:click="increase()"
-                                :disabled="loading"
-                            >
-                                +{{ number_format($minIncrement, 0, '.', ' ') }}
-                            </button>
-                        </div>
-                    </div>
-
-                    <button
-                        type="submit"
-                        class="btn btn-primary w-full"
-                        :disabled="loading"
+                @auth
+                    <form
+                        method="POST"
+                        action="{{ route('listings.bids.store', $listing) }}"
+                        x-on:submit.prevent="placeBid($event)"
+                        class="space-y-4"
                     >
-                        <span x-show="!loading">Pielikt soli</span>
-                        <span x-show="loading" class="inline-flex items-center gap-2">
-                            <svg class="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                                <path d="M12 3v3m0 12v3m9-9h-3M6 12H3m15.364-6.364-2.121 2.121M8.757 15.243l-2.121 2.121m0-12.728 2.121 2.121m8.486 8.486 2.121 2.121" stroke-linecap="round" stroke-linejoin="round" />
-                            </svg>
-                            Apstrādā...
-                        </span>
-                    </button>
-                </form>
+                        @csrf
+                        <div class="space-y-3">
+                            <label for="bid-amount" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tavs solis (€)</label>
+                            <div class="flex items-center gap-2">
+                                <button
+                                    type="button"
+                                    class="btn btn-secondary shrink-0 px-3 py-2 text-sm"
+                                    x-on:click="decrease()"
+                                    :disabled="loading || amount <= nextBidAmount"
+                                >
+                                    −{{ number_format($minIncrement, 0, '.', ' ') }}
+                                </button>
+
+                                <input
+                                    id="bid-amount"
+                                    name="amount"
+                                    type="number"
+                                    inputmode="decimal"
+                                    min="{{ number_format($nextBidAmount, 2, '.', '') }}"
+                                    step="{{ number_format($minIncrement, 0, '.', '') }}"
+                                    value="{{ old('amount', $nextBidAmount) }}"
+                                    x-model.number="amount"
+                                    x-bind:min="nextBidAmount"
+                                    x-bind:step="minIncrement"
+                                    x-bind:disabled="loading"
+                                    x-on:blur="handleManualInput($event)"
+                                    x-on:change="handleManualInput($event)"
+                                    class="flex-1 rounded-2xl border border-gray-200 bg-white px-4 py-2 text-center text-lg font-semibold text-gray-900 shadow-sm focus:border-[#2B7A78] focus:outline-none focus:ring-2 focus:ring-[#2B7A78]/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                                    required
+                                >
+
+                                <button
+                                    type="button"
+                                    class="btn btn-secondary shrink-0 px-3 py-2 text-sm"
+                                    x-on:click="increase()"
+                                    :disabled="loading"
+                                >
+                                    +{{ number_format($minIncrement, 0, '.', ' ') }}
+                                </button>
+                            </div>
+                        </div>
+
+                        <button
+                            type="submit"
+                            class="btn btn-primary w-full"
+                            :disabled="loading"
+                        >
+                            <span x-show="!loading">Pielikt soli</span>
+                            <span x-show="loading" class="inline-flex items-center gap-2">
+                                <svg class="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                    <path d="M12 3v3m0 12v3m9-9h-3M6 12H3m15.364-6.364-2.121 2.121M8.757 15.243l-2.121 2.121m0-12.728 2.121 2.121m8.486 8.486 2.121 2.121" stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                                Apstrādā...
+                            </span>
+                        </button>
+                    </form>
+                @else
+                    <p class="rounded-2xl bg-gray-50/80 px-4 py-3 text-sm text-gray-600 dark:bg-gray-800/60 dark:text-gray-300">
+                        Lai piedalītos izsolē, lūdzu, <a href="{{ route('login') }}" class="font-semibold text-[#2B7A78] hover:underline">ielogojies savā kontā</a> vai <a href="{{ route('register') }}" class="font-semibold text-[#2B7A78] hover:underline">izveido jaunu profilu</a>.
+                    </p>
+                @endauth
 
                 <div
                     class="rounded-2xl border border-rose-200/70 bg-rose-50/70 px-4 py-3 text-sm text-rose-700 shadow-sm dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-200"
@@ -209,6 +219,22 @@
                 </div>
 
                 <div class="mt-4 space-y-3">
+                    <div x-ref="serverHistory">
+                        @forelse($recentBids as $bid)
+                            <div class="rounded-2xl border border-gray-200/60 bg-white/80 px-4 py-3 shadow-sm dark:border-gray-700/60 dark:bg-gray-800/70">
+                                <div class="flex items-center justify-between gap-3">
+                                    <p class="text-sm font-semibold text-gray-900 dark:text-white">{{ $bid['user'] }}</p>
+                                    <p class="text-base font-semibold text-[#2B7A78] dark:text-[#2B7A78]/80">{{ number_format($bid['amount'], 2, '.', ' ') }} €</p>
+                                </div>
+                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ $bid['created_at_human'] }}</p>
+                            </div>
+                        @empty
+                            <p class="rounded-2xl bg-gray-50/80 px-4 py-3 text-sm text-gray-500 dark:bg-gray-800/60 dark:text-gray-300">
+                                Vēl nav veikts neviens solis. Esi pirmais!
+                            </p>
+                        @endforelse
+                    </div>
+
                     <template x-if="!bids.length">
                         <p class="rounded-2xl bg-gray-50/80 px-4 py-3 text-sm text-gray-500 dark:bg-gray-800/60 dark:text-gray-300">
                             Vēl nav veikts neviens solis. Esi pirmais!
@@ -225,24 +251,6 @@
                         </div>
                     </template>
                 </div>
-
-                <noscript>
-                    <div class="mt-4 space-y-3">
-                        @forelse($recentBids as $bid)
-                            <div class="rounded-2xl border border-gray-200/60 bg-white/80 px-4 py-3 shadow-sm dark:border-gray-700/60 dark:bg-gray-800/70">
-                                <div class="flex items-center justify-between gap-3">
-                                    <p class="text-sm font-semibold text-gray-900 dark:text-white">{{ $bid['user'] }}</p>
-                                    <p class="text-base font-semibold text-[#2B7A78] dark:text-[#2B7A78]/80">{{ number_format($bid['amount'], 2, '.', ' ') }} €</p>
-                                </div>
-                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ $bid['created_at_human'] }}</p>
-                            </div>
-                        @empty
-                            <p class="rounded-2xl bg-gray-50/80 px-4 py-3 text-sm text-gray-500 dark:bg-gray-800/60 dark:text-gray-300">
-                                Vēl nav veikts neviens solis. Esi pirmais!
-                            </p>
-                        @endforelse
-                    </div>
-                </noscript>
             </div>
         </div>
     </div>
