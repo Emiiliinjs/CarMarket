@@ -152,6 +152,8 @@
                                 x-bind:min="nextBidAmount"
                                 x-bind:step="minIncrement"
                                 x-bind:disabled="loading"
+                                x-on:blur="handleManualInput($event)"
+                                x-on:change="handleManualInput($event)"
                                 class="flex-1 rounded-2xl border border-gray-200 bg-white px-4 py-2 text-center text-lg font-semibold text-gray-900 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
                                 required
                             >
