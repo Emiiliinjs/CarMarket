@@ -24,11 +24,11 @@
         <section class="space-y-4 rounded-3xl border border-gray-200 bg-white/80 p-6 shadow-sm dark:border-gray-700 dark:bg-gray-900/70">
             <div class="flex items-center justify-between">
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Gaidošie sludinājumi</h3>
-                <span class="rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-200">{{ $pendingListings->count() }}</span>
+                <span class="rounded-full bg-[#2B7A78]/10 px-3 py-1 text-xs font-semibold text-[#2B7A78] dark:bg-[#2B7A78]/10 dark:text-[#2B7A78]/70">{{ $pendingListings->count() }}</span>
             </div>
 
             @forelse($pendingListings as $listing)
-                <article class="space-y-3 rounded-2xl border border-gray-200 bg-white/80 p-4 shadow-sm transition hover:border-indigo-200 dark:border-gray-700 dark:bg-gray-900/80">
+                <article class="space-y-3 rounded-2xl border border-gray-200 bg-white/80 p-4 shadow-sm transition hover:border-[#2B7A78]/30 dark:border-gray-700 dark:bg-gray-900/80">
                     <div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                         <div>
                             <h4 class="text-base font-semibold text-gray-900 dark:text-white">{{ $listing->marka }} {{ $listing->modelis }} ({{ $listing->gads }})</h4>

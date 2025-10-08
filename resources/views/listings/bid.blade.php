@@ -20,7 +20,7 @@
     <x-slot name="header">
         <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
-                <p class="text-xs font-semibold uppercase tracking-widest text-indigo-500 dark:text-indigo-300">Tiešsaistes izsole</p>
+                <p class="text-xs font-semibold uppercase tracking-widest text-[#2B7A78] dark:text-[#2B7A78]/80">Tiešsaistes izsole</p>
                 <h2 class="mt-2 text-2xl font-semibold leading-tight text-gray-900 dark:text-white">
                     {{ $listing->marka }} {{ $listing->modelis }} ({{ $listing->gads }})
                 </h2>
@@ -115,7 +115,7 @@
             <div class="space-y-4 rounded-3xl bg-white/80 p-6 shadow-xl ring-1 ring-gray-100 dark:bg-gray-900/70 dark:ring-gray-800">
                 <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Pievieno savu soli</h3>
-                    <span class="inline-flex items-center rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-200">
+                    <span class="inline-flex items-center rounded-full bg-[#2B7A78]/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-[#2B7A78] dark:bg-[#2B7A78]/10 dark:text-[#2B7A78]/70">
                         Solis {{ number_format($minIncrement, 0, '.', ' ') }} €
                     </span>
                 </div>
@@ -154,7 +154,7 @@
                                 x-bind:disabled="loading"
                                 x-on:blur="handleManualInput($event)"
                                 x-on:change="handleManualInput($event)"
-                                class="flex-1 rounded-2xl border border-gray-200 bg-white px-4 py-2 text-center text-lg font-semibold text-gray-900 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                                class="flex-1 rounded-2xl border border-gray-200 bg-white px-4 py-2 text-center text-lg font-semibold text-gray-900 shadow-sm focus:border-[#2B7A78] focus:outline-none focus:ring-2 focus:ring-[#2B7A78]/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
                                 required
                             >
 
@@ -219,7 +219,7 @@
                         <div class="rounded-2xl border border-gray-200/60 bg-white/80 px-4 py-3 shadow-sm dark:border-gray-700/60 dark:bg-gray-800/70">
                             <div class="flex items-center justify-between gap-3">
                                 <p class="text-sm font-semibold text-gray-900 dark:text-white" x-text="bid.user"></p>
-                                <p class="text-base font-semibold text-indigo-600 dark:text-indigo-300" x-text="format(bid.amount)"></p>
+                                <p class="text-base font-semibold text-[#2B7A78] dark:text-[#2B7A78]/80" x-text="format(bid.amount)"></p>
                             </div>
                             <p class="mt-1 text-xs text-gray-500 dark:text-gray-400" x-text="bid.created_at_human"></p>
                         </div>
@@ -232,7 +232,7 @@
                             <div class="rounded-2xl border border-gray-200/60 bg-white/80 px-4 py-3 shadow-sm dark:border-gray-700/60 dark:bg-gray-800/70">
                                 <div class="flex items-center justify-between gap-3">
                                     <p class="text-sm font-semibold text-gray-900 dark:text-white">{{ $bid['user'] }}</p>
-                                    <p class="text-base font-semibold text-indigo-600 dark:text-indigo-300">{{ number_format($bid['amount'], 2, '.', ' ') }} €</p>
+                                    <p class="text-base font-semibold text-[#2B7A78] dark:text-[#2B7A78]/80">{{ number_format($bid['amount'], 2, '.', ' ') }} €</p>
                                 </div>
                                 <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ $bid['created_at_human'] }}</p>
                             </div>

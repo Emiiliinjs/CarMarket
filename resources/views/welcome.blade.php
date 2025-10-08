@@ -1,9 +1,9 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="rounded-3xl border border-slate-200 bg-gradient-to-br from-indigo-50 via-white to-white px-6 py-8 shadow-sm sm:px-10 sm:py-12 dark:border-slate-800 dark:from-slate-900/70 dark:via-slate-950">
+        <div class="rounded-3xl border border-slate-200 bg-gradient-to-br from-[#2B7A78]/12 via-white to-white px-6 py-8 shadow-sm sm:px-10 sm:py-12 dark:border-slate-800 dark:from-slate-900/70 dark:via-slate-950">
             <div class="grid gap-8 lg:grid-cols-[1.1fr,1fr]">
                 <div class="space-y-6">
-                    <span class="inline-flex items-center gap-2 rounded-full bg-white/70 px-4 py-1 text-xs font-semibold uppercase tracking-wide text-indigo-600 shadow-sm shadow-indigo-100 dark:bg-slate-900/60 dark:text-indigo-300">
+                    <span class="inline-flex items-center gap-2 rounded-full bg-white/70 px-4 py-1 text-xs font-semibold uppercase tracking-wide text-[#2B7A78] shadow-sm shadow-[#2B7A78]/20 dark:bg-slate-900/60 dark:text-[#2B7A78]/80">
                         Jaunākie piedāvājumi
                     </span>
 
@@ -16,7 +16,7 @@
                     </p>
 
                     <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
-                        <a href="{{ route('listings.index') }}" class="inline-flex items-center justify-center rounded-xl bg-indigo-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-indigo-500">
+                        <a href="{{ route('listings.index') }}" class="inline-flex items-center justify-center rounded-xl bg-[#2B7A78] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#22615F]">
                             Pārlūkot auto
                         </a>
                         <div class="flex items-center gap-6 text-sm text-slate-500 dark:text-slate-300">
@@ -78,7 +78,7 @@
                         <h2 class="text-2xl font-semibold text-slate-900 dark:text-white">Izcelti auto piedāvājumi</h2>
                         <p class="text-sm text-slate-600 dark:text-slate-300">Vienkāršas, bet modernas kartītes ar visiem svarīgākajiem datiem.</p>
                     </div>
-                    <a href="{{ route('favorites.index') }}" class="inline-flex items-center gap-2 text-sm font-semibold text-indigo-600 transition hover:text-indigo-500 dark:text-indigo-300 dark:hover:text-indigo-200">
+                    <a href="{{ route('favorites.index') }}" class="inline-flex items-center gap-2 text-sm font-semibold text-[#2B7A78] transition hover:text-[#22615F] dark:text-[#2B7A78]/80 dark:hover:text-[#2B7A78]">
                         Apskatīt favorītus
                         <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                             <path d="M12.293 4.293a1 1 0 0 1 1.414 0l4 4a1 1 0 0 1 0 1.414l-4 4a1 1 0 1 1-1.414-1.414L14.586 10l-2.293-2.293a1 1 0 0 1 0-1.414Z" />

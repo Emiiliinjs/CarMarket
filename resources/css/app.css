@@ -10,11 +10,11 @@
 
 @layer components {
     .btn {
-        @apply inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold shadow-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60;
+        @apply inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold shadow-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2B7A78] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60;
     }
 
     .btn-primary {
-        @apply bg-indigo-600 text-white hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-400;
+        @apply bg-[#2B7A78] text-white hover:bg-[#22615F] dark:bg-[#2B7A78] dark:hover:bg-[#22615F];
     }
 
     .btn-secondary {
@@ -30,6 +30,6 @@
     }
 
     .btn-light {
-        @apply border border-white/60 bg-white/80 text-indigo-600 hover:bg-white dark:border-slate-700 dark:bg-slate-900/70 dark:text-indigo-300;
+        @apply border border-white/60 bg-white/80 text-[#2B7A78] hover:bg-white dark:border-slate-700 dark:bg-slate-900/70 dark:text-[#2B7A78];
     }
 }

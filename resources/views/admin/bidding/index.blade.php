@@ -11,7 +11,7 @@
             </div>
             <a
                 href="{{ route('admin.bidding.create') }}"
-                class="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+                class="inline-flex items-center gap-2 rounded-xl bg-[#2B7A78] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#22615F] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2B7A78]"
             >
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="h-5 w-5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
@@ -46,7 +46,7 @@
                         <div class="flex flex-wrap items-center gap-3">
                             <a
                                 href="{{ route('listings.live-bid', $listing) }}"
-                                class="inline-flex items-center gap-2 rounded-xl border border-indigo-200/70 px-4 py-2 text-sm font-semibold text-indigo-600 transition hover:border-indigo-400 hover:text-indigo-500 dark:border-indigo-800/50 dark:text-indigo-300 dark:hover:border-indigo-600"
+                                class="inline-flex items-center gap-2 rounded-xl border border-[#2B7A78]/40 px-4 py-2 text-sm font-semibold text-[#2B7A78] transition hover:border-[#2B7A78]/50 hover:text-[#22615F] dark:border-[#2B7A78]/60 dark:text-[#2B7A78]/80 dark:hover:border-[#2B7A78]"
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-4 w-4">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
