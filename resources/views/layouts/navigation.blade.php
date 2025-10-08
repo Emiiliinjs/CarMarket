@@ -8,9 +8,9 @@
             <!-- Logo -->
             <a
                 href="{{ route('listings.index') }}"
-                class="flex items-center gap-2 rounded-xl border border-transparent px-2 py-1 text-slate-700 transition hover:border-slate-200 hover:bg-white/90 dark:text-slate-200 dark:hover:border-slate-700 dark:hover:bg-slate-900/70"
+                class="flex items-center gap-2 rounded-xl border border-transparent px-2 py-1 text-slate-700 transition hover:border-[#2B7A78]/40 hover:bg-white/90 dark:text-slate-200 dark:hover:border-[#2B7A78]/40 dark:hover:bg-slate-900/70"
             >
-                <x-application-logo class="block h-8 w-auto fill-current text-indigo-600 dark:text-indigo-400" />
+                <x-application-logo class="block h-8 w-auto fill-current text-[#2B7A78]" />
                 <span class="hidden text-sm font-semibold tracking-tight sm:inline">
                     {{ config('app.name', 'CarMarket') }}
                 </span>
@@ -54,7 +54,7 @@
             <button
                 type="button"
                 @click="$store.theme.toggle()"
-                class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200/80 text-indigo-600 transition hover:border-indigo-200 hover:text-indigo-500 dark:border-slate-700 dark:text-indigo-300 dark:hover:border-indigo-500"
+                class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200/80 text-[#2B7A78] transition hover:border-[#2B7A78]/50 hover:text-[#22615F] dark:border-slate-700 dark:text-[#2B7A78] dark:hover:border-[#2B7A78]/60"
             >
                 <span class="sr-only">Tumšais režīms</span>
                 <svg x-show="!$store.theme.isDark" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -76,10 +76,10 @@
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
                         <button
-                            class="inline-flex items-center gap-2 rounded-xl border border-slate-200/80 px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-indigo-200 hover:text-indigo-600 dark:border-slate-700 dark:text-slate-200 dark:hover:border-indigo-500"
+                            class="inline-flex items-center gap-2 rounded-xl border border-slate-200/80 px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-[#2B7A78]/40 hover:text-[#2B7A78] dark:border-slate-700 dark:text-slate-200 dark:hover:border-[#2B7A78]/50"
                         >
                             <span>{{ Auth::user()->name }}</span>
-                            <svg class="h-4 w-4 text-indigo-500 dark:text-indigo-300" viewBox="0 0 20 20" fill="currentColor">
+                            <svg class="h-4 w-4 text-[#2B7A78]" viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd"
                                     d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
                                     clip-rule="evenodd" />
@@ -103,10 +103,10 @@
                     </x-slot>
                 </x-dropdown>
             @else
-                <a href="{{ route('login') }}" class="text-sm font-semibold text-slate-600 transition hover:text-indigo-600 dark:text-slate-300 dark:hover:text-indigo-300">
+                <a href="{{ route('login') }}" class="text-sm font-semibold text-slate-600 transition hover:text-[#2B7A78] dark:text-slate-300 dark:hover:text-[#2B7A78]">
                     {{ __('Ieiet') }}
                 </a>
-                <a href="{{ route('register') }}" class="rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-500">
+                <a href="{{ route('register') }}" class="rounded-xl bg-[#2B7A78] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#22615F]">
                     {{ __('Reģistrēties') }}
                 </a>
             @endauth
@@ -115,7 +115,7 @@
         <!-- Mobile Hamburger -->
         <div class="flex items-center md:hidden">
             <button @click="open = ! open"
-                class="inline-flex items-center justify-center rounded-xl border border-slate-200/80 p-2 text-slate-600 transition hover:border-indigo-200 hover:text-indigo-600 dark:border-slate-700 dark:text-slate-200 dark:hover:border-indigo-500"
+                class="inline-flex items-center justify-center rounded-xl border border-slate-200/80 p-2 text-slate-600 transition hover:border-[#2B7A78]/40 hover:text-[#2B7A78] dark:border-slate-700 dark:text-slate-200 dark:hover:border-[#2B7A78]/50"
             >
                 <span class="sr-only">Izvēlne</span>
                 <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
@@ -177,7 +177,7 @@
                     </x-responsive-nav-link>
 
                     <button type="button" @click="$store.theme.toggle()"
-                        class="flex w-full items-center justify-between rounded-lg border border-slate-200/70 px-4 py-2 text-sm font-semibold text-slate-600 transition hover:border-indigo-200 hover:text-indigo-600 dark:border-slate-700 dark:text-slate-200 dark:hover:border-indigo-500"
+                        class="flex w-full items-center justify-between rounded-lg border border-slate-200/70 px-4 py-2 text-sm font-semibold text-slate-600 transition hover:border-[#2B7A78]/40 hover:text-[#2B7A78] dark:border-slate-700 dark:text-slate-200 dark:hover:border-[#2B7A78]/50"
                     >
                         <span>{{ __('Tumšais režīms') }}</span>
                         <svg x-show="!$store.theme.isDark" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
@@ -207,10 +207,10 @@
                 </div>
             @else
                 <div class="flex flex-col gap-2 text-sm">
-                    <a href="{{ route('login') }}" class="rounded-lg border border-slate-200/70 px-4 py-2 font-semibold text-slate-600 transition hover:border-indigo-200 hover:text-indigo-600 dark:border-slate-700 dark:text-slate-300 dark:hover:border-indigo-500">
+                    <a href="{{ route('login') }}" class="rounded-lg border border-slate-200/70 px-4 py-2 font-semibold text-slate-600 transition hover:border-[#2B7A78]/40 hover:text-[#2B7A78] dark:border-slate-700 dark:text-slate-300 dark:hover:border-[#2B7A78]/50">
                         {{ __('Ieiet') }}
                     </a>
-                    <a href="{{ route('register') }}" class="rounded-lg bg-indigo-600 px-4 py-2 text-center font-semibold text-white transition hover:bg-indigo-500">
+                    <a href="{{ route('register') }}" class="rounded-lg bg-[#2B7A78] px-4 py-2 text-center font-semibold text-white transition hover:bg-[#22615F]">
                         {{ __('Reģistrēties') }}
                     </a>
                 </div>

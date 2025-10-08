@@ -71,7 +71,7 @@
             <dl class="grid grid-cols-2 gap-4 text-sm text-slate-600 dark:text-slate-300">
                 <div>
                     <dt class="font-medium text-slate-500 dark:text-slate-400">Cena</dt>
-                    <dd class="text-base font-semibold text-indigo-600 dark:text-indigo-300">{{ number_format($listing->cena, 2, '.', ' ') }} €</dd>
+                    <dd class="text-base font-semibold text-[#2B7A78] dark:text-[#2B7A78]/80">{{ number_format($listing->cena, 2, '.', ' ') }} €</dd>
                 </div>
                 <div>
                     <dt class="font-medium text-slate-500 dark:text-slate-400">Nobraukums</dt>
@@ -90,11 +90,11 @@
 
         <div class="flex items-center justify-between gap-4">
             <label class="inline-flex items-center gap-2 text-xs font-medium text-slate-500 dark:text-slate-300">
-                <input type="checkbox" class="js-compare-checkbox h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 dark:border-slate-600 dark:bg-slate-800">
+                <input type="checkbox" class="js-compare-checkbox h-4 w-4 rounded border-slate-300 text-[#2B7A78] focus:ring-[#2B7A78] dark:border-slate-600 dark:bg-slate-800">
                 Salīdzināt
             </label>
 
-            <a href="{{ route('listings.show', $listing->id) }}" class="inline-flex items-center gap-2 rounded-xl border border-indigo-200 bg-indigo-50 px-4 py-2 text-sm font-semibold text-indigo-600 transition hover:border-indigo-300 hover:bg-indigo-100 dark:border-indigo-500/40 dark:bg-indigo-500/10 dark:text-indigo-200 dark:hover:border-indigo-500">
+            <a href="{{ route('listings.show', $listing->id) }}" class="inline-flex items-center gap-2 rounded-xl border border-[#2B7A78]/30 bg-[#2B7A78]/10 px-4 py-2 text-sm font-semibold text-[#2B7A78] transition hover:border-[#2B7A78]/40 hover:bg-[#2B7A78]/15 dark:border-[#2B7A78]/40 dark:bg-[#2B7A78]/20 dark:text-[#2B7A78]/70 dark:hover:border-[#2B7A78]/50">
                 Skatīt detaļas
             </a>
         </div>

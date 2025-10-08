@@ -30,7 +30,7 @@
             <div class="grid gap-6 lg:grid-cols-12">
                 <div class="lg:col-span-4">
                     <label for="search" class="text-sm font-semibold text-gray-700 dark:text-gray-200">Meklēt pēc atslēgvārda</label>
-                    <div class="mt-2 flex rounded-xl border border-gray-200 bg-white shadow-sm focus-within:border-indigo-500 focus-within:ring-2 focus-within:ring-indigo-500/20 dark:border-gray-700 dark:bg-gray-800">
+                    <div class="mt-2 flex rounded-xl border border-gray-200 bg-white shadow-sm focus-within:border-[#2B7A78] focus-within:ring-2 focus-within:ring-[#2B7A78]/20 dark:border-gray-700 dark:bg-gray-800">
                         <input
                             id="search"
                             name="search"
@@ -58,7 +58,7 @@
     x-model="selectedBrand"
     @change="updateModels()" 
     class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-700 shadow-sm 
-           focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 
+           focus:border-[#2B7A78] focus:outline-none focus:ring-2 focus:ring-[#2B7A78]/20 
            dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200"
 >
     <option value="">Izvēlies marku</option>
@@ -79,7 +79,7 @@
     x-model="selectedModel"
     :disabled="availableModels.length === 0"
     class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-700 shadow-sm 
-           focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 
+           focus:border-[#2B7A78] focus:outline-none focus:ring-2 focus:ring-[#2B7A78]/20 
            dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 
            disabled:cursor-not-allowed disabled:bg-gray-100 dark:disabled:bg-gray-800/60"
 >
@@ -93,27 +93,27 @@
 
                     <div class="lg:col-span-1">
                         <label for="price_min" class="text-sm font-semibold text-gray-700 dark:text-gray-200">Cena no (€)</label>
-                        <input id="price_min" name="price_min" type="number" min="0" value="{{ $filters['price_min'] ?? '' }}" class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200" />
+                        <input id="price_min" name="price_min" type="number" min="0" value="{{ $filters['price_min'] ?? '' }}" class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-700 shadow-sm focus:border-[#2B7A78] focus:outline-none focus:ring-2 focus:ring-[#2B7A78]/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200" />
                     </div>
 
                     <div class="lg:col-span-1">
                         <label for="price_max" class="text-sm font-semibold text-gray-700 dark:text-gray-200">Cena līdz (€)</label>
-                        <input id="price_max" name="price_max" type="number" min="0" value="{{ $filters['price_max'] ?? '' }}" class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200" />
+                        <input id="price_max" name="price_max" type="number" min="0" value="{{ $filters['price_max'] ?? '' }}" class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-700 shadow-sm focus:border-[#2B7A78] focus:outline-none focus:ring-2 focus:ring-[#2B7A78]/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200" />
                     </div>
 
                     <div class="lg:col-span-1">
                         <label for="year_from" class="text-sm font-semibold text-gray-700 dark:text-gray-200">Gads no</label>
-                        <input id="year_from" name="year_from" type="number" min="1900" max="{{ date('Y') + 1 }}" value="{{ $filters['year_from'] ?? '' }}" class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200" />
+                        <input id="year_from" name="year_from" type="number" min="1900" max="{{ date('Y') + 1 }}" value="{{ $filters['year_from'] ?? '' }}" class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-700 shadow-sm focus:border-[#2B7A78] focus:outline-none focus:ring-2 focus:ring-[#2B7A78]/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200" />
                     </div>
 
                     <div class="lg:col-span-1">
                         <label for="year_to" class="text-sm font-semibold text-gray-700 dark:text-gray-200">Gads līdz</label>
-                        <input id="year_to" name="year_to" type="number" min="1900" max="{{ date('Y') + 1 }}" value="{{ $filters['year_to'] ?? '' }}" class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200" />
+                        <input id="year_to" name="year_to" type="number" min="1900" max="{{ date('Y') + 1 }}" value="{{ $filters['year_to'] ?? '' }}" class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-700 shadow-sm focus:border-[#2B7A78] focus:outline-none focus:ring-2 focus:ring-[#2B7A78]/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200" />
                     </div>
 
                     <div class="lg:col-span-2">
                         <label for="degviela" class="text-sm font-semibold text-gray-700 dark:text-gray-200">Degvielas tips</label>
-                        <select id="degviela" name="degviela" class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200">
+                        <select id="degviela" name="degviela" class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-700 shadow-sm focus:border-[#2B7A78] focus:outline-none focus:ring-2 focus:ring-[#2B7A78]/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200">
                             <option value="">Visi</option>
                             @foreach($fuelOptions as $fuel)
                                 <option value="{{ $fuel }}" @selected(($filters['degviela'] ?? '') === $fuel)>{{ $fuel }}</option>
@@ -123,7 +123,7 @@
 
                     <div class="lg:col-span-2">
                         <label for="status" class="text-sm font-semibold text-gray-700 dark:text-gray-200">Statuss</label>
-                        <select id="status" name="status" class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200">
+                        <select id="status" name="status" class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-700 shadow-sm focus:border-[#2B7A78] focus:outline-none focus:ring-2 focus:ring-[#2B7A78]/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200">
                             <option value="">Visi</option>
                             @foreach($statusOptions as $value => $label)
                                 <option value="{{ $value }}" @selected(($filters['status'] ?? '') === $value)>{{ $label }}</option>
@@ -133,7 +133,7 @@
 
                     <div class="lg:col-span-2">
                         <label for="sort" class="text-sm font-semibold text-gray-700 dark:text-gray-200">Kārtošana</label>
-                        <select id="sort" name="sort" class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200">
+                        <select id="sort" name="sort" class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-700 shadow-sm focus:border-[#2B7A78] focus:outline-none focus:ring-2 focus:ring-[#2B7A78]/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200">
                             @foreach($sortOptions as $value => $label)
                                 <option value="{{ $value }}" @selected(($filters['sort'] ?? 'newest') === $value)>{{ $label }}</option>
                             @endforeach
@@ -145,7 +145,7 @@
             <div class="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div class="flex flex-wrap items-center gap-2 text-xs text-gray-500 dark:text-gray-300">
                     @if($activeFilters->isNotEmpty())
-                        <span class="rounded-full bg-indigo-50 px-3 py-1 text-indigo-600 dark:bg-indigo-500/20 dark:text-indigo-200">Aktīvie filtri:</span>
+                        <span class="rounded-full bg-[#2B7A78]/10 px-3 py-1 text-[#2B7A78] dark:bg-[#2B7A78]/20 dark:text-[#2B7A78]/70">Aktīvie filtri:</span>
                         @foreach($activeFilters as $key => $value)
                             <span class="rounded-full bg-gray-100 px-3 py-1 text-gray-600 dark:bg-gray-800 dark:text-gray-200">{{ ucfirst(str_replace('_', ' ', $key)) }}: <strong>{{ $value }}</strong></span>
                         @endforeach
@@ -190,7 +190,7 @@
             </div>
         @endif
 
-        <div id="compare-panel" class="sticky bottom-6 z-20 hidden rounded-3xl border border-indigo-200 bg-white/95 p-6 shadow-2xl backdrop-blur dark:border-indigo-500/40 dark:bg-gray-900/90">
+        <div id="compare-panel" class="sticky bottom-6 z-20 hidden rounded-3xl border border-[#2B7A78]/30 bg-white/95 p-6 shadow-2xl backdrop-blur dark:border-[#2B7A78]/40 dark:bg-gray-900/90">
             <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Salīdzināšanas rīks</h3>

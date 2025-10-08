@@ -37,7 +37,7 @@
                         </button>
                     </form>
                 @else
-                    <a href="{{ route('login') }}" class="btn btn-secondary rounded-full border-indigo-200 px-4 text-indigo-600 hover:bg-indigo-50 dark:border-indigo-500/30 dark:bg-gray-900/60 dark:text-indigo-200">
+                    <a href="{{ route('login') }}" class="btn btn-secondary rounded-full border-[#2B7A78]/30 px-4 text-[#2B7A78] hover:bg-[#2B7A78]/10 dark:border-[#2B7A78]/30 dark:bg-gray-900/60 dark:text-[#2B7A78]/70">
                         <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                             <path d="M3.172 5.172a4 4 0 0 1 5.656 0L10 6.343l1.172-1.171a4 4 0 0 1 5.656 5.656L10 17.657l-6.828-6.829a4 4 0 0 1 0-5.656Z" fill="none" stroke="currentColor" stroke-width="1.5" />
                         </svg>
@@ -117,9 +117,9 @@
                     <div class="flex items-baseline justify-between gap-4">
                         <div>
                             <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Cena</p>
-                            <p class="text-3xl font-semibold text-indigo-600 dark:text-indigo-300">{{ number_format($listing->cena, 2, '.', ' ') }} €</p>
+                            <p class="text-3xl font-semibold text-[#2B7A78] dark:text-[#2B7A78]/80">{{ number_format($listing->cena, 2, '.', ' ') }} €</p>
                         </div>
-                        <span class="inline-flex items-center rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-200">{{ $listing->degviela }} • {{ $listing->parnesumkarba }}</span>
+                        <span class="inline-flex items-center rounded-full bg-[#2B7A78]/10 px-3 py-1 text-xs font-semibold text-[#2B7A78] dark:bg-[#2B7A78]/10 dark:text-[#2B7A78]/70">{{ $listing->degviela }} • {{ $listing->parnesumkarba }}</span>
                     </div>
 
                     <dl class="grid gap-4 text-sm text-gray-600 dark:text-gray-300">
@@ -146,9 +146,9 @@
                 </div>
 
                 @if($listing->show_contact && $listing->contact_info)
-                    <div class="rounded-3xl border border-indigo-200 bg-indigo-50 p-6 shadow-sm dark:border-indigo-500/30 dark:bg-indigo-500/10">
-                        <h3 class="text-base font-semibold text-indigo-700 dark:text-indigo-200">Kontakta informācija</h3>
-                        <p class="mt-2 whitespace-pre-line text-sm text-indigo-900 dark:text-indigo-100">{{ $listing->contact_info }}</p>
+                    <div class="rounded-3xl border border-[#2B7A78]/30 bg-[#2B7A78]/10 p-6 shadow-sm dark:border-[#2B7A78]/30 dark:bg-[#2B7A78]/10">
+                        <h3 class="text-base font-semibold text-[#22615F] dark:text-[#2B7A78]/70">Kontakta informācija</h3>
+                        <p class="mt-2 whitespace-pre-line text-sm text-[#184844] dark:text-[#7FD1CC]">{{ $listing->contact_info }}</p>
                     </div>
                 @endif
 
@@ -167,7 +167,7 @@
 
                     <form x-show="open" x-cloak method="POST" action="{{ route('listings.report', $listing) }}" class="mt-4 space-y-3">
                         @csrf
-                        <textarea name="reason" rows="3" required class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200" placeholder="Apraksti pārkāpumu vai maldinošu informāciju"></textarea>
+                        <textarea name="reason" rows="3" required class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-700 shadow-sm focus:border-[#2B7A78] focus:outline-none focus:ring-2 focus:ring-[#2B7A78]/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200" placeholder="Apraksti pārkāpumu vai maldinošu informāciju"></textarea>
                         <button type="submit" class="btn btn-danger">Nosūtīt ziņojumu</button>
                     </form>
                 </div>
