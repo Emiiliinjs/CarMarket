@@ -24,12 +24,22 @@ trait HandlesListingImages
 
     protected function compressAndStoreImage(UploadedFile $image): string
     {
-        $resource = @imagecreatefromstring(file_get_contents($image->getRealPath()));
+        if (! function_exists('imagecreatefromstring')) {
+            return $this->storeOriginalImage($image);
+        }
+
+        $contents = @file_get_contents($image->getRealPath());
+
+        if ($contents === false) {
+            throw ValidationException::withMessages([
+                'images' => 'Neizdevās nolasīt augšupielādēto bildi.',
+            ]);
+        }
+
+        $resource = @imagecreatefromstring($contents);
 
         if ($resource === false) {
-            throw ValidationException::withMessages([
-                'images' => 'Neizdevās apstrādāt vienu no augšupielādētajām bildēm.',
-            ]);
+            return $this->storeOriginalImage($image);
         }
 
         if (function_exists('imagepalettetotruecolor') && ! imageistruecolor($resource)) {
@@ -89,7 +99,13 @@ trait HandlesListingImages
 
             if ($encoded && $binary !== false) {
                 $filename = 'listings/' . Str::uuid() . '.webp';
-                Storage::disk('public')->put($filename, $binary);
+                $stored = Storage::disk('public')->put($filename, $binary);
+
+                if (! $stored) {
+                    throw ValidationException::withMessages([
+                        'images' => 'Neizdevās saglabāt apstrādāto bildi.',
+                    ]);
+                }
 
                 return $filename;
             }
@@ -106,7 +122,45 @@ trait HandlesListingImages
         }
 
         $filename = 'listings/' . Str::uuid() . '.png';
-        Storage::disk('public')->put($filename, $binary);
+        $stored = Storage::disk('public')->put($filename, $binary);
+
+        if (! $stored) {
+            throw ValidationException::withMessages([
+                'images' => 'Neizdevās saglabāt apstrādāto bildi.',
+            ]);
+        }
+
+        return $filename;
+    }
+
+    protected function storeOriginalImage(UploadedFile $image): string
+    {
+        $disk = Storage::disk('public');
+
+        $extension = strtolower($image->getClientOriginalExtension() ?: $image->guessExtension() ?: 'jpg');
+        $filename = 'listings/' . Str::uuid() . '.' . $extension;
+
+        $stream = fopen($image->getRealPath(), 'r');
+
+        if ($stream === false) {
+            throw ValidationException::withMessages([
+                'images' => 'Neizdevās nolasīt augšupielādēto bildi.',
+            ]);
+        }
+
+        try {
+            $stored = $disk->put($filename, $stream);
+        } finally {
+            if (is_resource($stream)) {
+                fclose($stream);
+            }
+        }
+
+        if (! $stored) {
+            throw ValidationException::withMessages([
+                'images' => 'Neizdevās saglabāt augšupielādēto bildi.',
+            ]);
+        }
 
         return $filename;
     }
