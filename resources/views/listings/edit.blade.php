@@ -21,11 +21,7 @@
                 action="{{ route('listings.update', $listing->id) }}"
                 enctype="multipart/form-data"
                 class="space-y-10"
-                x-data="listingForm(
-                    @json($carModels),
-                    @js(old('marka', $listing->marka)),
-                    @js(old('modelis', $listing->modelis))
-                )"
+                x-data="listingForm(@json($carModels), @js($listing->marka), @js($listing->modelis))"
                 x-init="init()"
             >
                 @csrf
@@ -34,39 +30,24 @@
                 <!-- ======================== Pamatinformācija ======================== -->
                 <section class="space-y-6">
                     <div class="grid gap-6 md:grid-cols-2">
-                        <!-- Marka -->
+                        <!-- Marka (read-only) -->
                         <div>
-                            <label class="text-sm font-semibold text-gray-700" for="marka">Marka</label>
-                            <select id="marka" name="marka" x-model="selectedBrand"
-                                    @change="updateModels()"
-                                    class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-gray-700 shadow-sm
-                                           focus:border-[#2B7A78] focus:outline-none focus:ring-2 focus:ring-[#2B7A78]/30"
-                                    required>
-                                <option value="">Izvēlies marku</option>
-                                <template x-for="brand in availableBrands" :key="brand">
-                                    <option :value="brand" x-text="brand"></option>
-                                </template>
-                            </select>
-                            @error('marka') <p class="mt-2 text-sm text-red-600">{{ $message }}</p> @enderror
-
+                            <label class="text-sm font-semibold text-gray-700">Marka</label>
+                            <input type="text"
+                                   value="{{ $listing->marka }}"
+                                   disabled
+                                   class="mt-2 w-full rounded-xl border border-gray-200 bg-gray-100 px-4 py-2.5 text-gray-700 shadow-sm" />
+                            <input type="hidden" name="marka" value="{{ $listing->marka }}">
                         </div>
 
-                        <!-- Modelis -->
+                        <!-- Modelis (read-only) -->
                         <div>
-                            <label class="text-sm font-semibold text-gray-700" for="modelis">Modelis</label>
-                            <select id="modelis" name="modelis" x-model="selectedModel"
-                                    :disabled="! selectedBrand"
-                                    class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-gray-700 shadow-sm
-                                           focus:border-[#2B7A78] focus:outline-none focus:ring-2 focus:ring-[#2B7A78]/30
-                                           disabled:cursor-not-allowed disabled:bg-gray-100"
-                                    required>
-                                <option value="">Izvēlies modeli</option>
-                                <template x-for="model in availableModels" :key="model">
-                                    <option :value="model" x-text="model"></option>
-                                </template>
-                            </select>
-                            @error('modelis') <p class="mt-2 text-sm text-red-600">{{ $message }}</p> @enderror
-
+                            <label class="text-sm font-semibold text-gray-700">Modelis</label>
+                            <input type="text"
+                                   value="{{ $listing->modelis }}"
+                                   disabled
+                                   class="mt-2 w-full rounded-xl border border-gray-200 bg-gray-100 px-4 py-2.5 text-gray-700 shadow-sm" />
+                            <input type="hidden" name="modelis" value="{{ $listing->modelis }}">
                         </div>
 
                         <!-- Gads -->
@@ -107,7 +88,6 @@
                                 <option value="Elektriska" @selected(old('degviela', $listing->degviela) === 'Elektriska')>Elektriska</option>
                                 <option value="Hibrīds" @selected(old('degviela', $listing->degviela) === 'Hibrīds')>Hibrīds</option>
                             </select>
-                            @error('degviela') <p class="mt-2 text-sm text-red-600">{{ $message }}</p> @enderror
                         </div>
 
                         <!-- Pārnesumkārba -->
@@ -119,50 +99,39 @@
                                 <option value="Manuālā" @selected(old('parnesumkarba', $listing->parnesumkarba) === 'Manuālā')>Manuālā</option>
                                 <option value="Automātiskā" @selected(old('parnesumkarba', $listing->parnesumkarba) === 'Automātiskā')>Automātiskā</option>
                             </select>
-                            @error('parnesumkarba') <p class="mt-2 text-sm text-red-600">{{ $message }}</p> @enderror
                         </div>
                     </div>
 
-                    <!-- Apraksts + Statuss + Kontaktinfo -->
-                    <div class="grid gap-6 md:grid-cols-2">
-                        <div class="md:col-span-2">
-                            <label for="apraksts" class="text-sm font-semibold text-gray-700">Apraksts</label>
-                            <textarea id="apraksts" name="apraksts" rows="4"
-                                      class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-gray-700 shadow-sm
-                                             focus:border-[#2B7A78] focus:outline-none focus:ring-2 focus:ring-[#2B7A78]/30">{{ old('apraksts', $listing->apraksts) }}</textarea>
-                            @error('apraksts') <p class="mt-2 text-sm text-red-600">{{ $message }}</p> @enderror
-                        </div>
+                    <!-- Apraksts -->
+                    <div>
+                        <label for="apraksts" class="text-sm font-semibold text-gray-700">Apraksts</label>
+                        <textarea id="apraksts" name="apraksts" rows="4"
+                                  class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-gray-700 shadow-sm
+                                         focus:border-[#2B7A78] focus:outline-none focus:ring-2 focus:ring-[#2B7A78]/30">{{ old('apraksts', $listing->apraksts) }}</textarea>
+                    </div>
 
-                        <div>
-                            <label for="status" class="text-sm font-semibold text-gray-700">Statuss</label>
-                            <select id="status" name="status"
-                                    class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-gray-700 shadow-sm
-                                           focus:border-[#2B7A78] focus:outline-none focus:ring-2 focus:ring-[#2B7A78]/30" required>
-                                <option value="{{ Listing::STATUS_AVAILABLE }}" @selected(old('status', $listing->status) === Listing::STATUS_AVAILABLE)>Pieejams</option>
-                                <option value="{{ Listing::STATUS_RESERVED }}" @selected(old('status', $listing->status) === Listing::STATUS_RESERVED)>Rezervēts</option>
-                                <option value="{{ Listing::STATUS_SOLD }}" @selected(old('status', $listing->status) === Listing::STATUS_SOLD)>Pārdots</option>
-                            </select>
-                            @error('status') <p class="mt-2 text-sm text-red-600">{{ $message }}</p> @enderror
-                        </div>
+                    <!-- Statuss -->
+                    <div>
+                        <label for="status" class="text-sm font-semibold text-gray-700">Statuss</label>
+                        <select id="status" name="status"
+                                class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-gray-700 shadow-sm
+                                       focus:border-[#2B7A78] focus:outline-none focus:ring-2 focus:ring-[#2B7A78]/30" required>
+                            <option value="{{ Listing::STATUS_AVAILABLE }}" @selected(old('status', $listing->status) === Listing::STATUS_AVAILABLE)>Pieejams</option>
+                            <option value="{{ Listing::STATUS_RESERVED }}" @selected(old('status', $listing->status) === Listing::STATUS_RESERVED)>Rezervēts</option>
+                            <option value="{{ Listing::STATUS_SOLD }}" @selected(old('status', $listing->status) === Listing::STATUS_SOLD)>Pārdots</option>
+                        </select>
+                    </div>
 
-                        <div class="md:col-span-2">
-                            <label for="contact_info" class="text-sm font-semibold text-gray-700">Kontakta informācija</label>
-                            <textarea id="contact_info" name="contact_info" rows="3"
-                                      class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-gray-700 shadow-sm
-                                             focus:border-[#2B7A78] focus:outline-none focus:ring-2 focus:ring-[#2B7A78]/30">{{ old('contact_info', $listing->contact_info) }}</textarea>
-                            @error('contact_info') <p class="mt-2 text-sm text-red-600">{{ $message }}</p> @enderror
-
-                            <label class="mt-3 inline-flex items-center gap-2 text-sm text-gray-600">
-                                <input type="checkbox" name="show_contact" value="1"
-                                       @checked(old('show_contact', $listing->show_contact))
-                                       class="h-4 w-4 rounded border-gray-300 text-[#2B7A78] focus:ring-[#2B7A78]">
-                                Rādīt kontaktinformāciju sludinājumā
-                            </label>
-                        </div>
+                    <!-- Kontaktinformācija -->
+                    <div>
+                        <label for="contact_info" class="text-sm font-semibold text-gray-700">Kontakta informācija</label>
+                        <textarea id="contact_info" name="contact_info" rows="3"
+                                  class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-gray-700 shadow-sm
+                                         focus:border-[#2B7A78] focus:outline-none focus:ring-2 focus:ring-[#2B7A78]/30">{{ old('contact_info', $listing->contact_info) }}</textarea>
                     </div>
                 </section>
 
-                <!-- ======================== Esošās bildes ======================== -->
+                <!-- Esošās bildes -->
                 @if($listing->galleryImages->count())
                     <section class="space-y-4">
                         <h3 class="text-lg font-semibold text-gray-900">Esošās bildes</h3>
@@ -171,7 +140,7 @@
                         <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
                             @foreach($listing->galleryImages as $image)
                                 <div class="relative overflow-hidden rounded-2xl bg-gray-100 shadow-sm">
-                                    <img src="{{ route('listing-images.show', $image) }}"
+                                    <img src="{{ asset('storage/'.$image->filename) }}"
                                          alt="Esoša auto bilde"
                                          class="h-32 w-full object-cover">
                                     <label class="absolute bottom-2 left-2 inline-flex items-center gap-1 rounded bg-black/70 px-2 py-1 text-xs text-white">
@@ -184,47 +153,13 @@
                     </section>
                 @endif
 
-                <!-- ======================== Jaunas bildes ======================== -->
-                <section class="space-y-4"
-                         @dragover.prevent="dragover = true"
-                         @dragleave.prevent="dragover = false"
-                         @drop.prevent="handleDrop($event)">
+                <!-- Jaunas bildes -->
+                <section class="space-y-4">
                     <h3 class="text-lg font-semibold text-gray-900">Pievieno jaunas bildes</h3>
-
-                    <div :class="{'border-[#2B7A78]/50 bg-[#2B7A78]/15': dragover}"
-                         class="flex min-h-[160px] flex-col items-center justify-center gap-4 rounded-2xl border-2 border-dashed border-[#2B7A78]/30 bg-white/70 p-8 text-center transition">
-                        <template x-if="files.length === 0">
-                            <div class="space-y-2">
-                                <span class="inline-flex items-center justify-center rounded-full bg-[#2B7A78]/15 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-[#2B7A78]">Velc &amp; nomet</span>
-                                <p class="text-sm text-gray-500">Atbalstīti formāti: JPG, PNG, WEBP. Maks. izmērs 2MB katrai bildei.</p>
-                            </div>
-                        </template>
-
-                        <template x-if="files.length > 0">
-                            <div class="grid w-full grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
-                                <template x-for="(file, index) in files" :key="index">
-                                    <div class="group relative overflow-hidden rounded-2xl bg-gray-100 shadow-sm">
-                                        <img :src="file.url"
-                                             class="h-28 w-full object-cover transition duration-200 group-hover:scale-105"
-                                             alt="Augšupielādētā bilde">
-                                        <button type="button" @click="remove(index)"
-                                                class="absolute right-2 top-2 inline-flex h-7 w-7 items-center justify-center
-                                                       rounded-full bg-black/60 text-xs font-semibold text-white">×</button>
-                                    </div>
-                                </template>
-                            </div>
-                        </template>
-
-                        <input type="file" name="images[]" multiple class="hidden" x-ref="fileInput"
-                               @change="handleFiles($event)" accept="image/*">
-                        <button type="button" @click="$refs.fileInput.click()" class="btn btn-light">Izvēlies bildes</button>
-                    </div>
-
-                    @error('images') <p class="text-sm text-red-600">{{ $message }}</p> @enderror
-                    @error('images.*') <p class="text-sm text-red-600">{{ $message }}</p> @enderror
+                    <input type="file" name="images[]" multiple accept="image/*" class="block w-full text-sm text-gray-600">
                 </section>
 
-                <!-- ======================== Submit ======================== -->
+                <!-- Submit -->
                 <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <p class="text-sm text-gray-500">Saglabājot izmaiņas, atzīmētās bildes tiks dzēstas, bet jaunās – pievienotas.</p>
                     <button type="submit" class="btn btn-primary text-base">Atjaunināt sludinājumu</button>
@@ -233,5 +168,16 @@
         </div>
     </div>
 
-    @include('listings.partials.car-scripts')
+    <!-- Alpine logika (šeit vairs netiek izmantota) -->
+    <script>
+    function listingForm(carData, initialBrand, initialModel) {
+        return {
+            carData,
+            selectedBrand: initialBrand || '',
+            selectedModel: initialModel || '',
+            init() {},
+            updateModels() {}
+        }
+    }
+    </script>
 </x-app-layout>
