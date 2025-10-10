@@ -156,9 +156,7 @@ class ListingController extends Controller
 
         $listing = Listing::create($validated);
 
-        if ($request->hasFile('images')) {
-            $this->storeListingImages($listing, $request->file('images'));
-        }
+        $this->storeListingImages($listing, $request->file('images'));
 
         return redirect()->route('listings.show',$listing->id)
             ->with('success','Sludinājums veiksmīgi pievienots!');
@@ -226,9 +224,7 @@ class ListingController extends Controller
         }
 
         // Pievienot jaunas bildes
-        if ($request->hasFile('images')) {
-            $this->storeListingImages($listing, $request->file('images'));
-        }
+        $this->storeListingImages($listing, $request->file('images'));
 
         return redirect()->route('listings.show',$listing->id)
             ->with('success','Sludinājums veiksmīgi atjaunināts!');
