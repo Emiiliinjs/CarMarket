@@ -59,9 +59,7 @@ class AdminBiddingController extends Controller
 
         $listing = Listing::create($validated);
 
-        if ($request->hasFile('images')) {
-            $this->storeListingImages($listing, $request->file('images'));
-        }
+        $this->storeListingImages($listing, $request->file('images'));
 
         return redirect()
             ->route('admin.bidding.index')

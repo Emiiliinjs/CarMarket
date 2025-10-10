@@ -10,8 +10,16 @@ use Illuminate\Validation\ValidationException;
 
 trait HandlesListingImages
 {
-    protected function storeListingImages(Listing $listing, array $images): void
+    protected function storeListingImages(Listing $listing, iterable|UploadedFile|null $images): void
     {
+        if ($images === null) {
+            return;
+        }
+
+        if ($images instanceof UploadedFile) {
+            $images = [$images];
+        }
+
         foreach ($images as $image) {
             if (! $image instanceof UploadedFile || ! $image->isValid()) {
                 continue;
