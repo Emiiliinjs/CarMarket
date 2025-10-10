@@ -20,9 +20,9 @@
                 enctype="multipart/form-data"
                 class="space-y-10"
                 x-data="listingForm(
-                    @json($carModels),
-                    @js(old('marka')),
-                    @js(old('modelis'))
+                    JSON.parse(document.getElementById('car-models-data').textContent),
+                    '{{ old('marka') }}',
+                    '{{ old('modelis') }}'
                 )"
                 x-init="init()"
             >
@@ -38,7 +38,7 @@
                                 id="marka"
                                 name="marka"
                                 x-model="selectedBrand"
-                                       @change="updateModels()"
+                                @change="updateModels()"
                                 class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-gray-700 shadow-sm
                                        focus:border-[#2B7A78] focus:outline-none focus:ring-2 focus:ring-[#2B7A78]/30"
                                 required
@@ -51,7 +51,6 @@
                             @error('marka')
                                 <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                             @enderror
-
                         </div>
 
                         <!-- Modelis -->
@@ -75,7 +74,6 @@
                             @error('modelis')
                                 <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                             @enderror
-
                         </div>
 
                         <!-- Gads -->
@@ -233,5 +231,34 @@
         </div>
     </div>
 
-    @include('listings.partials.car-scripts')
+    {{-- JSON car data priekš Alpine --}}
+    <script id="car-models-data" type="application/json">
+        {!! json_encode($carModels, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) !!}
+    </script>
+
+    {{-- Alpine helper funkcija --}}
+    <script>
+        function listingForm(carData, initialBrand = '', initialModel = '') {
+            return {
+                carData,
+                availableBrands: Object.keys(carData),
+                availableModels: [],
+                selectedBrand: initialBrand || '',
+                selectedModel: initialModel || '',
+
+                init() {
+                    if (this.selectedBrand) {
+                        this.updateModels();
+                    }
+                },
+
+                updateModels() {
+                    this.availableModels = this.carData[this.selectedBrand] || [];
+                    if (!this.availableModels.includes(this.selectedModel)) {
+                        this.selectedModel = '';
+                    }
+                }
+            }
+        }
+    </script>
 </x-app-layout>

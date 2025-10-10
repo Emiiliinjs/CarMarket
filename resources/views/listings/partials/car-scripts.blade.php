@@ -1,15 +1,29 @@
-@php
-    $carData = $carModels ?? [];
-
-    if (is_object($carData) && method_exists($carData, 'all')) {
-        $carData = $carData->all();
-    }
-
-    if (! is_array($carData)) {
-        $carData = [];
-    }
-@endphp
-
+{{-- Ieliekam auto marku un modeļu JSON no PHP --}}
 <script id="car-models-data" type="application/json">
-    @json($carData, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
+    {!! json_encode($carModels, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) !!}
+</script>
+
+<script>
+    function listingForm(carData, initialBrand = '', initialModel = '') {
+        return {
+            carData,
+            availableBrands: Object.keys(carData),
+            availableModels: [],
+            selectedBrand: initialBrand || '',
+            selectedModel: initialModel || '',
+
+            init() {
+                if (this.selectedBrand) {
+                    this.updateModels();
+                }
+            },
+
+            updateModels() {
+                this.availableModels = this.carData[this.selectedBrand] || [];
+                if (!this.availableModels.includes(this.selectedModel)) {
+                    this.selectedModel = '';
+                }
+            }
+        }
+    }
 </script>

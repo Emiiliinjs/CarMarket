@@ -42,9 +42,6 @@
                     <x-nav-link :href="route('admin.index')" :active="request()->routeIs('admin.index')">
                         {{ __('Admin panelis') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('admin.bidding.index')" :active="request()->routeIs('admin.bidding.*')">
-                        {{ __('Izsoles auto') }}
-                    </x-nav-link>
                 @endif
             </div>
         </div>

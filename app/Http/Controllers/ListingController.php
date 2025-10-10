@@ -13,6 +13,7 @@ use Illuminate\View\View;
 class ListingController extends Controller
 {
     use HandlesListingImages;
+
     /**
      * Rāda visus sludinājumus ar filtriem un kārtošanu
      */
@@ -90,7 +91,7 @@ class ListingController extends Controller
     }
 
     /**
-     * Rāda "dzīvās izsoles" skatu
+     * Rāda "dzīvās izsoles" skatu (tikai adminam)
      */
     public function liveBid(Listing $listing): View
     {
@@ -304,5 +305,4 @@ class ListingController extends Controller
             default      => $query->latest(),
         };
     }
-
 }
