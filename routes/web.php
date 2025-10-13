@@ -77,7 +77,7 @@ Route::get('/dashboard', function () {
     ];
 
     return view('dashboard', $stats);
-})->middleware(['auth', 'verified'])->name('dashboard');
+})->middleware(['auth', 'verified', 'admin'])->name('dashboard');
 
 // Profila CRUD (Laravel Breeze default)
 Route::middleware(['auth', 'active-user'])->group(function () {
