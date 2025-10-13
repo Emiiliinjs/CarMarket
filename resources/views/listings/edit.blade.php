@@ -135,11 +135,18 @@
                 @if($listing->galleryImages->count())
                     <section
                         class="space-y-4"
-                        x-data="existingImageManager(@json($listing->galleryImages->map(fn ($image) => [
-                            'id' => $image->id,
-                            'url' => asset('storage/'.$image->filename),
-                            'name' => basename($image->filename),
-                        ])))"
+                        x-data="existingImageManager(@json(
+                            $listing->galleryImages
+                                ->map(function ($image) {
+                                    return [
+                                        'id' => $image->id,
+                                        'url' => asset('storage/'.$image->filename),
+                                        'name' => basename($image->filename),
+                                    ];
+                                })
+                                ->values()
+                                ->all()
+                        ))"
                     >
                         <h3 class="text-lg font-semibold text-gray-900">Esošās bildes</h3>
                         <p class="text-sm text-gray-500">Atzīmē tās bildes, kuras gribi dzēst, un pārvelc vai izmanto bultiņas, lai mainītu secību.</p>
