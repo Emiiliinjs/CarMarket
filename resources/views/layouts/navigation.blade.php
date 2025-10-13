@@ -1,5 +1,5 @@
 <nav
-    x-data="{ open: false }"
+    x-data="mainNavigation({{ $adminNotificationCount ?? 0 }})"
     class="sticky top-0 z-40 border-b border-slate-200/70 bg-white/80 backdrop-blur-sm transition dark:border-slate-800/80 dark:bg-slate-950/70"
 >
     <!-- Primary Navigation Menu -->
@@ -44,7 +44,13 @@
                 {{-- Admin panelis --}}
                 @if(auth()->user()?->is_admin)
                     <x-nav-link :href="route('admin.index')" :active="request()->routeIs('admin.index')">
-                        {{ __('Admin panelis') }}
+                        <span>{{ __('Admin panelis') }}</span>
+                        <span
+                            x-cloak
+                            x-show="adminCount > 0"
+                            x-text="adminCount"
+                            class="inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-rose-500 px-1 text-[0.65rem] font-semibold leading-none text-white"
+                        >{{ $adminNotificationCount ?? 0 }}</span>
                     </x-nav-link>
                 @endif
             </div>
@@ -160,7 +166,13 @@
             {{-- Admin sadaļa --}}
             @if(auth()->user()?->is_admin)
                 <x-responsive-nav-link :href="route('admin.index')" :active="request()->routeIs('admin.index')">
-                    {{ __('Admin panelis') }}
+                    <span>{{ __('Admin panelis') }}</span>
+                    <span
+                        x-cloak
+                        x-show="adminCount > 0"
+                        x-text="adminCount"
+                        class="ml-2 inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-rose-500 px-1 text-[0.65rem] font-semibold leading-none text-white"
+                    >{{ $adminNotificationCount ?? 0 }}</span>
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('admin.bidding.index')" :active="request()->routeIs('admin.bidding.*')">
                     {{ __('Izsoles auto') }}

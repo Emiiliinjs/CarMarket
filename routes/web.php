@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminBiddingController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AdminNotificationController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\ListingBidController;
 use App\Http\Controllers\ListingController;
@@ -55,6 +56,7 @@ Route::middleware(['auth', 'active-user', 'admin'])->prefix('admin')->name('admi
     Route::delete('/listings/{listing}', [AdminController::class, 'destroyListing'])->name('listings.destroy');
     Route::post('/users/{user}/toggle-block', [AdminController::class, 'toggleUserBlock'])->name('users.toggle-block');
     Route::post('/reports/{report}/resolve', [AdminController::class, 'resolveReport'])->name('reports.resolve');
+    Route::post('/notifications/read', [AdminNotificationController::class, 'markAsRead'])->name('notifications.read');
 
     Route::get('/bidding', [AdminBiddingController::class, 'index'])->name('bidding.index');
     Route::get('/bidding/create', [AdminBiddingController::class, 'create'])->name('bidding.create');
