@@ -133,30 +133,118 @@
 
                 <!-- Esošās bildes -->
                 @if($listing->galleryImages->count())
-                    <section class="space-y-4">
+                    <section
+                        class="space-y-4"
+                        x-data="existingImageManager(@json($listing->galleryImages->map(fn ($image) => [
+                            'id' => $image->id,
+                            'url' => asset('storage/'.$image->filename),
+                            'name' => basename($image->filename),
+                        ])))"
+                    >
                         <h3 class="text-lg font-semibold text-gray-900">Esošās bildes</h3>
-                        <p class="text-sm text-gray-500">Atzīmē tās bildes, kuras gribi dzēst.</p>
+                        <p class="text-sm text-gray-500">Atzīmē tās bildes, kuras gribi dzēst, un pārvelc vai izmanto bultiņas, lai mainītu secību.</p>
 
                         <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
-                            @foreach($listing->galleryImages as $image)
-                                <div class="relative overflow-hidden rounded-2xl bg-gray-100 shadow-sm">
-                                    <img src="{{ asset('storage/'.$image->filename) }}"
+                            <template x-for="(image, index) in images" :key="image.id">
+                                <div
+                                    class="group relative overflow-hidden rounded-2xl bg-gray-100 shadow-sm"
+                                    draggable="true"
+                                    @dragstart="startDrag(index)"
+                                    @dragover.prevent
+                                    @drop.prevent="handleReorderDrop(index)"
+                                    @dragend="endDrag()"
+                                >
+                                    <input type="hidden" name="existing_image_order[]" :value="image.id">
+                                    <img :src="image.url"
                                          alt="Esoša auto bilde"
                                          class="h-32 w-full object-cover">
+                                    <div class="pointer-events-none absolute right-2 top-2 flex gap-1 opacity-0 transition group-hover:opacity-100">
+                                        <button
+                                            type="button"
+                                            class="pointer-events-auto inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/80 text-gray-700 shadow"
+                                            @click.stop="move(index, index - 1)"
+                                            :disabled="index === 0"
+                                            title="Pārvietot augstāk"
+                                        >↑</button>
+                                        <button
+                                            type="button"
+                                            class="pointer-events-auto inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/80 text-gray-700 shadow"
+                                            @click.stop="move(index, index + 1)"
+                                            :disabled="index === images.length - 1"
+                                            title="Pārvietot zemāk"
+                                        >↓</button>
+                                    </div>
                                     <label class="absolute bottom-2 left-2 inline-flex items-center gap-1 rounded bg-black/70 px-2 py-1 text-xs text-white">
-                                        <input type="checkbox" name="remove_images[]" value="{{ $image->id }}">
+                                        <input type="checkbox" name="remove_images[]" :value="image.id">
                                         Dzēst
                                     </label>
+                                    <p class="px-2 pb-2 text-xs text-gray-600" x-text="image.name"></p>
                                 </div>
-                            @endforeach
+                            </template>
                         </div>
                     </section>
                 @endif
 
                 <!-- Jaunas bildes -->
-                <section class="space-y-4">
+                <section class="space-y-4" x-data="imageUploadManager()" x-init="registerInput($refs.input)">
                     <h3 class="text-lg font-semibold text-gray-900">Pievieno jaunas bildes</h3>
-                    <input type="file" name="images[]" multiple accept="image/*" class="block w-full text-sm text-gray-600">
+                    <div
+                        class="flex w-full cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-300 p-6 text-center text-sm text-gray-600 transition hover:bg-gray-50"
+                        :class="{ 'ring-2 ring-[#2B7A78]/50': isDragOver }"
+                        @click="$refs.input.click()"
+                        @dragover.prevent="onZoneDrag(true)"
+                        @dragleave.prevent="onZoneDrag(false)"
+                        @drop.prevent="handleZoneDrop($event)"
+                    >
+                        <span class="font-medium text-[#2B7A78]">Noklikšķini vai ievelc bildes šeit</span>
+                        <span class="mt-1 block text-xs text-gray-400">Atbalstītie formāti: JPG, PNG, WEBP</span>
+                    </div>
+                    <input
+                        x-ref="input"
+                        type="file"
+                        name="images[]"
+                        multiple
+                        accept="image/*"
+                        class="hidden"
+                        @change="setFiles($event.target.files)"
+                    >
+
+                    <template x-if="files.length">
+                        <div class="grid grid-cols-2 gap-4 sm:grid-cols-3">
+                            <template x-for="(file, index) in files" :key="file.name + index">
+                                <div
+                                    class="group relative rounded-xl shadow"
+                                    draggable="true"
+                                    @dragstart="startDrag(index)"
+                                    @dragover.prevent
+                                    @drop.prevent="handleReorderDrop(index)"
+                                    @dragend="endDrag()"
+                                >
+                                    <img :src="URL.createObjectURL(file)" class="h-32 w-full rounded-xl object-cover">
+                                    <div class="pointer-events-none absolute right-2 top-2 flex gap-1 opacity-0 transition group-hover:opacity-100">
+                                        <button
+                                            type="button"
+                                            class="pointer-events-auto inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/80 text-gray-700 shadow"
+                                            @click.stop="move(index, index - 1)"
+                                            :disabled="index === 0"
+                                            title="Pārvietot augstāk"
+                                        >↑</button>
+                                        <button
+                                            type="button"
+                                            class="pointer-events-auto inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/80 text-gray-700 shadow"
+                                            @click.stop="move(index, index + 1)"
+                                            :disabled="index === files.length - 1"
+                                            title="Pārvietot zemāk"
+                                        >↓</button>
+                                    </div>
+                                    <p class="mt-1 truncate text-xs text-gray-600" x-text="file.name"></p>
+                                </div>
+                            </template>
+                        </div>
+                    </template>
+
+                    @error('images') <p class="text-sm text-red-600">{{ $message }}</p> @enderror
+                    @error('images.*') <p class="text-sm text-red-600">{{ $message }}</p> @enderror
                 </section>
 
                 <!-- Submit -->
@@ -178,6 +266,114 @@
             init() {},
             updateModels() {}
         }
+    }
+
+    function imageUploadManager() {
+        return {
+            files: [],
+            inputEl: null,
+            dragIndex: null,
+            isDragOver: false,
+
+            registerInput(el) {
+                this.inputEl = el;
+            },
+
+            setFiles(fileList) {
+                this.files = Array.from(fileList ?? []);
+                this.syncInputFiles();
+            },
+
+            onZoneDrag(state) {
+                this.isDragOver = state;
+            },
+
+            handleZoneDrop(event) {
+                this.onZoneDrag(false);
+
+                if (event.dataTransfer?.files?.length) {
+                    this.setFiles(event.dataTransfer.files);
+                }
+            },
+
+            startDrag(index) {
+                this.dragIndex = index;
+            },
+
+            endDrag() {
+                this.dragIndex = null;
+            },
+
+            handleReorderDrop(targetIndex) {
+                if (this.dragIndex === null) {
+                    return;
+                }
+
+                this.move(this.dragIndex, targetIndex);
+                this.endDrag();
+            },
+
+            move(from, to) {
+                if (from === to || to < 0 || to >= this.files.length) {
+                    return;
+                }
+
+                const updated = [...this.files];
+                const [moved] = updated.splice(from, 1);
+                updated.splice(to, 0, moved);
+                this.files = updated;
+                this.syncInputFiles();
+            },
+
+            syncInputFiles() {
+                if (! this.inputEl) {
+                    return;
+                }
+
+                const dataTransfer = new DataTransfer();
+
+                this.files.forEach(file => {
+                    dataTransfer.items.add(file);
+                });
+
+                this.inputEl.files = dataTransfer.files;
+            },
+        };
+    }
+
+    function existingImageManager(initialImages = []) {
+        return {
+            images: initialImages,
+            dragIndex: null,
+
+            startDrag(index) {
+                this.dragIndex = index;
+            },
+
+            endDrag() {
+                this.dragIndex = null;
+            },
+
+            handleReorderDrop(targetIndex) {
+                if (this.dragIndex === null) {
+                    return;
+                }
+
+                this.move(this.dragIndex, targetIndex);
+                this.endDrag();
+            },
+
+            move(from, to) {
+                if (from === to || to < 0 || to >= this.images.length) {
+                    return;
+                }
+
+                const updated = [...this.images];
+                const [moved] = updated.splice(from, 1);
+                updated.splice(to, 0, moved);
+                this.images = updated;
+            },
+        };
     }
     </script>
 </x-app-layout>

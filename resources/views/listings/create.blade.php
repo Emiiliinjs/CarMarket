@@ -166,55 +166,78 @@
                 </section>
 
                 <!-- ======================== Jaunas bildes ======================== -->
-<!-- ======================== Jaunas bildes ======================== -->
-<section class="space-y-4" x-data="{ files: [] }">
-    <h3 class="text-lg font-semibold text-gray-900">Pievieno auto bildes</h3>
+                <section class="space-y-4" x-data="imageUploadManager()" x-init="registerInput($refs.input)">
+                    <h3 class="text-lg font-semibold text-gray-900">Pievieno auto bildes</h3>
 
-    <!-- Drag & Drop zona -->
-    <div
-        @dragover.prevent="$el.classList.add('ring-2', 'ring-[#2B7A78]/50')"
-        @dragleave.prevent="$el.classList.remove('ring-2', 'ring-[#2B7A78]/50')"
-        @drop.prevent="
-            $el.classList.remove('ring-2', 'ring-[#2B7A78]/50');
-            files = [...$event.dataTransfer.files];
-            $refs.input.files = $event.dataTransfer.files;
-        "
-        class="flex flex-col items-center justify-center w-full border-2 border-dashed border-gray-300 rounded-2xl p-8 text-center cursor-pointer hover:bg-gray-50 transition"
-        @click="$refs.input.click()"
-    >
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-gray-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
-        </svg>
-        <p class="text-sm text-gray-600">Ievelc bildes šeit vai <span class="text-[#2B7A78] font-medium underline">izvēlies no ierīces</span></p>
-        <p class="mt-1 text-xs text-gray-400">Atbalstītie formāti: JPG, PNG, WEBP</p>
-    </div>
+                    <!-- Drag & Drop zona -->
+                    <div
+                        class="flex w-full cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-300 p-8 text-center transition hover:bg-gray-50"
+                        :class="{ 'ring-2 ring-[#2B7A78]/50': isDragOver }"
+                        @click="$refs.input.click()"
+                        @dragover.prevent="onZoneDrag(true)"
+                        @dragleave.prevent="onZoneDrag(false)"
+                        @drop.prevent="handleZoneDrop($event)"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" class="mb-2 h-10 w-10 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+                        </svg>
+                        <p class="text-sm text-gray-600">Ievelc bildes šeit vai <span class="font-medium text-[#2B7A78] underline">izvēlies no ierīces</span></p>
+                        <p class="mt-1 text-xs text-gray-400">Atbalstītie formāti: JPG, PNG, WEBP</p>
+                    </div>
 
-    <!-- Slēptais input -->
-    <input
-        x-ref="input"
-        type="file"
-        name="images[]"
-        multiple
-        accept="image/*"
-        class="hidden"
-        @change="files = [...$event.target.files]"
-    >
+                    <!-- Slēptais input -->
+                    <input
+                        x-ref="input"
+                        type="file"
+                        name="images[]"
+                        multiple
+                        accept="image/*"
+                        class="hidden"
+                        @change="setFiles($event.target.files)"
+                    >
 
-    <!-- Priekšskatījums -->
-    <template x-if="files.length">
-        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mt-4">
-            <template x-for="file in files" :key="file.name">
-                <div class="relative">
-                    <img :src="URL.createObjectURL(file)" class="w-full h-32 object-cover rounded-xl shadow">
-                    <p class="text-xs mt-1 truncate text-gray-600" x-text="file.name"></p>
-                </div>
-            </template>
-        </div>
-    </template>
+                    <!-- Priekšskatījums -->
+                    <template x-if="files.length">
+                        <div class="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
+                            <template x-for="(file, index) in files" :key="file.name + index">
+                                <div
+                                    class="group relative rounded-xl shadow"
+                                    draggable="true"
+                                    @dragstart="startDrag(index)"
+                                    @dragover.prevent
+                                    @drop.prevent="handleReorderDrop(index)"
+                                    @dragend="endDrag()"
+                                >
+                                    <img :src="URL.createObjectURL(file)" class="h-32 w-full rounded-xl object-cover">
+                                    <div class="pointer-events-none absolute right-2 top-2 flex gap-1 opacity-0 transition group-hover:opacity-100">
+                                        <button
+                                            type="button"
+                                            class="pointer-events-auto inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/80 text-gray-700 shadow"
+                                            @click.stop="move(index, index - 1)"
+                                            :disabled="index === 0"
+                                            title="Pārvietot augstāk"
+                                        >
+                                            ↑
+                                        </button>
+                                        <button
+                                            type="button"
+                                            class="pointer-events-auto inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/80 text-gray-700 shadow"
+                                            @click.stop="move(index, index + 1)"
+                                            :disabled="index === files.length - 1"
+                                            title="Pārvietot zemāk"
+                                        >
+                                            ↓
+                                        </button>
+                                    </div>
+                                    <p class="mt-1 truncate text-xs text-gray-600" x-text="file.name"></p>
+                                </div>
+                            </template>
+                        </div>
+                    </template>
 
-    @error('images') <p class="text-sm text-red-600">{{ $message }}</p> @enderror
-    @error('images.*') <p class="text-sm text-red-600">{{ $message }}</p> @enderror
-</section>
+                    @error('images') <p class="text-sm text-red-600">{{ $message }}</p> @enderror
+                    @error('images.*') <p class="text-sm text-red-600">{{ $message }}</p> @enderror
+                </section>
 
 
                 <!-- ======================== Submit ======================== -->
@@ -252,6 +275,79 @@
                     }
                 }
             }
+        }
+
+        function imageUploadManager() {
+            return {
+                files: [],
+                inputEl: null,
+                dragIndex: null,
+                isDragOver: false,
+
+                registerInput(el) {
+                    this.inputEl = el;
+                },
+
+                setFiles(fileList) {
+                    this.files = Array.from(fileList ?? []);
+                    this.syncInputFiles();
+                },
+
+                onZoneDrag(state) {
+                    this.isDragOver = state;
+                },
+
+                handleZoneDrop(event) {
+                    this.onZoneDrag(false);
+
+                    if (event.dataTransfer?.files?.length) {
+                        this.setFiles(event.dataTransfer.files);
+                    }
+                },
+
+                startDrag(index) {
+                    this.dragIndex = index;
+                },
+
+                endDrag() {
+                    this.dragIndex = null;
+                },
+
+                handleReorderDrop(targetIndex) {
+                    if (this.dragIndex === null) {
+                        return;
+                    }
+
+                    this.move(this.dragIndex, targetIndex);
+                    this.endDrag();
+                },
+
+                move(from, to) {
+                    if (from === to || to < 0 || to >= this.files.length) {
+                        return;
+                    }
+
+                    const updated = [...this.files];
+                    const [moved] = updated.splice(from, 1);
+                    updated.splice(to, 0, moved);
+                    this.files = updated;
+                    this.syncInputFiles();
+                },
+
+                syncInputFiles() {
+                    if (! this.inputEl) {
+                        return;
+                    }
+
+                    const dataTransfer = new DataTransfer();
+
+                    this.files.forEach(file => {
+                        dataTransfer.items.add(file);
+                    });
+
+                    this.inputEl.files = dataTransfer.files;
+                },
+            };
         }
     </script>
 </x-app-layout>

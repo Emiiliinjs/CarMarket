@@ -9,7 +9,7 @@ class ListingImage extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['listing_id', 'filename'];
+    protected $fillable = ['listing_id', 'filename', 'sort_order'];
 
     public function listing()
     {
