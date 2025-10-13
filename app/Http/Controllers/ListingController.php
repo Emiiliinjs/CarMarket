@@ -9,6 +9,7 @@ use App\Support\HandlesListingImages;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 class ListingController extends Controller
@@ -213,12 +214,17 @@ class ListingController extends Controller
             'status'       => 'required|in:'.implode(',', Listing::STATUSES),
             'contact_info' => 'nullable|string|max:1000',
             'show_contact' => 'nullable|boolean',
-            'images'       => 'nullable|array',
-            'images.*'     => 'image|max:2048',
-            'remove_images'=> 'nullable|array',
+            'images'                => 'nullable|array',
+            'images.*'              => 'image|max:2048',
+            'remove_images'         => 'nullable|array',
+            'existing_image_order'  => 'nullable|array',
+            'existing_image_order.*'=> [
+                'integer',
+                Rule::exists('listing_images', 'id')->where('listing_id', $listing->id),
+            ],
         ]);
 
-        unset($validated['images'],$validated['remove_images']);
+        unset($validated['images'],$validated['remove_images'],$validated['existing_image_order']);
         $validated['show_contact'] = $request->boolean('show_contact', false);
 
         if (!Auth::user()->is_admin) {
@@ -234,6 +240,34 @@ class ListingController extends Controller
                 if ($img) {
                     Storage::disk('public')->delete($img->filename);
                     $img->delete();
+                }
+            }
+        }
+
+        $listing->load('galleryImages');
+
+        $order = $request->input('existing_image_order', []);
+
+        if (! empty($order)) {
+            $position = 0;
+
+            foreach (array_values(array_unique($order)) as $imageId) {
+                $img = $listing->galleryImages()->find($imageId);
+
+                if (! $img) {
+                    continue;
+                }
+
+                $position++;
+                $img->update(['sort_order' => $position]);
+            }
+        } elseif ($listing->galleryImages->isNotEmpty()) {
+            $position = 0;
+
+            foreach ($listing->galleryImages as $img) {
+                $position++;
+                if ($img->sort_order !== $position) {
+                    $img->update(['sort_order' => $position]);
                 }
             }
         }

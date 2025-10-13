@@ -61,7 +61,9 @@ class Listing extends Model
      */
     public function galleryImages()
     {
-        return $this->hasMany(ListingImage::class);
+        return $this->hasMany(ListingImage::class)
+            ->orderBy('sort_order')
+            ->orderBy('id');
     }
 
     public function favoritedBy()

@@ -20,13 +20,20 @@ trait HandlesListingImages
             $images = [$images];
         }
 
+        $nextOrder = (int) $listing->galleryImages()->max('sort_order');
+
         foreach ($images as $image) {
             if (! $image instanceof UploadedFile || ! $image->isValid()) {
                 continue;
             }
 
             $path = $this->compressAndStoreImage($image);
-            $listing->galleryImages()->create(['filename' => $path]);
+            $nextOrder++;
+
+            $listing->galleryImages()->create([
+                'filename' => $path,
+                'sort_order' => $nextOrder,
+            ]);
         }
     }
 
