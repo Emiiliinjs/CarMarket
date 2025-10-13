@@ -135,6 +135,7 @@
                             <dt class="font-medium text-gray-500 dark:text-gray-400">Nobraukums</dt>
                             <dd class="font-semibold text-gray-900 dark:text-white">{{ number_format($listing->nobraukums, 0, '.', ' ') }} km</dd>
                         </div>
+                        
                     </dl>
 
                     @if($listing->apraksts)
