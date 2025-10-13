@@ -20,6 +20,45 @@
         </div>
     @endif
 
+    @if(($adminNotifications ?? collect())->isNotEmpty())
+        <section class="mb-8 space-y-3 rounded-3xl border border-[#2B7A78]/30 bg-white/90 p-6 shadow-sm backdrop-blur dark:border-[#2B7A78]/50 dark:bg-gray-900/80">
+            <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                <h3 class="text-lg font-semibold text-[#2B7A78] dark:text-[#88d9d2]">Jaunie administratora paziņojumi</h3>
+                <div class="flex gap-2">
+                    <form method="POST" action="{{ route('admin.notifications.read') }}">
+                        @csrf
+                        <input type="hidden" name="mark_all" value="1">
+                        <button type="submit" class="btn btn-secondary px-3 py-2 text-xs">Atzīmēt visus kā izlasītus</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="space-y-3">
+                @foreach($adminNotifications as $notification)
+                    <article class="rounded-2xl border border-slate-200 bg-white/90 p-4 shadow-sm transition hover:border-[#2B7A78]/40 dark:border-slate-700 dark:bg-gray-900/80">
+                        <div class="flex flex-col gap-2">
+                            <h4 class="text-base font-semibold text-slate-900 dark:text-white">{{ $notification->title }}</h4>
+                            <p class="text-sm text-slate-600 dark:text-slate-300">{{ $notification->message }}</p>
+                        </div>
+                        <div class="mt-3 flex flex-wrap items-center justify-between gap-3 text-xs text-slate-500 dark:text-slate-400">
+                            <span>{{ $notification->created_at?->diffForHumans() }}</span>
+                            <div class="flex flex-wrap items-center gap-2">
+                                @if($notification->action_url)
+                                    <a href="{{ $notification->action_url }}" class="btn btn-secondary px-3 py-1 text-xs">Atvērt</a>
+                                @endif
+                                <form method="POST" action="{{ route('admin.notifications.read') }}">
+                                    @csrf
+                                    <input type="hidden" name="ids[]" value="{{ $notification->id }}">
+                                    <button type="submit" class="btn btn-success px-3 py-1 text-xs">Atzīmēt kā izlasītu</button>
+                                </form>
+                            </div>
+                        </div>
+                    </article>
+                @endforeach
+            </div>
+        </section>
+    @endif
+
     <div class="grid gap-8 lg:grid-cols-2">
         <section class="space-y-4 rounded-3xl border border-gray-200 bg-white/80 p-6 shadow-sm dark:border-gray-700 dark:bg-gray-900/70">
             <div class="flex items-center justify-between">

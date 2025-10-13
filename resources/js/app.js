@@ -393,6 +393,57 @@ const listingsPage = (carData, initialBrand = '', initialModel = '', initialSear
     ...carSelection(carData, initialBrand, initialModel, initialSearch),
 });
 
+const mainNavigation = (initialAdminCount = 0) => ({
+    open: false,
+    adminCount: Number.isFinite(Number(initialAdminCount)) ? Number(initialAdminCount) : 0,
+    init() {
+        if (typeof this.$watch === 'function') {
+            this.$watch('$store.adminNotifications.count', (value) => {
+                this.adminCount = Number.isFinite(Number(value)) ? Number(value) : 0;
+            });
+        }
+    },
+});
+
+const adminNotificationToasts = (initialItems = []) => ({
+    items: Array.isArray(initialItems) ? initialItems : [],
+    visible: [],
+    bootstrap(totalCount = null) {
+        if (window.Alpine?.store('adminNotifications')) {
+            window.Alpine.store('adminNotifications').initialize(this.items, totalCount);
+        }
+
+        this.initializeToasts();
+    },
+    initializeToasts() {
+        this.visible = this.items.map((item, index) => ({
+            ...item,
+            timeout: 8000 + index * 1000,
+        }));
+
+        this.visible.forEach((item, index) => {
+            window.setTimeout(() => {
+                this.dismiss(item.id);
+            }, Math.min(16000, 8000 + index * 1000));
+        });
+    },
+    dismiss(id) {
+        this.visible = this.visible.filter((item) => item.id !== id);
+
+        if (window.Alpine?.store('adminNotifications')) {
+            window.Alpine.store('adminNotifications').markRead([id]);
+        }
+    },
+    dismissAll() {
+        const ids = this.visible.map((item) => item.id);
+        this.visible = [];
+
+        if (ids.length && window.Alpine?.store('adminNotifications')) {
+            window.Alpine.store('adminNotifications').markRead(ids);
+        }
+    },
+});
+
 const liveBid = (config = {}) => {
     const locale = typeof config.locale === 'string' && config.locale.trim() !== ''
         ? config.locale
@@ -579,6 +630,8 @@ Object.assign(window, {
     listingForm,
     listingsPage,
     liveBid,
+    mainNavigation,
+    adminNotificationToasts,
 });
 
 const storedTheme = localStorage.getItem('theme');
@@ -623,6 +676,61 @@ document.addEventListener('alpine:init', () => {
     });
 
     Alpine.store('theme').init();
+
+    Alpine.store('adminNotifications', {
+        items: [],
+        count: 0,
+        initialize(initialItems = [], totalCount = null) {
+            this.items = Array.isArray(initialItems) ? initialItems : [];
+
+            if (totalCount === null || Number.isNaN(Number(totalCount))) {
+                this.count = this.items.length;
+            } else {
+                this.count = Number(totalCount) >= 0 ? Number(totalCount) : 0;
+            }
+        },
+        setCount(value) {
+            this.count = Number.isFinite(Number(value)) ? Number(value) : 0;
+        },
+        async markRead(ids = []) {
+            const payload = Array.isArray(ids)
+                ? ids.filter((id) => Number.isInteger(Number(id)))
+                : [];
+
+            if (payload.length === 0) {
+                return;
+            }
+
+            try {
+                const response = await window.axios.post('/admin/notifications/read', { ids: payload });
+
+                this.items = this.items.filter((item) => !payload.includes(item.id));
+
+                if (typeof response?.data?.remaining === 'number') {
+                    this.count = response.data.remaining;
+                } else {
+                    this.count = Math.max(0, this.count - payload.length);
+                }
+            } catch (error) {
+                console.error('Neizdevās atzīmēt paziņojumu kā izlasītu:', error);
+            }
+        },
+        async markAll() {
+            try {
+                const response = await window.axios.post('/admin/notifications/read', { mark_all: true });
+
+                this.items = [];
+
+                if (typeof response?.data?.remaining === 'number') {
+                    this.count = response.data.remaining;
+                } else {
+                    this.count = 0;
+                }
+            } catch (error) {
+                console.error('Neizdevās atzīmēt paziņojumus kā izlasītus:', error);
+            }
+        },
+    });
 });
 
 window.Alpine = Alpine;

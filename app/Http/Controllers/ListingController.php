@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AdminNotification;
 use App\Models\Listing;
 use App\Support\CarModelRepository;
 use App\Support\HandlesListingImages;
@@ -157,6 +158,20 @@ class ListingController extends Controller
         $listing = Listing::create($validated);
 
         $this->storeListingImages($listing, $request->file('images'));
+
+        if (! $listing->is_approved) {
+            AdminNotification::create([
+                'type' => 'listing_pending',
+                'title' => 'Jauns sludinājums gaida apstiprinājumu',
+                'message' => sprintf(
+                    '%s %s (%s) tika iesniegts un gaida administratora apstiprinājumu.',
+                    $listing->marka,
+                    $listing->modelis,
+                    $listing->gads
+                ),
+                'action_url' => route('admin.index', ['sekcija' => 'pending-listings']) . '#pending-listings',
+            ]);
+        }
 
         return redirect()->route('listings.show',$listing->id)
             ->with('success','Sludinājums veiksmīgi pievienots!');
