@@ -16,7 +16,7 @@ class EnsureUserIsAdmin
     public function handle(Request $request, Closure $next): Response
     {
         if (! $request->user()?->is_admin) {
-            abort(403);
+            return redirect()->route('listings.index');
         }
 
         return $next($request);
