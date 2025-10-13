@@ -186,8 +186,7 @@ function imageGalleryManager(existing = []) {
             this.images[targetIndex] = temp;
             this.dragIndex = null;
 
-            // ✅ saglabā jauno secību slēptajos inputos
-            this.syncOrderInputs();
+            this.syncAllInputs();
         },
         addFiles(fileList) {
             Array.from(fileList).forEach(file => {
@@ -199,20 +198,25 @@ function imageGalleryManager(existing = []) {
                     file
                 });
             });
-            this.syncInput();
+            this.syncAllInputs();
         },
-        syncInput() {
-            const input = document.querySelector('input[name="images[]"]');
+        syncAllInputs() {
+            // ===== Sinhronizē failu inputu jaunām bildēm =====
+            const fileInput = document.querySelector('input[name="images[]"]');
             const dt = new DataTransfer();
             this.images.forEach(img => {
                 if (!img.existing && img.file) dt.items.add(img.file);
             });
-            input.files = dt.files;
-        },
-        // ✅ jauns: ģenerē hidden inputus esošo bilžu secībai
-        syncOrderInputs() {
-            document.querySelectorAll('input[name="existing_image_order[]"]').forEach(e => e.remove());
+            fileInput.files = dt.files;
+
+            // ===== Notīra iepriekšējos hidden inputus =====
+            document
+                .querySelectorAll('input[name="existing_image_order[]"], input[name="new_image_order[]"]')
+                .forEach(e => e.remove());
+
             const form = document.querySelector('form');
+
+            // ===== Esošo bilžu secība =====
             this.images.forEach(img => {
                 if (img.existing && img.id) {
                     const input = document.createElement('input');
@@ -222,9 +226,22 @@ function imageGalleryManager(existing = []) {
                     form.appendChild(input);
                 }
             });
+
+            // ===== Jauno bilžu secība =====
+            this.images.forEach((img, index) => {
+                if (!img.existing) {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'new_image_order[]';
+                    input.value = index;
+                    form.appendChild(input);
+                }
+            });
         }
     };
 }
 </script>
+
+
 
 </x-app-layout>
