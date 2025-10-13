@@ -6,23 +6,21 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::table('listings', function (Blueprint $table) {
-            $table->dropColumn('tilpums');
+            if (Schema::hasColumn('listings', 'tilpums')) {
+                $table->dropColumn('tilpums');
+            }
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::table('listings', function (Blueprint $table) {
-            $table->decimal('tilpums', 4, 1)->nullable();
+            if (!Schema::hasColumn('listings', 'tilpums')) {
+                $table->string('tilpums')->nullable();
+            }
         });
     }
 };
