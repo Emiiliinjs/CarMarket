@@ -21,8 +21,13 @@ return new class extends Migration
             $table->decimal('cena', 10, 2);
             $table->string('degviela');
             $table->string('parnesumkarba');
+            $table->decimal('motora_tilpums', 4, 1)->nullable();
+            $table->string('vin_numurs')->nullable();
+            $table->string('valsts_numurzime')->nullable();
+            $table->string('virsbuves_tips')->nullable(); // Sedans, Hečbeks, Kupeja utt.
+            $table->date('tehniska_apskate')->nullable(); // var būt NULL, ja nav
             $table->text('apraksts')->nullable();
-            $table->json('images')->nullable(); // šeit glabājam bildes kā JSON masīvu
+            $table->json('images')->nullable();
             $table->timestamps();
         });
     }

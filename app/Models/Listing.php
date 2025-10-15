@@ -11,8 +11,8 @@ class Listing extends Model
     use HasFactory;
 
     public const STATUS_AVAILABLE = 'available';
-    public const STATUS_RESERVED = 'reserved';
-    public const STATUS_SOLD = 'sold';
+    public const STATUS_RESERVED  = 'reserved';
+    public const STATUS_SOLD      = 'sold';
 
     public const STATUSES = [
         self::STATUS_AVAILABLE,
@@ -35,30 +35,29 @@ class Listing extends Model
         'contact_info',
         'show_contact',
         'is_admin_bidding',
+        'motora_tilpums',
+        'virsbuves_tips',
+        'vin_numurs',
+        'valsts_numurzime',
+        'tehniska_apskate',
     ];
 
-    // Automātiski ielādē galerijas bildes, ja vajadzīgs
     protected $with = ['galleryImages', 'user'];
 
     protected $casts = [
-        'is_approved' => 'boolean',
-        'show_contact' => 'boolean',
-        'is_admin_bidding' => 'boolean',
+        'is_approved'       => 'boolean',
+        'show_contact'      => 'boolean',
+        'is_admin_bidding'  => 'boolean',
+        'tehniska_apskate'  => 'date',
     ];
 
     protected $appends = ['status_label'];
 
-    /**
-     * Lietotājs, kas ievietoja sludinājumu
-     */
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    /**
-     * Sludinājuma bildes (vienam sludinājumam var būt vairākas bildes)
-     */
     public function galleryImages()
     {
         return $this->hasMany(ListingImage::class)
@@ -104,11 +103,10 @@ class Listing extends Model
             ->when($filters['status'] ?? null, fn ($q, $status) => $q->where('status', $status))
             ->when($filters['search'] ?? null, function ($q, $search) {
                 $like = "%{$search}%";
-
                 $q->where(function ($query) use ($like) {
                     $query->where('marka', 'like', $like)
-                        ->orWhere('modelis', 'like', $like)
-                        ->orWhere('apraksts', 'like', $like);
+                          ->orWhere('modelis', 'like', $like)
+                          ->orWhere('apraksts', 'like', $like);
                 });
             });
 
@@ -119,8 +117,8 @@ class Listing extends Model
     {
         return match ($this->status) {
             self::STATUS_RESERVED => 'Rezervēts',
-            self::STATUS_SOLD => 'Pārdots',
-            default => 'Pieejams',
+            self::STATUS_SOLD     => 'Pārdots',
+            default               => 'Pieejams',
         };
     }
 

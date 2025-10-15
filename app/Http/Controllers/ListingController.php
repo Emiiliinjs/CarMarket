@@ -136,28 +136,40 @@ class ListingController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'marka'        => 'required|string|max:255',
-            'modelis'      => 'required|string|max:255',
-            'gads'         => 'required|digits:4|integer|min:1900|max:'.(date('Y')+1),
-            'nobraukums'   => 'required|integer|min:0',
-            'cena'         => 'required|numeric|min:0',
-            'degviela'     => 'required|string',
-            'parnesumkarba'=> 'required|string',
-            'apraksts'     => 'nullable|string',
-            'status'       => 'required|in:'.implode(',', Listing::STATUSES),
-            'contact_info' => 'nullable|string|max:1000',
-            'show_contact' => 'nullable|boolean',
-            'images'       => 'nullable|array',
-            'images.*'     => 'image|max:2048',
+            'marka'         => 'required|string|max:255',
+            'modelis'       => 'required|string|max:255',
+            'gads'          => 'required|digits:4|integer|min:1900|max:'.(date('Y')+1),
+            'nobraukums'    => 'required|integer|min:0',
+            'cena'          => 'required|numeric|min:0',
+            'degviela'      => 'required|string|max:50',
+            'parnesumkarba' => 'required|string|max:50',
+
+            // jaunie lauki
+            'motora_tilpums'   => 'nullable|numeric|min:0|max:9.9',
+            'virsbuves_tips'   => 'nullable|string|max:50',
+            'vin_numurs'       => 'nullable|string|max:50',
+            'valsts_numurzime' => 'nullable|string|max:50',
+            'tehniska_apskate' => 'nullable|date',
+
+            'apraksts'      => 'nullable|string',
+            'status'        => 'required|in:'.implode(',', Listing::STATUSES),
+            'contact_info'  => 'nullable|string|max:1000',
+            'show_contact'  => 'nullable|boolean',
+
+            'images'   => 'nullable|array',
+            'images.*' => 'image|max:2048',
         ]);
 
         $validated['user_id']      = Auth::id();
         $validated['show_contact'] = $request->boolean('show_contact', false);
         $validated['is_approved']  = Auth::user()?->is_admin ?? false;
+
+        // šos atstāj ārpus mass-assign if validated satur images atslēgu
         unset($validated['images']);
 
         $listing = Listing::create($validated);
 
+        // bildes
         $this->storeListingImages($listing, $request->file('images'));
 
         if (! $listing->is_approved) {
@@ -203,30 +215,42 @@ class ListingController extends Controller
         }
 
         $validated = $request->validate([
-            'marka'        => 'required|string|max:255',
-            'modelis'      => 'required|string|max:255',
-            'gads'         => 'required|digits:4|integer|min:1900|max:'.(date('Y')+1),
-            'nobraukums'   => 'required|integer|min:0',
-            'cena'         => 'required|numeric|min:0',
-            'degviela'     => 'required|string',
-            'parnesumkarba'=> 'required|string',
-            'apraksts'     => 'nullable|string',
-            'status'       => 'required|in:'.implode(',', Listing::STATUSES),
-            'contact_info' => 'nullable|string|max:1000',
-            'show_contact' => 'nullable|boolean',
-            'images'                => 'nullable|array',
-            'images.*'              => 'image|max:2048',
-            'remove_images'         => 'nullable|array',
-            'existing_image_order'  => 'nullable|array',
-            'existing_image_order.*'=> [
+            'marka'         => 'required|string|max:255',
+            'modelis'       => 'required|string|max:255',
+            'gads'          => 'required|digits:4|integer|min:1900|max:'.(date('Y')+1),
+            'nobraukums'    => 'required|integer|min:0',
+            'cena'          => 'required|numeric|min:0',
+            'degviela'      => 'required|string|max:50',
+            'parnesumkarba' => 'required|string|max:50',
+
+            // jaunie lauki
+            'motora_tilpums'   => 'nullable|numeric|min:0|max:9.9',
+            'virsbuves_tips'   => 'nullable|string|max:50',
+            'vin_numurs'       => 'nullable|string|max:50',
+            'valsts_numurzime' => 'nullable|string|max:50',
+            'tehniska_apskate' => 'nullable|date',
+
+            'apraksts'      => 'nullable|string',
+            'status'        => 'required|in:'.implode(',', Listing::STATUSES),
+            'contact_info'  => 'nullable|string|max:1000',
+            'show_contact'  => 'nullable|boolean',
+
+            'images'                 => 'nullable|array',
+            'images.*'               => 'image|max:2048',
+            'remove_images'          => 'nullable|array',
+            'existing_image_order'   => 'nullable|array',
+            'existing_image_order.*' => [
                 'integer',
                 Rule::exists('listing_images', 'id')->where('listing_id', $listing->id),
             ],
         ]);
 
+        // neatjauninām šīs atslēgas tieši uz modeli
         unset($validated['images'],$validated['remove_images'],$validated['existing_image_order']);
+
         $validated['show_contact'] = $request->boolean('show_contact', false);
 
+        // parasts lietotājs ar update -> atkārtoti vajag apstiprinājumu
         if (!Auth::user()->is_admin) {
             $validated['is_approved'] = false;
         }
@@ -246,24 +270,20 @@ class ListingController extends Controller
 
         $listing->load('galleryImages');
 
+        // Kārtība esošajām bildēm
         $order = $request->input('existing_image_order', []);
-
         if (! empty($order)) {
             $position = 0;
-
             foreach (array_values(array_unique($order)) as $imageId) {
                 $img = $listing->galleryImages()->find($imageId);
-
                 if (! $img) {
                     continue;
                 }
-
                 $position++;
                 $img->update(['sort_order' => $position]);
             }
         } elseif ($listing->galleryImages->isNotEmpty()) {
             $position = 0;
-
             foreach ($listing->galleryImages as $img) {
                 $position++;
                 if ($img->sort_order !== $position) {
