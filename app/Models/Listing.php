@@ -53,6 +53,17 @@ class Listing extends Model
 
     protected $appends = ['status_label'];
 
+    protected static function booted(): void
+    {
+        static::deleting(function (Listing $listing): void {
+            $images = $listing->relationLoaded('galleryImages')
+                ? $listing->galleryImages
+                : $listing->galleryImages()->get();
+
+            $images->each->delete();
+        });
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);

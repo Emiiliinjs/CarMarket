@@ -54,7 +54,6 @@ class ListingImageController extends Controller
             abort(403, 'Nav atļauts dzēst šo bildi.');
         }
 
-        Storage::disk('public')->delete($image->filename);
         $image->delete();
 
         return redirect()
