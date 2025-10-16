@@ -7,7 +7,6 @@ use App\Support\HandlesListingImages;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class AdminBiddingController extends Controller
@@ -70,11 +69,6 @@ class AdminBiddingController extends Controller
     {
         if (! $listing->is_admin_bidding) {
             abort(404);
-        }
-
-        foreach ($listing->galleryImages as $image) {
-            Storage::disk('public')->delete($image->filename);
-            $image->delete();
         }
 
         $listing->delete();

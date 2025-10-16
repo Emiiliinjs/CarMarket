@@ -59,11 +59,6 @@ class AdminController extends Controller
 
     public function destroyListing(Listing $listing): RedirectResponse
     {
-        foreach ($listing->galleryImages as $image) {
-            \Storage::disk('public')->delete($image->filename);
-            $image->delete();
-        }
-
         $listing->delete();
 
         return back()->with('success', 'Sludinājums dzēsts.');
