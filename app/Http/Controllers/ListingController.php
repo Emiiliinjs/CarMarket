@@ -8,7 +8,6 @@ use App\Support\CarModelRepository;
 use App\Support\HandlesListingImages;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
@@ -262,7 +261,6 @@ class ListingController extends Controller
             foreach ($request->input('remove_images') as $imageId) {
                 $img = $listing->galleryImages()->find($imageId);
                 if ($img) {
-                    Storage::disk('public')->delete($img->filename);
                     $img->delete();
                 }
             }
@@ -306,11 +304,6 @@ class ListingController extends Controller
     {
         if (Auth::id() !== $listing->user_id && !Auth::user()?->is_admin) {
             abort(403,'Nav atļauts dzēst šo sludinājumu.');
-        }
-
-        foreach ($listing->galleryImages as $image) {
-            Storage::disk('public')->delete($image->filename);
-            $image->delete();
         }
 
         $listing->delete();
