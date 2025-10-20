@@ -18,7 +18,7 @@
             <a href="{{ route('listings.index') }}"
                class="flex items-center gap-2 rounded-xl px-2 py-1 text-slate-800 transition hover:bg-slate-100 dark:text-slate-100 dark:hover:bg-slate-900">
                 <x-application-logo class="block h-8 w-auto fill-current text-[#2B7A78]" />
-                <span class="hidden text-sm font-semibold tracking-tight sm:inline">{{ config('app.name','CarMarket') }}</span>
+                <span class="hidden text-sm font-semibold tracking-tight sm:inline">{{ config('CarMarket','CarMarket') }}</span>
             </a>
 
             <!-- Desktop links -->
@@ -35,7 +35,7 @@
                         {{ __('Favorīti') }}
                     </x-nav-link>
                     <x-nav-link :href="route('listings.create')" :active="request()->routeIs('listings.create')">
-                        {{ __('Pievienot') }}
+                        {{ __('Pievienot sludinājumu') }}
                     </x-nav-link>
                 @endauth
 
@@ -141,7 +141,7 @@
                         {{ __('Favorīti') }}
                     </x-responsive-nav-link>
                     <x-responsive-nav-link :href="route('listings.create')" :active="request()->routeIs('listings.create')" @click="open=false">
-                        {{ __('Pievienot') }}
+                        {{ __('Pievienot sludinājumu') }}
                     </x-responsive-nav-link>
                 @endauth
 
