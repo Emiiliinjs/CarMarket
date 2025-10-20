@@ -16,13 +16,29 @@
         $activeFilters = collect($filters ?? [])->filter(fn ($value, $key) => filled($value) && $key !== 'sort');
     @endphp
 
-    <div class="space-y-8">
+    <div class="space-y-8" x-data="{ showFilters: false }">
+        <!-- Mobilā filtru poga -->
+        <div class="flex justify-between items-center sm:hidden">
+            <button
+                type="button"
+                @click="showFilters = !showFilters"
+                class="w-full rounded-xl border border-gray-300 bg-white px-4 py-2 text-sm font-medium 
+                       text-gray-700 shadow-sm hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 
+                       dark:text-gray-200 dark:hover:bg-gray-700 transition"
+            >
+                <span x-show="!showFilters">Rādīt filtrus ▼</span>
+                <span x-show="showFilters">Slēpt filtrus ▲</span>
+            </button>
+        </div>
+
         <!-- Filtru forma -->
         <form
             method="GET"
             id="filters-panel"
             class="rounded-3xl border border-gray-200 bg-white/80 p-6 shadow-sm 
                    dark:border-gray-700 dark:bg-gray-900/70"
+            x-show="showFilters || window.innerWidth >= 640"
+            x-transition
         >
             <div class="grid gap-6 lg:grid-cols-12">
                 <!-- Meklēšana -->
@@ -103,40 +119,34 @@
                                        dark:bg-gray-800 dark:text-gray-200">
                             <option value="">Visi</option>
                             @foreach($fuelOptions as $fuel)
-                                <option value="{{ $fuel }}" @selected(($filters['degviela'] ?? '') === $fuel)>
-                                    {{ $fuel }}
-                                </option>
+                                <option value="{{ $fuel }}" @selected(($filters['degviela'] ?? '') === $fuel)>{{ $fuel }}</option>
                             @endforeach
                         </select>
                     </div>
 
                     <div class="lg:col-span-2">
                         <label for="status" class="text-sm font-semibold text-gray-700 dark:text-gray-200">Statuss</label>
-                        <select id="status" name="status" 
+                        <select id="status" name="status"
                                 class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm 
                                        text-gray-700 shadow-sm focus:border-[#2B7A78] focus:outline-none 
                                        focus:ring-2 focus:ring-[#2B7A78]/20 dark:border-gray-700 
                                        dark:bg-gray-800 dark:text-gray-200">
                             <option value="">Visi</option>
                             @foreach($statusOptions as $value => $label)
-                                <option value="{{ $value }}" @selected(($filters['status'] ?? '') === $value)>
-                                    {{ $label }}
-                                </option>
+                                <option value="{{ $value }}" @selected(($filters['status'] ?? '') === $value)>{{ $label }}</option>
                             @endforeach
                         </select>
                     </div>
 
                     <div class="lg:col-span-2">
                         <label for="sort" class="text-sm font-semibold text-gray-700 dark:text-gray-200">Kārtošana</label>
-                        <select id="sort" name="sort" 
+                        <select id="sort" name="sort"
                                 class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm 
                                        text-gray-700 shadow-sm focus:border-[#2B7A78] focus:outline-none 
                                        focus:ring-2 focus:ring-[#2B7A78]/20 dark:border-gray-700 
                                        dark:bg-gray-800 dark:text-gray-200">
                             @foreach($sortOptions as $value => $label)
-                                <option value="{{ $value }}" @selected(($filters['sort'] ?? 'newest') === $value)>
-                                    {{ $label }}
-                                </option>
+                                <option value="{{ $value }}" @selected(($filters['sort'] ?? 'newest') === $value)>{{ $label }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -242,9 +252,7 @@
             const state = {
                 items: [],
                 add(item) {
-                    if (this.items.length >= maxItems) {
-                        return false;
-                    }
+                    if (this.items.length >= maxItems) return false;
                     this.items.push(item);
                     this.render();
                     return true;
@@ -260,14 +268,11 @@
                 render() {
                     compareTable.innerHTML = '';
                     warningBox.classList.add('hidden');
-
                     if (this.items.length === 0) {
                         comparePanel.classList.add('hidden');
                         return;
                     }
-
                     comparePanel.classList.remove('hidden');
-
                     this.items.forEach((item) => {
                         const row = document.createElement('tr');
                         row.innerHTML = `
@@ -287,8 +292,7 @@
             document.querySelectorAll('.js-compare-checkbox').forEach((checkbox) => {
                 checkbox.addEventListener('change', () => {
                     const card = checkbox.closest('[data-listing-card]');
-                    if (! card) return;
-
+                    if (!card) return;
                     const item = {
                         id: card.dataset.id,
                         marka: card.dataset.marka,
@@ -300,10 +304,9 @@
                         parnesumkarba: card.dataset.parnesumkarba,
                         status: card.dataset.status,
                     };
-
                     if (checkbox.checked) {
                         const added = state.add(item);
-                        if (! added) {
+                        if (!added) {
                             checkbox.checked = false;
                             warningBox.textContent = 'Salīdzināšanai iespējams izvēlēties ne vairāk kā trīs sludinājumus vienlaikus.';
                             warningBox.classList.remove('hidden');
