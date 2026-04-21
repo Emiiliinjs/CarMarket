@@ -23,6 +23,10 @@
 
             <!-- Desktop links -->
             <div class="hidden items-center gap-1 md:flex">
+                <x-nav-link :href="route('landing.index')" :active="request()->routeIs('landing.index')">
+                    {{ __('Sākumlapa') }}
+                </x-nav-link>
+
                 <x-nav-link :href="route('listings.index')" :active="request()->routeIs('listings.index')">
                     {{ __('Sludinājumi') }}
                 </x-nav-link>
@@ -129,6 +133,10 @@
 
             <!-- Sekcija: Navigācija -->
             <div class="space-y-1">
+                <x-responsive-nav-link :href="route('landing.index')" :active="request()->routeIs('landing.index')" @click="open=false">
+                    {{ __('Sākumlapa') }}
+                </x-responsive-nav-link>
+
                 <x-responsive-nav-link :href="route('listings.index')" :active="request()->routeIs('listings.index')" @click="open=false">
                     {{ __('Sludinājumi') }}
                 </x-responsive-nav-link>
