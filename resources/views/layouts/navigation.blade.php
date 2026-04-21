@@ -47,11 +47,34 @@
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('admin.index')" :active="request()->routeIs('admin.index')">
-                        <span>{{ __('Admin panelis') }}</span>
-                        <span x-cloak x-show="adminCount>0" x-text="adminCount"
-                              class="ml-2 inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-rose-600 px-1 text-[0.65rem] font-bold leading-none text-white"></span>
-                    </x-nav-link>
+                    <x-dropdown align="left" width="56">
+                        <x-slot name="trigger">
+                            <button
+                                class="group inline-flex items-center gap-2 rounded-xl border border-amber-200/70 bg-gradient-to-r from-amber-50 to-orange-50 px-3 py-2 text-sm font-semibold text-amber-900 transition hover:border-amber-300 hover:shadow-sm dark:border-amber-600/40 dark:from-amber-900/30 dark:to-orange-900/30 dark:text-amber-100">
+                                <span class="inline-flex h-6 w-6 items-center justify-center rounded-lg bg-amber-500/15 text-amber-600 dark:text-amber-300">★</span>
+                                <span>{{ __('Admin zona') }}</span>
+                                <span x-cloak x-show="adminCount>0" x-text="adminCount"
+                                      class="inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-rose-600 px-1 text-[0.65rem] font-bold leading-none text-white"></span>
+                                <svg class="h-4 w-4 text-amber-600 transition group-hover:translate-y-px dark:text-amber-300" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 11.168l3.71-3.94a.75.75 0 1 1 1.08 1.04l-4.25 4.5a.75.75 0 0 1-1.08 0l-4.25-4.5a.75.75 0 0 1 .02-1.06Z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                        </x-slot>
+                        <x-slot name="content">
+                            <div class="px-4 py-2 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                                {{ __('Admin iespējas') }}
+                            </div>
+                            <x-dropdown-link :href="route('admin.index')">
+                                {{ __('Admin panelis') }}
+                            </x-dropdown-link>
+                            <x-dropdown-link :href="route('admin.bidding.index')">
+                                {{ __('Izsoļu pārvaldība') }}
+                            </x-dropdown-link>
+                            <x-dropdown-link :href="route('admin.bidding.create')">
+                                {{ __('Pievienot izsoles auto') }}
+                            </x-dropdown-link>
+                        </x-slot>
+                    </x-dropdown>
                 @endif
             </div>
         </div>
