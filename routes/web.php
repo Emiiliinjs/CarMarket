@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Route;
 
 // Mājaslapa - rāda visus sludinājumus
 Route::get('/', [ListingController::class, 'index'])->name('listings.index');
+Route::view('/landing', 'landing.index')->name('landing.index');
 
 // Galerijas bilžu apkalpošana
 Route::get('/listing-images/{image}', [ListingImageController::class, 'show'])
