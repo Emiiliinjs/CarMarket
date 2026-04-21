@@ -22,7 +22,7 @@
             </a>
 
             <!-- Desktop links -->
-            <div class="hidden items-center gap-1 md:flex">
+            <div class="hidden items-center gap-2 md:flex lg:gap-3">
                 <x-nav-link :href="route('landing.index')" :active="request()->routeIs('landing.index')">
                     {{ __('Sākumlapa') }}
                 </x-nav-link>
