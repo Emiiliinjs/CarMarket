@@ -1,28 +1,48 @@
 <nav
     x-data="{
-        open:false,
-        adminCount: Number({{ $adminNotificationCount ?? 0 }}||0),
-        scrolled:false,
-        init(){ const f=()=>this.scrolled=window.scrollY>4; f(); window.addEventListener('scroll',f,{passive:true}) }
+        open: false,
+        adminCount: Number({{ $adminNotificationCount ?? 0 }} || 0),
+        scrolled: false,
+        init() {
+            const f = () => this.scrolled = window.scrollY > 4;
+            f();
+            window.addEventListener('scroll', f, { passive: true });
+        }
     }"
     x-init="init()"
     x-effect="document.documentElement.style.overflowY = open ? 'hidden' : ''"
-    @keydown.escape.window="open=false"
-    class="sticky top-0 z-40 border-b bg-white/95 backdrop-blur dark:bg-slate-950/95 dark:border-slate-800"
-    :class="{ 'shadow-sm': scrolled }"
+    @keydown.escape.window="open = false"
+    class="sticky top-0 z-40 transition-all duration-300"
+    :class="scrolled
+        ? 'border-b border-slate-200/80 bg-white/90 shadow-[0_2px_20px_-4px_rgba(0,0,0,0.08)] backdrop-blur-md dark:border-slate-800/80 dark:bg-slate-950/90'
+        : 'border-b border-transparent bg-white/80 backdrop-blur-sm dark:bg-slate-950/80'"
 >
-    <!-- Top bar -->
+    <!-- ─── Top bar ─────────────────────────────────────────────────────────── -->
     <div class="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        <div class="flex flex-1 items-center gap-6">
+
+        <!-- Left: Logo + nav links -->
+        <div class="flex flex-1 items-center gap-5">
+
             <!-- Logo -->
             <a href="{{ route('listings.index') }}"
-               class="flex items-center gap-2 rounded-xl px-2 py-1 text-slate-800 transition hover:bg-slate-100 dark:text-slate-100 dark:hover:bg-slate-900">
-                <x-application-logo class="block h-8 w-auto fill-current text-[#2B7A78]" />
-                <span class="hidden text-sm font-semibold tracking-tight sm:inline">{{ config('CarMarket','CarMarket') }}</span>
+               class="group flex items-center gap-2.5 rounded-xl px-2 py-1.5 transition-all duration-200 hover:bg-teal-50 dark:hover:bg-teal-950/40">
+                <x-application-logo class="block h-8 w-auto fill-current text-[#2B7A78] transition-transform duration-200 group-hover:scale-105" />
+                <span class="hidden text-sm font-bold tracking-tight text-slate-800 transition-colors group-hover:text-[#2B7A78] sm:inline dark:text-slate-100 dark:group-hover:text-teal-400">
+                    {{ config('CarMarket', 'CarMarket') }}
+                </span>
             </a>
 
+<<<<<<< Updated upstream
             <!-- Desktop links -->
             <div class="hidden items-center gap-2 md:flex lg:gap-3">
+=======
+            <!-- Divider -->
+            <div class="hidden h-5 w-px bg-slate-200 md:block dark:bg-slate-700"></div>
+
+            <!-- Desktop nav links -->
+            <nav class="hidden items-center gap-0.5 md:flex" aria-label="Galvenā navigācija">
+
+>>>>>>> Stashed changes
                 <x-nav-link :href="route('landing.index')" :active="request()->routeIs('landing.index')">
                     {{ __('Sākumlapa') }}
                 </x-nav-link>
@@ -35,205 +55,265 @@
                     <x-nav-link :href="route('listings.mine')" :active="request()->routeIs('listings.mine')">
                         {{ __('Mani sludinājumi') }}
                     </x-nav-link>
+
                     <x-nav-link :href="route('favorites.index')" :active="request()->routeIs('favorites.index')">
                         {{ __('Favorīti') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('listings.create')" :active="request()->routeIs('listings.create')">
-                        {{ __('Pievienot sludinājumu') }}
-                    </x-nav-link>
+
+                    <a href="{{ route('listings.create') }}"
+                       class="ml-1 inline-flex items-center gap-1.5 rounded-xl bg-[#2B7A78] px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-[#22615F] hover:shadow-md active:scale-95 {{ request()->routeIs('listings.create') ? 'ring-2 ring-[#2B7A78] ring-offset-2' : '' }}">
+                        <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
+                        </svg>
+                        {{ __('Pievienot') }}
+                    </a>
                 @endauth
 
                 @if(auth()->user()?->is_admin)
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                        {{ __('Dashboard') }}
-                    </x-nav-link>
+
+
+                    <!-- Admin dropdown -->
                     <x-dropdown align="left" width="56">
                         <x-slot name="trigger">
-                            <button
-                                class="group inline-flex items-center gap-2 rounded-xl border border-amber-200/70 bg-gradient-to-r from-amber-50 to-orange-50 px-3 py-2 text-sm font-semibold text-amber-900 transition hover:border-amber-300 hover:shadow-sm dark:border-amber-600/40 dark:from-amber-900/30 dark:to-orange-900/30 dark:text-amber-100">
-                                <span class="inline-flex h-6 w-6 items-center justify-center rounded-lg bg-amber-500/15 text-amber-600 dark:text-amber-300">★</span>
-                                <span>{{ __('Admin zona') }}</span>
-                                <span x-cloak x-show="adminCount>0" x-text="adminCount"
-                                      class="inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-rose-600 px-1 text-[0.65rem] font-bold leading-none text-white"></span>
-                                <svg class="h-4 w-4 text-amber-600 transition group-hover:translate-y-px dark:text-amber-300" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 11.168l3.71-3.94a.75.75 0 1 1 1.08 1.04l-4.25 4.5a.75.75 0 0 1-1.08 0l-4.25-4.5a.75.75 0 0 1 .02-1.06Z" clip-rule="evenodd" />
+                            <button class="group ml-1 inline-flex items-center gap-2 rounded-xl border border-amber-200/80 bg-gradient-to-br from-amber-50 to-orange-50/80 px-3 py-2 text-sm font-semibold text-amber-900 shadow-sm transition-all duration-200 hover:border-amber-300 hover:shadow-md dark:border-amber-600/30 dark:from-amber-900/25 dark:to-orange-900/20 dark:text-amber-100">
+                                <span class="flex h-5 w-5 items-center justify-center rounded-md bg-amber-400/20 text-xs text-amber-600 dark:text-amber-400">★</span>
+                                <span>{{ __('Admin') }}</span>
+                                <span x-cloak x-show="adminCount > 0" x-text="adminCount"
+                                      class="inline-flex h-4.5 min-w-[1.1rem] items-center justify-center rounded-full bg-rose-500 px-1 text-[0.6rem] font-bold leading-none text-white shadow-sm"></span>
+                                <svg class="h-3.5 w-3.5 text-amber-500 transition-transform duration-200 group-hover:translate-y-0.5 dark:text-amber-400" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 11.168l3.71-3.94a.75.75 0 1 1 1.08 1.04l-4.25 4.5a.75.75 0 0 1-1.08 0l-4.25-4.5a.75.75 0 0 1 .02-1.06Z" clip-rule="evenodd"/>
                                 </svg>
                             </button>
                         </x-slot>
                         <x-slot name="content">
-                            <div class="px-4 py-2 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                            <div class="px-3 pb-1.5 pt-2.5 text-[0.65rem] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500">
                                 {{ __('Admin iespējas') }}
                             </div>
                             <x-dropdown-link :href="route('admin.index')">
-                                {{ __('Admin panelis') }}
+                                <span class="flex items-center gap-2">
+                                    <svg class="h-3.5 w-3.5 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+                                    {{ __('Admin panelis') }}
+                                </span>
                             </x-dropdown-link>
                             <x-dropdown-link :href="route('admin.bidding.index')">
-                                {{ __('Izsoļu pārvaldība') }}
+                                <span class="flex items-center gap-2">
+                                    <svg class="h-3.5 w-3.5 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13l-1.35 2.7A1 1 0 0 0 6.54 17H17M7 13l1-4h9"/><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/></svg>
+                                    {{ __('Izsoļu pārvaldība') }}
+                                </span>
                             </x-dropdown-link>
                             <x-dropdown-link :href="route('admin.bidding.create')">
-                                {{ __('Pievienot izsoles auto') }}
+                                <span class="flex items-center gap-2">
+                                    <svg class="h-3.5 w-3.5 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                                    {{ __('Pievienot izsoles auto') }}
+                                </span>
                             </x-dropdown-link>
                         </x-slot>
                     </x-dropdown>
                 @endif
-            </div>
+
+            </nav>
         </div>
 
-        <!-- Desktop actions -->
-        <div class="hidden items-center gap-3 md:flex">
-            <button type="button" @click="$store.theme.toggle()"
-                    class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 text-[#2B7A78] transition hover:border-[#2B7A78] dark:border-slate-700"
+        <!-- Right: Actions -->
+        <div class="hidden items-center gap-2 md:flex">
+
+            <!-- Dark mode toggle -->
+            <button type="button"
+                    @click="$store.theme.toggle()"
+                    class="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 text-slate-500 transition-all duration-200 hover:border-[#2B7A78] hover:bg-teal-50 hover:text-[#2B7A78] dark:border-slate-700 dark:text-slate-400 dark:hover:border-teal-600 dark:hover:bg-teal-950/30 dark:hover:text-teal-400"
                     aria-label="Tumšais režīms">
-                <svg x-show="!$store.theme.isDark" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M10 3.5a.75.75 0 0 1 .75.75V6a.75.75 0 0 1-1.5 0V4.25A.75.75 0 0 1 10 3.5Z"/></svg>
-                <svg x-show="$store.theme.isDark" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9.598 2.304a.75.75 0 0 1 .95-.95 7 7 0 1 1-7.294 11.465.75.75 0 0 1 .317-1.284 4.8 4.8 0 0 0 3.21-5.082 4.8 4.8 0 0 0 2.817-4.153Z" clip-rule="evenodd"/></svg>
+                <svg x-show="!$store.theme.isDark" xmlns="http://www.w3.org/2000/svg" class="h-4.5 w-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+                </svg>
+                <svg x-show="$store.theme.isDark" xmlns="http://www.w3.org/2000/svg" class="h-4.5 w-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                </svg>
             </button>
 
             @auth
+                <!-- User dropdown -->
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
-                        <button class="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-800 transition hover:border-[#2B7A78] hover:text-[#2B7A78] dark:border-slate-700 dark:text-slate-200">
-                            <span>{{ Auth::user()->name }}</span>
-                            <svg class="h-4 w-4 text-[#2B7A78]" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+                        <button class="group inline-flex items-center gap-2 rounded-xl border border-slate-200 px-3.5 py-2 text-sm font-medium text-slate-700 transition-all duration-200 hover:border-[#2B7A78] hover:bg-teal-50 hover:text-[#2B7A78] dark:border-slate-700 dark:text-slate-200 dark:hover:border-teal-700 dark:hover:bg-teal-950/30">
+                            <!-- Avatar initials -->
+                            <span class="flex h-6 w-6 items-center justify-center rounded-lg bg-teal-100 text-[0.65rem] font-bold text-teal-700 dark:bg-teal-900/60 dark:text-teal-300">
+                                {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                            </span>
+                            <span class="max-w-[7rem] truncate">{{ Auth::user()->name }}</span>
+                            <svg class="h-3.5 w-3.5 text-slate-400 transition-transform duration-200 group-hover:text-[#2B7A78]" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                            </svg>
                         </button>
                     </x-slot>
                     <x-slot name="content">
-                        <x-dropdown-link :href="route('profile.edit')">{{ __('Profils') }}</x-dropdown-link>
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
-                            <x-dropdown-link :href="route('logout')" onclick="event.preventDefault(); this.closest('form').submit();">
-                                {{ __('Iziet') }}
-                            </x-dropdown-link>
-                        </form>
+                        <div class="border-b border-slate-100 px-3 py-2.5 dark:border-slate-800">
+                            <p class="text-xs font-semibold text-slate-800 dark:text-slate-100">{{ Auth::user()->name }}</p>
+                            <p class="mt-0.5 truncate text-[0.7rem] text-slate-400">{{ Auth::user()->email }}</p>
+                        </div>
+                        <div class="py-1">
+                            <x-dropdown-link :href="route('profile.edit')">{{ __('Profils') }}</x-dropdown-link>
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <x-dropdown-link :href="route('logout')" onclick="event.preventDefault(); this.closest('form').submit();">
+                                    {{ __('Iziet') }}
+                                </x-dropdown-link>
+                            </form>
+                        </div>
                     </x-slot>
                 </x-dropdown>
             @else
-                <div class="flex items-center gap-2">
-                    <a href="{{ route('login') }}"
-                       class="rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-800 transition hover:border-[#2B7A78] hover:text-[#2B7A78] dark:border-slate-700 dark:text-slate-200">
-                        {{ __('Ieiet') }}
-                    </a>
-                    <a href="{{ route('register') }}"
-                       class="rounded-xl bg-[#2B7A78] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#22615F]">
-                        {{ __('Reģistrēties') }}
-                    </a>
-                </div>
+                <a href="{{ route('login') }}"
+                   class="rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition-all duration-200 hover:border-[#2B7A78] hover:text-[#2B7A78] dark:border-slate-700 dark:text-slate-300">
+                    {{ __('Ieiet') }}
+                </a>
+                <a href="{{ route('register') }}"
+                   class="rounded-xl bg-[#2B7A78] px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-[#22615F] hover:shadow-md active:scale-95">
+                    {{ __('Reģistrēties') }}
+                </a>
             @endauth
         </div>
 
-        <!-- Mobile hamburger -->
-        <div class="flex items-center md:hidden">
-            <button @click="open=!open"
-                    class="inline-flex items-center justify-center rounded-xl border border-slate-200 p-2 text-slate-700 transition hover:border-[#2B7A78] hover:text-[#2B7A78] dark:border-slate-700 dark:text-slate-200"
-                    :aria-expanded="open.toString()" aria-label="Izvēlne">
-                <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                    <path :class="{'hidden': open, 'inline-flex': !open}" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-                    <path :class="{'hidden': !open, 'inline-flex': open}" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        <!-- ─── Mobile: hamburger ────────────────────────────────────────────── -->
+        <div class="flex items-center gap-2 md:hidden">
+            <button type="button"
+                    @click="open = !open"
+                    class="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 text-slate-600 transition-all duration-200 hover:border-[#2B7A78] hover:text-[#2B7A78] dark:border-slate-700 dark:text-slate-300"
+                    :aria-expanded="open.toString()"
+                    aria-label="Izvēlne">
+                <svg class="h-5 w-5 transition-transform duration-200" :class="{ 'rotate-45': open }" stroke="currentColor" fill="none" viewBox="0 0 24 24">
+                    <path :class="{ 'hidden': open }" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                    <path :class="{ 'hidden': !open }" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                 </svg>
             </button>
         </div>
     </div>
 
-    <!-- Mobile panel -->
+    <!-- ─── Mobile panel ─────────────────────────────────────────────────────── -->
     <div x-cloak x-show="open" class="md:hidden">
         <!-- Backdrop -->
-        <div class="fixed inset-0 z-30 bg-slate-900/60" @click="open=false" aria-hidden="true"></div>
+        <div class="fixed inset-0 z-30 bg-slate-900/50 backdrop-blur-sm"
+             @click="open = false"
+             aria-hidden="true"></div>
 
-        <!-- Panel -->
-        <div
-            class="fixed inset-x-0 top-16 z-40 h-[calc(100vh-4rem)] overflow-y-auto border-t border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-950"
-            x-transition:enter="transition ease-out duration-150"
-            x-transition:enter-start="opacity-0 -translate-y-2"
-            x-transition:enter-end="opacity-100 translate-y-0"
-            x-transition:leave="transition ease-in duration-100"
-            x-transition:leave-start="opacity-100 translate-y-0"
-            x-transition:leave-end="opacity-0 -translate-y-2"
-        >
-            <div class="mb-2 flex justify-end">
-                <button @click="open=false" class="rounded-lg p-2 text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-900" aria-label="Aizvērt">
-                    <svg class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor"><path d="M6 18L18 6M6 6l12 12"/></svg>
-                </button>
-            </div>
+        <!-- Slide-down panel -->
+        <div class="fixed inset-x-0 top-16 z-40 h-[calc(100dvh-4rem)] overflow-y-auto bg-white dark:bg-slate-950"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0 -translate-y-3"
+             x-transition:enter-end="opacity-100 translate-y-0"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100 translate-y-0"
+             x-transition:leave-end="opacity-0 -translate-y-3">
 
-            <!-- Sekcija: Navigācija -->
-            <div class="space-y-1">
-                <x-responsive-nav-link :href="route('landing.index')" :active="request()->routeIs('landing.index')" @click="open=false">
-                    {{ __('Sākumlapa') }}
-                </x-responsive-nav-link>
+            <div class="divide-y divide-slate-100 dark:divide-slate-800/60">
 
-                <x-responsive-nav-link :href="route('listings.index')" :active="request()->routeIs('listings.index')" @click="open=false">
-                    {{ __('Sludinājumi') }}
-                </x-responsive-nav-link>
+                <!-- Nav links section -->
+                <div class="px-4 py-3 space-y-0.5">
+                    <p class="mb-2 px-3 text-[0.65rem] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-600">
+                        {{ __('Navigācija') }}
+                    </p>
 
-                @auth
-                    <x-responsive-nav-link :href="route('listings.mine')" :active="request()->routeIs('listings.mine')" @click="open=false">
-                        {{ __('Mani sludinājumi') }}
+                    <x-responsive-nav-link :href="route('landing.index')" :active="request()->routeIs('landing.index')" @click="open=false">
+                        {{ __('Sākumlapa') }}
                     </x-responsive-nav-link>
-                    <x-responsive-nav-link :href="route('favorites.index')" :active="request()->routeIs('favorites.index')" @click="open=false">
-                        {{ __('Favorīti') }}
-                    </x-responsive-nav-link>
-                    <x-responsive-nav-link :href="route('listings.create')" :active="request()->routeIs('listings.create')" @click="open=false">
-                        {{ __('Pievienot sludinājumu') }}
-                    </x-responsive-nav-link>
-                @endauth
 
-                @if(auth()->user()?->is_admin)
-                    <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" @click="open=false">
-                        {{ __('Dashboard') }}
+                    <x-responsive-nav-link :href="route('listings.index')" :active="request()->routeIs('listings.index')" @click="open=false">
+                        {{ __('Sludinājumi') }}
                     </x-responsive-nav-link>
-                    <x-responsive-nav-link :href="route('admin.index')" :active="request()->routeIs('admin.index')" @click="open=false">
-                        <span>{{ __('Admin panelis') }}</span>
-                        <span x-cloak x-show="adminCount>0" x-text="adminCount"
-                              class="ml-2 inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-rose-600 px-1 text-[0.65rem] font-bold leading-none text-white"></span>
-                    </x-responsive-nav-link>
-                    <x-responsive-nav-link :href="route('admin.bidding.index')" :active="request()->routeIs('admin.bidding.*')" @click="open=false">
-                        {{ __('Izsoles auto') }}
-                    </x-responsive-nav-link>
-                @endif
-            </div>
 
-            <!-- Guests -->
-            @guest
-            <div class="mt-6 rounded-xl border border-slate-200 p-4 dark:border-slate-800">
-                <p class="mb-3 text-sm font-semibold text-slate-800 dark:text-slate-200">{{ __('Sveicināts, viesi') }}</p>
-                <div class="grid grid-cols-2 gap-2">
-                    <a href="{{ route('login') }}"
-                       class="rounded-lg border border-slate-300 px-4 py-2 text-center text-sm font-semibold text-slate-800 transition hover:border-[#2B7A78] hover:text-[#2B7A78] dark:border-slate-700 dark:text-slate-200">
-                        {{ __('Ieiet') }}
-                    </a>
-                    <a href="{{ route('register') }}"
-                       class="rounded-lg bg-[#2B7A78] px-4 py-2 text-center text-sm font-semibold text-white transition hover:bg-[#22615F]">
-                        {{ __('Reģistrēties') }}
-                    </a>
-                </div>
-            </div>
-            @endguest
-
-            <!-- Auth block -->
-            @auth
-            <div class="mt-6 rounded-xl border border-slate-200 p-4 dark:border-slate-800">
-                <div class="space-y-1 text-sm text-slate-700 dark:text-slate-300">
-                    <p class="font-semibold text-slate-900 dark:text-white">{{ Auth::user()->name }}</p>
-                    <p class="truncate">{{ Auth::user()->email }}</p>
-                </div>
-                <div class="mt-3 space-y-1">
-                    <x-responsive-nav-link :href="route('profile.edit')" @click="open=false">
-                        {{ __('Profils') }}
-                    </x-responsive-nav-link>
-                    <button type="button" @click="$store.theme.toggle()"
-                            class="flex w-full items-center justify-between rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-[#2B7A78] hover:text-[#2B7A78] dark:border-slate-700 dark:text-slate-200">
-                        <span>{{ __('Tumšais režīms') }}</span>
-                        <svg x-show="!$store.theme.isDark" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M10 3.5a.75.75 0 0 1 .75.75V6a.75.75 0 0 1-1.5 0V4.25A.75.75 0 0 1 10 3.5Z"/></svg>
-                        <svg x-show="$store.theme.isDark" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9.598 2.304a.75.75 0 0 1 .95-.95 7 7 0 1 1-7.294 11.465.75.75 0 0 1 .317-1.284 4.8 4.8 0 0 0 3.21-5.082 4.8 4.8 0 0 0 2.817-4.153Z" clip-rule="evenodd"/></svg>
-                    </button>
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <x-responsive-nav-link :href="route('logout')" onclick="event.preventDefault(); this.closest('form').submit();">
-                            {{ __('Iziet') }}
+                    @auth
+                        <x-responsive-nav-link :href="route('listings.mine')" :active="request()->routeIs('listings.mine')" @click="open=false">
+                            {{ __('Mani sludinājumi') }}
                         </x-responsive-nav-link>
-                    </form>
+
+                        <x-responsive-nav-link :href="route('favorites.index')" :active="request()->routeIs('favorites.index')" @click="open=false">
+                            {{ __('Favorīti') }}
+                        </x-responsive-nav-link>
+
+                        <x-responsive-nav-link :href="route('listings.create')" :active="request()->routeIs('listings.create')" @click="open=false">
+                            {{ __('Pievienot sludinājumu') }}
+                        </x-responsive-nav-link>
+                    @endauth
+
+                    @if(auth()->user()?->is_admin)
+                        <div class="pt-2 pb-1">
+                            <p class="mb-1 px-3 text-[0.65rem] font-bold uppercase tracking-widest text-amber-500/70">
+                                {{ __('Admin zona') }}
+                            </p>
+                        </div>
+
+
+                        <x-responsive-nav-link :href="route('admin.index')" :active="request()->routeIs('admin.index')" @click="open=false">
+                            <span class="flex items-center gap-2">
+                                {{ __('Admin panelis') }}
+                                <span x-cloak x-show="adminCount > 0" x-text="adminCount"
+                                      class="inline-flex h-4.5 min-w-[1.1rem] items-center justify-center rounded-full bg-rose-500 px-1 text-[0.6rem] font-bold leading-none text-white"></span>
+                            </span>
+                        </x-responsive-nav-link>
+
+                        <x-responsive-nav-link :href="route('admin.bidding.index')" :active="request()->routeIs('admin.bidding.*')" @click="open=false">
+                            {{ __('Izsoles auto') }}
+                        </x-responsive-nav-link>
+                    @endif
                 </div>
+
+                <!-- Account section -->
+                <div class="px-4 py-4">
+                    @guest
+                        <p class="mb-3 text-xs text-slate-500 dark:text-slate-400">{{ __('Piesakies vai reģistrējies, lai piekļūtu visām funkcijām.') }}</p>
+                        <div class="grid grid-cols-2 gap-2">
+                            <a href="{{ route('login') }}"
+                               class="rounded-xl border border-slate-200 px-4 py-2.5 text-center text-sm font-semibold text-slate-700 transition hover:border-[#2B7A78] hover:text-[#2B7A78] dark:border-slate-700 dark:text-slate-200">
+                                {{ __('Ieiet') }}
+                            </a>
+                            <a href="{{ route('register') }}"
+                               class="rounded-xl bg-[#2B7A78] px-4 py-2.5 text-center text-sm font-semibold text-white transition hover:bg-[#22615F]">
+                                {{ __('Reģistrēties') }}
+                            </a>
+                        </div>
+                    @endguest
+
+                    @auth
+                        <!-- User info -->
+                        <div class="mb-3 flex items-center gap-3">
+                            <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-teal-100 text-sm font-bold text-teal-700 dark:bg-teal-900/50 dark:text-teal-300">
+                                {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                            </span>
+                            <div>
+                                <p class="text-sm font-semibold text-slate-900 dark:text-white">{{ Auth::user()->name }}</p>
+                                <p class="truncate text-xs text-slate-400">{{ Auth::user()->email }}</p>
+                            </div>
+                        </div>
+
+                        <div class="space-y-1">
+                            <x-responsive-nav-link :href="route('profile.edit')" @click="open=false">
+                                {{ __('Profils') }}
+                            </x-responsive-nav-link>
+
+                            <!-- Dark mode toggle -->
+                            <button type="button"
+                                    @click="$store.theme.toggle()"
+                                    class="flex w-full items-center justify-between rounded-xl px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-900/50">
+                                <span>{{ __('Tumšais režīms') }}</span>
+                                <span class="flex h-6 w-11 items-center rounded-full transition-colors duration-200"
+                                      :class="$store.theme.isDark ? 'bg-[#2B7A78]' : 'bg-slate-200'">
+                                    <span class="ml-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition-transform duration-200"
+                                          :class="$store.theme.isDark ? 'translate-x-5' : 'translate-x-0'"></span>
+                                </span>
+                            </button>
+
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <x-responsive-nav-link :href="route('logout')"
+                                    onclick="event.preventDefault(); this.closest('form').submit();"
+                                    class="text-rose-600 hover:text-rose-700 dark:text-rose-400">
+                                    {{ __('Iziet') }}
+                                </x-responsive-nav-link>
+                            </form>
+                        </div>
+                    @endauth
+                </div>
+
             </div>
-            @endauth
         </div>
     </div>
 </nav>

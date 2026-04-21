@@ -40,12 +40,6 @@
                         'max-w-7xl' => $isLandingPage,
                         'max-w-md' => ! $isLandingPage,
                     ])>
-                        <div class="mb-8 flex justify-center">
-                            <a href="/" class="flex items-center gap-3 rounded-full bg-white/70 px-4 py-2 shadow ring-1 ring-white/60 transition hover:-translate-y-0.5 hover:shadow-md dark:bg-slate-900/60 dark:ring-slate-700/60">
-                                <x-application-logo class="h-12 w-auto fill-current text-[#2B7A78] dark:text-[#2B7A78]" />
-                                <span class="hidden text-sm font-semibold tracking-wide text-slate-700 dark:text-slate-200 sm:inline">{{ config('app.name', 'CarMarket') }}</span>
-                            </a>
-                        </div>
 
                         <div @class([
                             'rounded-3xl border border-white/60 bg-white/80 shadow-xl backdrop-blur dark:border-slate-800/60 dark:bg-slate-900/70',
