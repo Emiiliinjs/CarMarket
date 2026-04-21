@@ -32,17 +32,17 @@
                 </span>
             </a>
 
-<<<<<<< Updated upstream
+
             <!-- Desktop links -->
             <div class="hidden items-center gap-2 md:flex lg:gap-3">
-=======
+                
             <!-- Divider -->
             <div class="hidden h-5 w-px bg-slate-200 md:block dark:bg-slate-700"></div>
 
             <!-- Desktop nav links -->
             <nav class="hidden items-center gap-0.5 md:flex" aria-label="Galvenā navigācija">
 
->>>>>>> Stashed changes
+
                 <x-nav-link :href="route('landing.index')" :active="request()->routeIs('landing.index')">
                     {{ __('Sākumlapa') }}
                 </x-nav-link>
