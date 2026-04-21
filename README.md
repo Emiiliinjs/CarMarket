@@ -37,4 +37,4 @@ Projekta grafiskie aktīvi (tai skaitā logo) atrodas mapē `public/images`.
 
 ## Licence
 
-Projekts ir pieejams saskaņā ar [MIT licenci](LICENSE).
+php artisan make:admin ipb22.e.darzins@vtdt.edu.lv
