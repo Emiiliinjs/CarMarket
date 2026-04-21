@@ -17,6 +17,9 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans antialiased">
+        @php
+            $isLandingPage = request()->routeIs('landing.index');
+        @endphp
         <div class="relative min-h-screen bg-slate-100 text-slate-900 transition-colors duration-500 dark:bg-slate-950 dark:text-slate-100">
             <div class="pointer-events-none absolute inset-0 overflow-hidden">
                 <div class="absolute -top-24 -left-32 h-80 w-80 rounded-full bg-[#2B7A78]/35 blur-3xl dark:bg-[#2B7A78]/20"></div>
@@ -27,8 +30,16 @@
             <div class="relative z-10 flex min-h-screen flex-col">
                 @include('layouts.navigation')
 
-                <main class="flex flex-1 items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
-                    <div class="w-full max-w-md">
+                <main @class([
+                    'flex flex-1 px-4 py-12 sm:px-6 lg:px-8',
+                    'items-start justify-center lg:py-16' => $isLandingPage,
+                    'items-center justify-center' => ! $isLandingPage,
+                ])>
+                    <div @class([
+                        'w-full',
+                        'max-w-7xl' => $isLandingPage,
+                        'max-w-md' => ! $isLandingPage,
+                    ])>
                         <div class="mb-8 flex justify-center">
                             <a href="/" class="flex items-center gap-3 rounded-full bg-white/70 px-4 py-2 shadow ring-1 ring-white/60 transition hover:-translate-y-0.5 hover:shadow-md dark:bg-slate-900/60 dark:ring-slate-700/60">
                                 <x-application-logo class="h-12 w-auto fill-current text-[#2B7A78] dark:text-[#2B7A78]" />
@@ -36,7 +47,11 @@
                             </a>
                         </div>
 
-                        <div class="rounded-3xl border border-white/60 bg-white/80 p-8 shadow-xl backdrop-blur dark:border-slate-800/60 dark:bg-slate-900/70">
+                        <div @class([
+                            'rounded-3xl border border-white/60 bg-white/80 shadow-xl backdrop-blur dark:border-slate-800/60 dark:bg-slate-900/70',
+                            'p-5 sm:p-6 lg:p-8' => $isLandingPage,
+                            'p-8' => ! $isLandingPage,
+                        ])>
                             {{ $slot }}
                         </div>
                     </div>
