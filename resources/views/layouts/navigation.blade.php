@@ -24,7 +24,7 @@
         <div class="flex flex-1 items-center gap-5">
 
             <!-- Logo -->
-            <a href="{{ route('listings.index') }}"
+            <a href="{{ route('landing.index') }}"
                class="group flex items-center gap-2.5 rounded-xl px-2 py-1.5 transition-all duration-200 hover:bg-teal-50 dark:hover:bg-teal-950/40">
                 <x-application-logo class="block h-8 w-auto fill-current text-[#2B7A78] transition-transform duration-200 group-hover:scale-105" />
                 <span class="hidden text-sm font-bold tracking-tight text-slate-800 transition-colors group-hover:text-[#2B7A78] sm:inline dark:text-slate-100 dark:group-hover:text-teal-400">
@@ -35,7 +35,7 @@
 
             <!-- Desktop links -->
             <div class="hidden items-center gap-2 md:flex lg:gap-3">
-                
+
             <!-- Divider -->
             <div class="hidden h-5 w-px bg-slate-200 md:block dark:bg-slate-700"></div>
 
