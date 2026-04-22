@@ -21,7 +21,7 @@
     <div class="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
 
         <!-- Left: Logo + nav links -->
-        <div class="flex flex-1 items-center gap-5">
+        <div class="flex items-center gap-5">
 
             <!-- Logo -->
             <a href="{{ route('landing.index') }}"
@@ -115,7 +115,7 @@
         </div>
 
         <!-- Right: Actions -->
-        <div class="hidden items-center gap-2 md:flex">
+        <div class="ml-auto hidden items-center gap-2 md:flex">
 
             <!-- Dark mode toggle -->
             <button type="button"
