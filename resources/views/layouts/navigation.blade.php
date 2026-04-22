@@ -39,9 +39,6 @@
             <!-- Desktop links -->
             <div class="hidden items-center gap-2 lg:flex">
 
-            <!-- Divider -->
-            <div class="hidden h-5 w-px bg-slate-200 lg:block dark:bg-slate-700"></div>
-
             <!-- Desktop nav links -->
             <nav class="hidden items-center gap-0.5 lg:flex" aria-label="Galvenā navigācija">
 
@@ -147,9 +144,6 @@
 
             @auth
                 <span class="inline-flex items-center gap-1 rounded-full border border-teal-200/80 bg-teal-50/80 px-2.5 py-1 text-[0.65rem] font-semibold uppercase tracking-wider text-teal-700 dark:border-teal-700/40 dark:bg-teal-900/20 dark:text-teal-300">
-                    <span class="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500"></span>
-                    {{ __('Live izsoles') }}
-                </span>
 
                 <!-- User dropdown -->
                 <x-dropdown align="right" width="48">
