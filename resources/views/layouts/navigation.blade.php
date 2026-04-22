@@ -17,6 +17,9 @@
         ? 'border-b border-slate-200/80 bg-white/90 shadow-[0_2px_20px_-4px_rgba(0,0,0,0.08)] backdrop-blur-md dark:border-slate-800/80 dark:bg-slate-950/90'
         : 'border-b border-transparent bg-white/80 backdrop-blur-sm dark:bg-slate-950/80'"
 >
+    <div aria-hidden="true"
+         class="pointer-events-none absolute inset-x-0 top-0 -z-10 h-full bg-[radial-gradient(circle_at_10%_0%,rgba(45,212,191,0.16),transparent_42%),radial-gradient(circle_at_85%_0%,rgba(56,189,248,0.16),transparent_38%)] dark:bg-[radial-gradient(circle_at_10%_0%,rgba(20,184,166,0.2),transparent_42%),radial-gradient(circle_at_85%_0%,rgba(14,116,144,0.2),transparent_38%)]"></div>
+
     <!-- ─── Top bar ─────────────────────────────────────────────────────────── -->
     <div class="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
 
@@ -44,19 +47,31 @@
 
 
                 <x-nav-link :href="route('landing.index')" :active="request()->routeIs('landing.index')">
+                    <svg class="h-4 w-4 opacity-80" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 11.5 12 4l9 7.5M6.5 10.5V20h11V10.5"/>
+                    </svg>
                     {{ __('Sākumlapa') }}
                 </x-nav-link>
 
                 <x-nav-link :href="route('listings.index')" :active="request()->routeIs('listings.index')">
+                    <svg class="h-4 w-4 opacity-80" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                        <rect x="3" y="5" width="18" height="14" rx="2"/><path stroke-linecap="round" d="M7 10h10M7 14h6"/>
+                    </svg>
                     {{ __('Sludinājumi') }}
                 </x-nav-link>
 
                 @auth
                     <x-nav-link :href="route('listings.mine')" :active="request()->routeIs('listings.mine')">
+                        <svg class="h-4 w-4 opacity-80" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 7h16M6 7V5h12v2m-1 0v12H7V7m3 4h4"/>
+                        </svg>
                         {{ __('Mani sludinājumi') }}
                     </x-nav-link>
 
                     <x-nav-link :href="route('favorites.index')" :active="request()->routeIs('favorites.index')">
+                        <svg class="h-4 w-4 opacity-80" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m12 20-7-6.3A4.4 4.4 0 0 1 11.2 7L12 7.8l.8-.8a4.4 4.4 0 0 1 6.2 6.2L12 20Z"/>
+                        </svg>
                         {{ __('Favorīti') }}
                     </x-nav-link>
 
@@ -131,6 +146,11 @@
             </button>
 
             @auth
+                <span class="inline-flex items-center gap-1 rounded-full border border-teal-200/80 bg-teal-50/80 px-2.5 py-1 text-[0.65rem] font-semibold uppercase tracking-wider text-teal-700 dark:border-teal-700/40 dark:bg-teal-900/20 dark:text-teal-300">
+                    <span class="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500"></span>
+                    {{ __('Live izsoles') }}
+                </span>
+
                 <!-- User dropdown -->
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
