@@ -37,13 +37,13 @@
 
 
             <!-- Desktop links -->
-            <div class="hidden items-center gap-2 md:flex lg:gap-3">
+            <div class="hidden items-center gap-2 lg:flex">
 
             <!-- Divider -->
-            <div class="hidden h-5 w-px bg-slate-200 md:block dark:bg-slate-700"></div>
+            <div class="hidden h-5 w-px bg-slate-200 lg:block dark:bg-slate-700"></div>
 
             <!-- Desktop nav links -->
-            <nav class="hidden items-center gap-0.5 md:flex" aria-label="Galvenā navigācija">
+            <nav class="hidden items-center gap-0.5 lg:flex" aria-label="Galvenā navigācija">
 
 
                 <x-nav-link :href="route('landing.index')" :active="request()->routeIs('landing.index')">
@@ -130,7 +130,7 @@
         </div>
 
         <!-- Right: Actions -->
-        <div class="ml-auto hidden items-center gap-2 md:flex">
+        <div class="ml-auto hidden items-center gap-2 lg:flex">
 
             <!-- Dark mode toggle -->
             <button type="button"
@@ -194,7 +194,7 @@
         </div>
 
         <!-- ─── Mobile: hamburger ────────────────────────────────────────────── -->
-        <div class="flex items-center gap-2 md:hidden">
+        <div class="flex items-center gap-2 lg:hidden">
             <button type="button"
                     @click="open = !open"
                     class="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 text-slate-600 transition-all duration-200 hover:border-[#2B7A78] hover:text-[#2B7A78] dark:border-slate-700 dark:text-slate-300"
@@ -209,7 +209,7 @@
     </div>
 
     <!-- ─── Mobile panel ─────────────────────────────────────────────────────── -->
-    <div x-cloak x-show="open" class="md:hidden">
+    <div x-cloak x-show="open" class="lg:hidden">
         <!-- Backdrop -->
         <div class="fixed inset-0 z-30 bg-slate-900/50 backdrop-blur-sm"
              @click="open = false"
