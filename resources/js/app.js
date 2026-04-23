@@ -474,18 +474,11 @@ const liveBid = (config = {}) => {
         },
         normalizeAmount(value) {
             const step = this.minIncrement > 0 ? this.minIncrement : 100;
-            const base = this.currentBid;
-            const minimum = Math.max(this.nextBidAmount || 0, base + step);
+            const minimum = Math.max(this.nextBidAmount || 0, this.currentBid + step);
             const numeric = toNumber(value, minimum);
+            const rounded = Math.round(numeric * 100) / 100;
 
-            if (numeric <= base) {
-                return minimum;
-            }
-
-            const steps = Math.round((numeric - base) / step);
-            const candidate = base + steps * step;
-
-            return candidate < minimum ? minimum : candidate;
+            return rounded < minimum ? minimum : rounded;
         },
         increase() {
             const current = this.normalizeAmount(this.amount);

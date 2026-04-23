@@ -64,9 +64,6 @@ class ListingBidController extends Controller
                 return;
             }
 
-            if (($amountCents - $currentCents) % $incrementCents !== 0) {
-                $validator->errors()->add('amount', __('Soli var palielināt tikai par :amount € intervāliem.', ['amount' => $increment]));
-            }
         });
 
         $validated = $validator->validate();
