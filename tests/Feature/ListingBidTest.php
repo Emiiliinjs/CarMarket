@@ -79,3 +79,55 @@ test('bid must still be at least minimum increment above current highest bid', f
         'amount' => 10050.00,
     ]);
 });
+
+test('non admin user can open live auction page for admin bidding listing', function () {
+    $owner = User::factory()->create();
+    $viewer = User::factory()->create();
+
+    $listing = Listing::create([
+        'user_id' => $owner->id,
+        'marka' => 'Mercedes-Benz',
+        'modelis' => 'E220',
+        'gads' => 2020,
+        'nobraukums' => 92000,
+        'cena' => 18000,
+        'degviela' => 'Dīzelis',
+        'parnesumkarba' => 'Automātiskā',
+        'status' => Listing::STATUS_AVAILABLE,
+        'is_approved' => true,
+        'is_admin_bidding' => true,
+    ]);
+
+    $this
+        ->actingAs($viewer)
+        ->get(route('listings.live-bid', $listing))
+        ->assertOk();
+});
+
+test('non admin user can place bid on admin bidding listing', function () {
+    $owner = User::factory()->create();
+    $bidder = User::factory()->create();
+
+    $listing = Listing::create([
+        'user_id' => $owner->id,
+        'marka' => 'Lexus',
+        'modelis' => 'RX450h',
+        'gads' => 2021,
+        'nobraukums' => 76000,
+        'cena' => 25000,
+        'degviela' => 'Hibrīds',
+        'parnesumkarba' => 'Automātiskā',
+        'status' => Listing::STATUS_AVAILABLE,
+        'is_approved' => true,
+        'is_admin_bidding' => true,
+    ]);
+
+    $this
+        ->actingAs($bidder)
+        ->postJson(route('listings.bids.store', $listing), [
+            'amount' => 25100,
+        ])
+        ->assertCreated()
+        ->assertJsonPath('currentBid', 25100.0)
+        ->assertJsonPath('nextBidAmount', 25200.0);
+});
