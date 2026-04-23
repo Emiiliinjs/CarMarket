@@ -539,13 +539,18 @@ const liveBid = (config = {}) => {
             }
         },
         async placeBid(event) {
-            if (event?.preventDefault) {
-                event.preventDefault();
-            }
-
             if (!this.storeUrl) {
                 return;
             }
+            const submitEvent = event && typeof event.preventDefault === 'function' ? event : null;
+            const form = submitEvent?.target instanceof HTMLFormElement ? submitEvent.target : null;
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? '';
+
+            if (!submitEvent || typeof window.fetch !== 'function' || !csrfToken) {
+                return;
+            }
+
+            submitEvent.preventDefault();
 
             this.amount = this.normalizeAmount(this.amount);
 
@@ -554,21 +559,25 @@ const liveBid = (config = {}) => {
             this.success = '';
 
             try {
-                const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? '';
-
                 const response = await fetch(this.storeUrl, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         Accept: 'application/json',
                         'X-Requested-With': 'XMLHttpRequest',
-                        'X-CSRF-TOKEN': token,
+                        'X-CSRF-TOKEN': csrfToken,
                     },
                     credentials: 'same-origin',
                     body: JSON.stringify({
                         amount: this.amount,
                     }),
                 });
+
+                if (response.redirected && form) {
+                    form.submit();
+
+                    return;
+                }
 
                 const payload = await response.json().catch(() => ({}));
 
