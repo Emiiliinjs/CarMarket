@@ -123,7 +123,7 @@
                         Solis {{ number_format($minIncrement, 0, '.', ' ') }} €
                     </span>
                 </div>
-                <p class="text-sm text-gray-500 dark:text-gray-300">Katrs solis tiek apstiprināts nekavējoties un tiek translēts visiem dalībniekiem.</p>
+                <p class="text-sm text-gray-500 dark:text-gray-300">Vari ievadīt arī lielāku summu par minimālo soli — sistēma pieņems jebkuru summu virs nākamā minimālā soļa.</p>
 
                 @auth
                     <form
@@ -151,11 +151,10 @@
                                     type="number"
                                     inputmode="decimal"
                                     min="{{ number_format($nextBidAmount, 2, '.', '') }}"
-                                    step="{{ number_format($minIncrement, 0, '.', '') }}"
+                                    step="0.01"
                                     value="{{ old('amount', $nextBidAmount) }}"
                                     x-model.number="amount"
                                     x-bind:min="nextBidAmount"
-                                    x-bind:step="minIncrement"
                                     x-bind:disabled="loading"
                                     x-on:blur="handleManualInput($event)"
                                     x-on:change="handleManualInput($event)"
