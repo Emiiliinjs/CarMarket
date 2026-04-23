@@ -129,7 +129,7 @@
                     <form
                         method="POST"
                         action="{{ route('listings.bids.store', $listing) }}"
-                        x-on:submit.prevent="placeBid($event)"
+                        x-on:submit="placeBid($event)"
                         class="space-y-4"
                     >
                         @csrf
