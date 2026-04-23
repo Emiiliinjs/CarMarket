@@ -41,13 +41,13 @@ Route::middleware(['auth', 'active-user'])->group(function () {
     Route::post('/favorites/{listing}', [FavoriteController::class, 'store'])->name('favorites.store');
     Route::delete('/favorites/{listing}', [FavoriteController::class, 'destroy'])->name('favorites.destroy');
 
-    Route::get('/listings/{listing}/live-bid', [ListingController::class, 'liveBid'])->name('listings.live-bid');
     Route::get('/listings/{listing}/bids', [ListingBidController::class, 'index'])->name('listings.bids.index');
     Route::post('/listings/{listing}/bids', [ListingBidController::class, 'store'])->name('listings.bids.store');
 });
 
 // Sludinājuma detaļas (skatīt jebkurš) — jābūt **pēc create/edit maršrutiem**
 Route::get('/listings/{listing}', [ListingController::class, 'show'])->name('listings.show');
+Route::get('/listings/{listing}/live-bid', [ListingController::class, 'liveBid'])->name('listings.live-bid');
 
 Route::post('/listings/{listing}/report', [ListingReportController::class, 'store'])->name('listings.report');
 

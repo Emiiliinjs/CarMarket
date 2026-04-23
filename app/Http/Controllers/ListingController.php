@@ -100,10 +100,6 @@ class ListingController extends Controller
             abort(404);
         }
 
-        if (! Auth::user()?->is_admin) {
-            abort(403);
-        }
-
         if (! $listing->is_approved && Auth::id() !== $listing->user_id && ! Auth::user()?->is_admin) {
             abort(404);
         }
