@@ -245,7 +245,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
                         </svg>
                         <p class="text-sm text-gray-600">Ievelc bildes šeit vai <span class="font-medium text-[#2B7A78] underline">izvēlies no ierīces</span></p>
-                        <p class="mt-1 text-xs text-gray-400">Atbalstītie formāti: JPG, PNG, WEBP. Max 5 MB gabalā.</p>
+                        <p class="mt-1 text-xs text-gray-400">Atbalstītie formāti: JPG, PNG, WEBP. Max 2 MB gabalā.</p>
                     </div>
 
                     <!-- Slēptais input -->
