@@ -24,8 +24,8 @@
             <div class="space-y-6 lg:col-span-3">
                 <div class="overflow-hidden rounded-3xl bg-white/80 shadow-xl ring-1 ring-gray-100 dark:bg-gray-900/70 dark:ring-gray-800">
                     <div class="relative aspect-[4/3]">
-                        <button type="button" class="group h-full w-full" @if($imageUrls->count()) data-gallery-index="0" @endif>
-                            <img src="{{ $primaryUrl }}" alt="{{ $listing->marka }} {{ $listing->modelis }}" class="h-full w-full object-cover transition group-hover:scale-[1.01]" loading="lazy">
+                        <button type="button" id="gallery-primary-opener" class="group h-full w-full" @if($imageUrls->count()) data-gallery-index="0" @endif>
+                            <img id="gallery-primary-image" src="{{ $primaryUrl }}" alt="{{ $listing->marka }} {{ $listing->modelis }}" class="h-full w-full object-cover transition group-hover:scale-[1.01]" loading="lazy">
                             @if($images->count() > 1)
                                 <span class="pointer-events-none absolute inset-0 hidden items-center justify-center bg-black/40 text-xs font-semibold uppercase tracking-wide text-white backdrop-blur group-hover:flex">Atvērt galeriju</span>
                                 <span class="absolute right-4 top-4 rounded-full bg-black/60 px-3 py-1 text-xs font-semibold text-white backdrop-blur">
@@ -41,7 +41,7 @@
                         <h3 class="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-500">Papildu bildes</h3>
                         <div class="grid grid-cols-2 gap-4 sm:grid-cols-3">
                             @foreach($additionalImages as $index => $imageUrl)
-                                <button type="button" class="group relative overflow-hidden rounded-2xl" data-gallery-index="{{ $index + 1 }}">
+                                <button type="button" class="group relative overflow-hidden rounded-2xl" data-gallery-index="{{ $index + 1 }}" data-preview-index="{{ $index + 1 }}">
                                     <img src="{{ $imageUrl }}" alt="Papildu bilde" class="h-32 w-full object-cover transition group-hover:scale-105" loading="lazy">
                                     <span class="pointer-events-none absolute inset-0 hidden items-center justify-center bg-black/40 text-xs font-semibold text-white group-hover:flex">Skatīt</span>
                                 </button>
@@ -189,6 +189,9 @@
                 if (!galleryImages.length) return;
 
                 const openers = document.querySelectorAll('[data-gallery-index]');
+                const primaryOpener = document.getElementById('gallery-primary-opener');
+                const primaryImage = document.getElementById('gallery-primary-image');
+                const previewButtons = document.querySelectorAll('[data-preview-index]');
                 const modal = document.getElementById('gallery-modal');
                 const modalImage = document.getElementById('gallery-image');
                 const modalCounter = document.getElementById('gallery-counter');
@@ -221,6 +224,15 @@
                     opener.addEventListener('click', () => {
                         const idx = parseInt(opener.getAttribute('data-gallery-index'), 10);
                         if (!Number.isNaN(idx)) openModal(idx);
+                    });
+                });
+
+                previewButtons.forEach((previewButton) => {
+                    previewButton.addEventListener('click', () => {
+                        const idx = parseInt(previewButton.getAttribute('data-preview-index'), 10);
+                        if (Number.isNaN(idx) || !primaryImage || !primaryOpener) return;
+                        primaryImage.src = galleryImages[idx];
+                        primaryOpener.setAttribute('data-gallery-index', String(idx));
                     });
                 });
 
