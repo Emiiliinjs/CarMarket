@@ -6,14 +6,14 @@
         <h2 class="text-2xl font-semibold leading-tight text-gray-900 dark:text-white">
                 Pievienot jaunu sludinājumu
             </h2>
-            <p class="text-sm text-gray-500">
+            <p class="text-sm text-gray-500 dark:text-gray-400">
                 Ievadi automašīnas informāciju un pievieno bildes – tās tiks saglabātas galerijā.
             </p>
         </div>
     </x-slot>
 
     <div class="mx-auto w-full max-w-5xl">
-        <div class="space-y-10 rounded-3xl bg-white/80 p-8 shadow-xl ring-1 ring-gray-100 backdrop-blur">
+        <div class="space-y-10 rounded-3xl border border-gray-200/70 bg-white/80 p-8 shadow-sm backdrop-blur dark:border-gray-800/60 dark:bg-gray-900/40">
             <form
                 method="POST"
                 action="{{ route('listings.store') }}"
@@ -44,13 +44,13 @@
                     <div class="grid gap-6 md:grid-cols-2">
                         <!-- Marka -->
                         <div>
-                            <label for="marka" class="text-sm font-semibold text-gray-700">Marka</label>
+                            <label for="marka" class="text-sm font-semibold text-gray-700 dark:text-gray-300">Marka</label>
                             <select
                                 id="marka"
                                 name="marka"
                                 x-model="selectedBrand"
                                 @change="updateModels()"
-                                class="mt-2 w-full appearance-none rounded-xl border border-gray-300 bg-white px-4 py-2.5 text-gray-900 shadow-sm focus:border-[#2B7A78] focus:ring-2 focus:ring-[#2B7A78]/30"
+                                class="mt-2 w-full appearance-none rounded-xl border border-gray-300 bg-white px-4 py-2.5 text-gray-900 shadow-sm focus:border-[#2B7A78] focus:ring-2 focus:ring-[#2B7A78]/30 dark:border-gray-700 dark:bg-gray-950 dark:text-gray-100"
                                 required
                             >
                                 <option value="">Izvēlies marku</option>
@@ -63,13 +63,13 @@
 
                         <!-- Modelis -->
                         <div>
-                            <label for="modelis" class="text-sm font-semibold text-gray-700">Modelis</label>
+                            <label for="modelis" class="text-sm font-semibold text-gray-700 dark:text-gray-300">Modelis</label>
                             <select
                                 id="modelis"
                                 name="modelis"
                                 x-model="selectedModel"
                                 :disabled="!selectedBrand"
-                                class="mt-2 w-full appearance-none rounded-xl border border-gray-300 bg-white px-4 py-2.5 text-gray-900 shadow-sm focus:border-[#2B7A78] focus:ring-2 focus:ring-[#2B7A78]/30"
+                                class="mt-2 w-full appearance-none rounded-xl border border-gray-300 bg-white px-4 py-2.5 text-gray-900 shadow-sm focus:border-[#2B7A78] focus:ring-2 focus:ring-[#2B7A78]/30 dark:border-gray-700 dark:bg-gray-950 dark:text-gray-100"
                                 required
                             >
                                 <option value="">Izvēlies modeli</option>
@@ -82,39 +82,39 @@
 
                         <!-- Gads -->
                         <div>
-                            <label for="gads" class="text-sm font-semibold text-gray-700">Izlaiduma gads</label>
+                            <label for="gads" class="text-sm font-semibold text-gray-700 dark:text-gray-300">Izlaiduma gads</label>
                             <input id="gads" type="number" name="gads"
                                    value="{{ old('gads') }}"
-                                   class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-gray-700 shadow-sm focus:border-[#2B7A78] focus:ring-2 focus:ring-[#2B7A78]/30"
+                                   class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-gray-700 shadow-sm focus:border-[#2B7A78] focus:ring-2 focus:ring-[#2B7A78]/30 dark:border-gray-700 dark:bg-gray-950 dark:text-gray-100"
                                    required>
                             @error('gads') <p class="mt-2 text-sm text-red-600">{{ $message }}</p> @enderror
                         </div>
 
                         <!-- Nobraukums -->
                         <div>
-                            <label for="nobraukums" class="text-sm font-semibold text-gray-700">Nobraukums (km)</label>
+                            <label for="nobraukums" class="text-sm font-semibold text-gray-700 dark:text-gray-300">Nobraukums (km)</label>
                             <input id="nobraukums" type="number" name="nobraukums"
                                    value="{{ old('nobraukums') }}"
-                                   class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-gray-700 shadow-sm focus:border-[#2B7A78] focus:ring-2 focus:ring-[#2B7A78]/30"
+                                   class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-gray-700 shadow-sm focus:border-[#2B7A78] focus:ring-2 focus:ring-[#2B7A78]/30 dark:border-gray-700 dark:bg-gray-950 dark:text-gray-100"
                                    required>
                             @error('nobraukums') <p class="mt-2 text-sm text-red-600">{{ $message }}</p> @enderror
                         </div>
 
                         <!-- Cena -->
                         <div>
-                            <label for="cena" class="text-sm font-semibold text-gray-700">Cena (€)</label>
+                            <label for="cena" class="text-sm font-semibold text-gray-700 dark:text-gray-300">Cena (€)</label>
                             <input id="cena" type="number" step="0.01" name="cena"
                                    value="{{ old('cena') }}"
-                                   class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-gray-700 shadow-sm focus:border-[#2B7A78] focus:ring-2 focus:ring-[#2B7A78]/30"
+                                   class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-gray-700 shadow-sm focus:border-[#2B7A78] focus:ring-2 focus:ring-[#2B7A78]/30 dark:border-gray-700 dark:bg-gray-950 dark:text-gray-100"
                                    required>
                             @error('cena') <p class="mt-2 text-sm text-red-600">{{ $message }}</p> @enderror
                         </div>
 
                         <!-- Degviela -->
                         <div>
-                            <label for="degviela" class="text-sm font-semibold text-gray-700">Degviela</label>
+                            <label for="degviela" class="text-sm font-semibold text-gray-700 dark:text-gray-300">Degviela</label>
                             <select id="degviela" name="degviela"
-                                    class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-gray-700 shadow-sm focus:ring-2 focus:ring-[#2B7A78]/30"
+                                    class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-gray-700 shadow-sm focus:ring-2 focus:ring-[#2B7A78]/30 dark:border-gray-700 dark:bg-gray-950 dark:text-gray-100"
                                     required>
                                 <option value="Benzīns" @selected(old('degviela') === 'Benzīns')>Benzīns</option>
                                 <option value="Dīzelis" @selected(old('degviela') === 'Dīzelis')>Dīzelis</option>
@@ -126,9 +126,9 @@
 
                         <!-- Pārnesumkārba -->
                         <div>
-                            <label for="parnesumkarba" class="text-sm font-semibold text-gray-700">Pārnesumkārba</label>
+                            <label for="parnesumkarba" class="text-sm font-semibold text-gray-700 dark:text-gray-300">Pārnesumkārba</label>
                             <select id="parnesumkarba" name="parnesumkarba"
-                                    class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-gray-700 shadow-sm focus:ring-2 focus:ring-[#2B7A78]/30"
+                                    class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-gray-700 shadow-sm focus:ring-2 focus:ring-[#2B7A78]/30 dark:border-gray-700 dark:bg-gray-950 dark:text-gray-100"
                                     required>
                                 <option value="Manuālā" @selected(old('parnesumkarba') === 'Manuālā')>Manuālā</option>
                                 <option value="Automātiskā" @selected(old('parnesumkarba') === 'Automātiskā')>Automātiskā</option>
@@ -138,18 +138,18 @@
 
                         <!-- Motora tilpums -->
                         <div>
-                            <label for="motora_tilpums" class="text-sm font-semibold text-gray-700">Motora tilpums (L)</label>
+                            <label for="motora_tilpums" class="text-sm font-semibold text-gray-700 dark:text-gray-300">Motora tilpums (L)</label>
                             <input id="motora_tilpums" type="number" step="0.1" name="motora_tilpums"
                                    value="{{ old('motora_tilpums') }}"
-                                   class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-gray-700 shadow-sm focus:ring-2 focus:ring-[#2B7A78]/30">
+                                   class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-gray-700 shadow-sm focus:ring-2 focus:ring-[#2B7A78]/30 dark:border-gray-700 dark:bg-gray-950 dark:text-gray-100">
                             @error('motora_tilpums') <p class="mt-2 text-sm text-red-600">{{ $message }}</p> @enderror
                         </div>
 
                         <!-- Virsbūves tips -->
                         <div>
-                            <label for="virsbuves_tips" class="text-sm font-semibold text-gray-700">Virsbūves tips</label>
+                            <label for="virsbuves_tips" class="text-sm font-semibold text-gray-700 dark:text-gray-300">Virsbūves tips</label>
                             <select id="virsbuves_tips" name="virsbuves_tips"
-                                    class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-gray-700 shadow-sm focus:ring-2 focus:ring-[#2B7A78]/30">
+                                    class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-gray-700 shadow-sm focus:ring-2 focus:ring-[#2B7A78]/30 dark:border-gray-700 dark:bg-gray-950 dark:text-gray-100">
                                 <option value="">Izvēlies</option>
                                 <option @selected(old('virsbuves_tips')==='Apvidus')>Apvidus</option>
                                 <option @selected(old('virsbuves_tips')==='Hečbeks')>Hečbeks</option>
@@ -166,45 +166,45 @@
 
                         <!-- VIN -->
                         <div>
-                            <label for="vin_numurs" class="text-sm font-semibold text-gray-700">VIN numurs</label>
+                            <label for="vin_numurs" class="text-sm font-semibold text-gray-700 dark:text-gray-300">VIN numurs</label>
                             <input id="vin_numurs" type="text" name="vin_numurs"
                                    value="{{ old('vin_numurs') }}"
-                                   class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-gray-700 shadow-sm focus:ring-2 focus:ring-[#2B7A78]/30">
+                                   class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-gray-700 shadow-sm focus:ring-2 focus:ring-[#2B7A78]/30 dark:border-gray-700 dark:bg-gray-950 dark:text-gray-100">
                             @error('vin_numurs') <p class="mt-2 text-sm text-red-600">{{ $message }}</p> @enderror
                         </div>
 
                         <!-- Valsts numurzīme -->
                         <div>
-                            <label for="valsts_numurzime" class="text-sm font-semibold text-gray-700">Valsts numurzīme</label>
+                            <label for="valsts_numurzime" class="text-sm font-semibold text-gray-700 dark:text-gray-300">Valsts numurzīme</label>
                             <input id="valsts_numurzime" type="text" name="valsts_numurzime"
                                    value="{{ old('valsts_numurzime') }}"
-                                   class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-gray-700 shadow-sm focus:ring-2 focus:ring-[#2B7A78]/30">
+                                   class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-gray-700 shadow-sm focus:ring-2 focus:ring-[#2B7A78]/30 dark:border-gray-700 dark:bg-gray-950 dark:text-gray-100">
                             @error('valsts_numurzime') <p class="mt-2 text-sm text-red-600">{{ $message }}</p> @enderror
                         </div>
 
                         <!-- Tehniskā apskate -->
                         <div>
-                            <label for="tehniska_apskate" class="text-sm font-semibold text-gray-700">Tehniskā apskate</label>
+                            <label for="tehniska_apskate" class="text-sm font-semibold text-gray-700 dark:text-gray-300">Tehniskā apskate</label>
                             <input id="tehniska_apskate" type="date" name="tehniska_apskate"
                                    value="{{ old('tehniska_apskate') }}"
-                                   class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-gray-700 shadow-sm focus:ring-2 focus:ring-[#2B7A78]/30">
+                                   class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-gray-700 shadow-sm focus:ring-2 focus:ring-[#2B7A78]/30 dark:border-gray-700 dark:bg-gray-950 dark:text-gray-100">
                             @error('tehniska_apskate') <p class="mt-2 text-sm text-red-600">{{ $message }}</p> @enderror
                         </div>
                     </div>
 
                     <!-- Apraksts -->
                     <div>
-                        <label for="apraksts" class="text-sm font-semibold text-gray-700">Apraksts</label>
+                        <label for="apraksts" class="text-sm font-semibold text-gray-700 dark:text-gray-300">Apraksts</label>
                         <textarea id="apraksts" name="apraksts" rows="4"
-                                  class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-gray-700 shadow-sm focus:border-[#2B7A78] focus:ring-2 focus:ring-[#2B7A78]/30">{{ old('apraksts') }}</textarea>
+                                  class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-gray-700 shadow-sm focus:border-[#2B7A78] focus:ring-2 focus:ring-[#2B7A78]/30 dark:border-gray-700 dark:bg-gray-950 dark:text-gray-100">{{ old('apraksts') }}</textarea>
                         @error('apraksts') <p class="mt-2 text-sm text-red-600">{{ $message }}</p> @enderror
                     </div>
 
                     <!-- Statuss -->
                     <div>
-                        <label for="status" class="text-sm font-semibold text-gray-700">Statuss</label>
+                        <label for="status" class="text-sm font-semibold text-gray-700 dark:text-gray-300">Statuss</label>
                         <select id="status" name="status"
-                                class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-gray-700 shadow-sm focus:ring-2 focus:ring-[#2B7A78]/30" required>
+                                class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-gray-700 shadow-sm focus:ring-2 focus:ring-[#2B7A78]/30 dark:border-gray-700 dark:bg-gray-950 dark:text-gray-100" required>
                             <option value="{{ Listing::STATUS_AVAILABLE }}" @selected(old('status') === Listing::STATUS_AVAILABLE)>Pieejams</option>
                             <option value="{{ Listing::STATUS_RESERVED }}" @selected(old('status') === Listing::STATUS_RESERVED)>Rezervēts</option>
                             <option value="{{ Listing::STATUS_SOLD }}" @selected(old('status') === Listing::STATUS_SOLD)>Pārdots</option>
@@ -214,12 +214,12 @@
 
                     <!-- Kontaktinformācija -->
                     <div>
-                        <label for="contact_info" class="text-sm font-semibold text-gray-700">Kontakta informācija</label>
+                        <label for="contact_info" class="text-sm font-semibold text-gray-700 dark:text-gray-300">Kontakta informācija</label>
                         <textarea id="contact_info" name="contact_info" rows="3"
-                                  class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-gray-700 shadow-sm focus:ring-2 focus:ring-[#2B7A78]/30">{{ old('contact_info') }}</textarea>
+                                  class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-gray-700 shadow-sm focus:ring-2 focus:ring-[#2B7A78]/30 dark:border-gray-700 dark:bg-gray-950 dark:text-gray-100">{{ old('contact_info') }}</textarea>
                         @error('contact_info') <p class="mt-2 text-sm text-red-600">{{ $message }}</p> @enderror
 
-                        <label class="mt-3 inline-flex items-center gap-2 text-sm text-gray-600">
+                        <label class="mt-3 inline-flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                             <input type="checkbox" name="show_contact" value="1" @checked(old('show_contact'))
                                    class="h-4 w-4 rounded border-gray-300 text-[#2B7A78] focus:ring-[#2B7A78]">
                             Rādīt kontaktinformāciju sludinājumā
@@ -230,22 +230,22 @@
 
                 <!-- ======================== Jaunas bildes ======================== -->
                 <section class="space-y-4" x-data="imageUploadManager()" x-init="registerInput($refs.input)">
-                    <h3 class="text-lg font-semibold text-gray-900">Pievieno auto bildes</h3>
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Pievieno auto bildes</h3>
 
                     <!-- Drag & Drop zona -->
                     <div
-                        class="flex w-full cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-300 p-8 text-center transition hover:bg-gray-50"
+                        class="flex w-full cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-300 p-8 text-center transition hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800/40"
                         :class="{ 'ring-2 ring-[#2B7A78]/50': isDragOver }"
                         @click="$refs.input.click()"
                         @dragover.prevent="onZoneDrag(true)"
                         @dragleave.prevent="onZoneDrag(false)"
                         @drop.prevent="handleZoneDrop($event)"
                     >
-                        <svg xmlns="http://www.w3.org/2000/svg" class="mb-2 h-10 w-10 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="mb-2 h-10 w-10 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
                         </svg>
-                        <p class="text-sm text-gray-600">Ievelc bildes šeit vai <span class="font-medium text-[#2B7A78] underline">izvēlies no ierīces</span></p>
-                        <p class="mt-1 text-xs text-gray-400">Atbalstītie formāti: JPG, PNG, WEBP. Max 2 MB gabalā.</p>
+                        <p class="text-sm text-gray-600 dark:text-gray-300">Ievelc bildes šeit vai <span class="font-medium text-[#2B7A78] underline">izvēlies no ierīces</span></p>
+                        <p class="mt-1 text-xs text-gray-400 dark:text-gray-500">Atbalstītie formāti: JPG, PNG, WEBP. Max 2 MB gabalā.</p>
                     </div>
 
                     <!-- Slēptais input -->
@@ -281,7 +281,7 @@
                                     <div class="pointer-events-none absolute right-2 top-2 flex gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100">
                                         <button
                                             type="button"
-                                            class="pointer-events-auto inline-flex h-7 w-7 items-center justify-center rounded-full bg-white/90 text-gray-700 shadow"
+                                            class="pointer-events-auto inline-flex h-7 w-7 items-center justify-center rounded-full bg-white/90 text-gray-700 shadow dark:bg-gray-900/90 dark:text-gray-200"
                                             @click.stop="move(index, index - 1)"
                                             :disabled="index === 0"
                                             title="Pārvietot augstāk"
@@ -289,7 +289,7 @@
 
                                         <button
                                             type="button"
-                                            class="pointer-events-auto inline-flex h-7 w-7 items-center justify-center rounded-full bg-white/90 text-gray-700 shadow"
+                                            class="pointer-events-auto inline-flex h-7 w-7 items-center justify-center rounded-full bg-white/90 text-gray-700 shadow dark:bg-gray-900/90 dark:text-gray-200"
                                             @click.stop="move(index, index + 1)"
                                             :disabled="index === files.length - 1"
                                             title="Pārvietot zemāk"
@@ -303,7 +303,7 @@
                                         >✕</button>
                                     </div>
 
-                                    <p class="mt-1 truncate text-xs text-gray-600" x-text="file.name"></p>
+                                    <p class="mt-1 truncate text-xs text-gray-600 dark:text-gray-300" x-text="file.name"></p>
                                 </div>
                             </template>
                         </div>
@@ -315,7 +315,7 @@
 
                 <!-- ======================== Submit ======================== -->
                 <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                    <p class="text-sm text-gray-500">Ar augšupielādi tu apliecini, ka bilde nepārkāpj autortiesības.</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Ar augšupielādi tu apliecini, ka bilde nepārkāpj autortiesības.</p>
                     <button type="submit" class="btn btn-primary text-base">Ievietot sludinājumu</button>
                 </div>
             </form>

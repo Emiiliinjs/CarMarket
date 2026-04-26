@@ -8,18 +8,7 @@ class CarModelRepository
 
     public function __construct()
     {
-        $path = database_path('data/car_models_full.json');
-
-        if (! file_exists($path)) {
-            throw new \RuntimeException("Car models file not found at {$path}");
-        }
-
-        $raw = json_decode(file_get_contents($path), true);
-
-        if (! is_array($raw)) {
-            throw new \RuntimeException("Car models JSON is invalid.");
-        }
-
+        $raw = $this->loadRawData();
         $this->data = $this->normalizeRawData($raw);
     }
 
@@ -101,5 +90,59 @@ class CarModelRepository
 
         // Izfiltrē tukšos un atgriež indeksētu masīvu
         return array_values(array_filter($clean));
+    }
+
+    private function loadRawData(): array
+    {
+        $paths = [
+            base_path('Cardata.json'),
+            database_path('data/car_models_full.json'),
+        ];
+
+        foreach ($paths as $path) {
+            if (! file_exists($path)) {
+                continue;
+            }
+
+            $contents = file_get_contents($path);
+            $decoded = json_decode($contents, true);
+
+            if (is_array($decoded)) {
+                if (array_key_exists('content', $decoded) && is_string($decoded['content'])) {
+                    $parsedFromContent = $this->parsePhpArrayDump($decoded['content']);
+                    if (! empty($parsedFromContent)) {
+                        return $parsedFromContent;
+                    }
+                }
+
+                return $decoded;
+            }
+        }
+
+        throw new \RuntimeException('Car models file not found or invalid.');
+    }
+
+    private function parsePhpArrayDump(string $content): array
+    {
+        preg_match_all(
+            "/'brand'\\s*=>\\s*'([^']+)'(.*?)(?='brand'\\s*=>|\\)\\s*,\\s*\\z)/s",
+            $content,
+            $brandBlocks,
+            PREG_SET_ORDER
+        );
+
+        $result = [];
+
+        foreach ($brandBlocks as $block) {
+            $brand = trim($block[1]);
+            $modelsPart = $block[2] ?? '';
+            preg_match_all("/'title'\\s*=>\\s*'([^']+)'/", $modelsPart, $modelMatches);
+            $result[] = [
+                'brand' => $brand,
+                'models' => $modelMatches[1] ?? [],
+            ];
+        }
+
+        return $result;
     }
 }
