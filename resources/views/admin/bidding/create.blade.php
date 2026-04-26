@@ -19,20 +19,55 @@
 
     <div class="mx-auto w-full max-w-4xl">
         <div class="rounded-3xl border border-gray-200/70 bg-white/80 p-8 shadow-sm backdrop-blur dark:border-gray-800/60 dark:bg-gray-900/40">
-            <form method="POST" action="{{ route('admin.bidding.store') }}" enctype="multipart/form-data" class="space-y-8">
+            <form
+                method="POST"
+                action="{{ route('admin.bidding.store') }}"
+                enctype="multipart/form-data"
+                class="space-y-8"
+                x-data="listingForm(
+                    JSON.parse(document.getElementById('car-models-data').textContent),
+                    '{{ old('marka') }}',
+                    '{{ old('modelis') }}'
+                )"
+                x-init="init()"
+            >
                 @csrf
 
                 <div class="grid gap-6 md:grid-cols-2">
                     <div>
                         <label for="marka" class="text-sm font-semibold text-gray-700 dark:text-gray-300">Marka</label>
-                        <input type="text" id="marka" name="marka" value="{{ old('marka') }}" required class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-gray-700 shadow-sm focus:border-[#2B7A78] focus:outline-none focus:ring-2 focus:ring-[#2B7A78]/30 dark:border-gray-700 dark:bg-gray-950 dark:text-gray-100">
+                        <select
+                            id="marka"
+                            name="marka"
+                            x-model="selectedBrand"
+                            @change="updateModels()"
+                            required
+                            class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-gray-700 shadow-sm focus:border-[#2B7A78] focus:outline-none focus:ring-2 focus:ring-[#2B7A78]/30 dark:border-gray-700 dark:bg-gray-950 dark:text-gray-100"
+                        >
+                            <option value="">Izvēlies marku</option>
+                            <template x-for="brand in availableBrands" :key="brand">
+                                <option :value="brand" x-text="brand"></option>
+                            </template>
+                        </select>
                         @error('marka')
                             <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                         @enderror
                     </div>
                     <div>
                         <label for="modelis" class="text-sm font-semibold text-gray-700 dark:text-gray-300">Modelis</label>
-                        <input type="text" id="modelis" name="modelis" value="{{ old('modelis') }}" required class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-gray-700 shadow-sm focus:border-[#2B7A78] focus:outline-none focus:ring-2 focus:ring-[#2B7A78]/30 dark:border-gray-700 dark:bg-gray-950 dark:text-gray-100">
+                        <select
+                            id="modelis"
+                            name="modelis"
+                            x-model="selectedModel"
+                            :disabled="!selectedBrand"
+                            required
+                            class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-gray-700 shadow-sm focus:border-[#2B7A78] focus:outline-none focus:ring-2 focus:ring-[#2B7A78]/30 dark:border-gray-700 dark:bg-gray-950 dark:text-gray-100"
+                        >
+                            <option value="">Izvēlies modeli</option>
+                            <template x-for="model in availableModels" :key="model">
+                                <option :value="model" x-text="model"></option>
+                            </template>
+                        </select>
                         @error('modelis')
                             <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                         @enderror
@@ -127,4 +162,33 @@
             </form>
         </div>
     </div>
+
+    <script id="car-models-data" type="application/json">
+        {!! json_encode($carModels, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) !!}
+    </script>
+
+    <script>
+        function listingForm(carData, initialBrand = '', initialModel = '') {
+            return {
+                carData,
+                availableBrands: Object.keys(carData),
+                availableModels: [],
+                selectedBrand: initialBrand || '',
+                selectedModel: initialModel || '',
+
+                init() {
+                    if (this.selectedBrand) {
+                        this.updateModels();
+                    }
+                },
+
+                updateModels() {
+                    this.availableModels = this.carData[this.selectedBrand] || [];
+                    if (!this.availableModels.includes(this.selectedModel)) {
+                        this.selectedModel = '';
+                    }
+                }
+            }
+        }
+    </script>
 </x-app-layout>

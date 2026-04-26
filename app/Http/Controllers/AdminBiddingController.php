@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Listing;
+use App\Support\CarModelRepository;
 use App\Support\HandlesListingImages;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -25,10 +26,11 @@ class AdminBiddingController extends Controller
         ]);
     }
 
-    public function create(): View
+    public function create(CarModelRepository $carModels): View
     {
         return view('admin.bidding.create', [
             'statuses' => Listing::STATUSES,
+            'carModels' => $carModels->all(),
         ]);
     }
 
@@ -49,6 +51,17 @@ class AdminBiddingController extends Controller
             'images'       => 'nullable|array',
             'images.*'     => 'image|max:2048',
         ]);
+
+        $allowedModels = app(CarModelRepository::class)->all();
+        $brandModels = $allowedModels[$validated['marka']] ?? [];
+
+        if (! array_key_exists($validated['marka'], $allowedModels) || ! in_array($validated['modelis'], $brandModels, true)) {
+            return back()
+                ->withErrors([
+                    'modelis' => 'Izvēlies auto marku un modeli no cardata.json saraksta.',
+                ])
+                ->withInput();
+        }
 
         $validated['user_id'] = Auth::id();
         $validated['show_contact'] = $request->boolean('show_contact', false);
