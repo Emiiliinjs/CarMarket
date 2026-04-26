@@ -143,8 +143,6 @@
             </button>
 
             @auth
-                <span class="inline-flex items-center gap-1 rounded-full border border-teal-200/80 bg-teal-50/80 px-2.5 py-1 text-[0.65rem] font-semibold uppercase tracking-wider text-teal-700 dark:border-teal-700/40 dark:bg-teal-900/20 dark:text-teal-300">
-
                 <!-- User dropdown -->
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
