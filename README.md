@@ -31,8 +31,7 @@ php artisan key:generate
 php artisan migrate --seed
 npm run build # vai npm run dev izstrādei
 php artisan serve
+php artisan make:admin tavsepasts
 ```
 
 Projekta grafiskie aktīvi (tai skaitā logo) atrodas mapē `public/images`.
-
-php artisan make:admin tavsepasts
