@@ -35,6 +35,4 @@ php artisan serve
 
 Projekta grafiskie aktīvi (tai skaitā logo) atrodas mapē `public/images`.
 
-## Licence
-
-php artisan make:admin ipb22.e.darzins@vtdt.edu.lv
+php artisan make:admin tavsepasts
