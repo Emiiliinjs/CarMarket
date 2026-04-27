@@ -12,7 +12,10 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->call(CarDatabaseSeeder::class);
+        $this->call([
+            CarDatabaseSeeder::class,
+            AdminUserSeeder::class,
+        ]);
 
         User::factory()->create([
             'name' => 'Test User',
