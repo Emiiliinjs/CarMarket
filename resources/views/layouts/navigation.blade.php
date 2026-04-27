@@ -237,16 +237,17 @@
 
         {{-- ── Logo ── --}}
         <a href="{{ route('landing.index') }}"
-           class="group flex items-center gap-3 mr-2 flex-shrink-0">
-            <div class="relative flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-[#2B7A78] to-teal-500 shadow-lg shadow-teal-500/25 transition-all duration-300 group-hover:shadow-teal-500/40 group-hover:scale-105">
-                <x-application-logo class="block h-5 w-auto fill-current text-white" />
-                <div class="absolute inset-0 rounded-xl ring-2 ring-white/20"></div>
-            </div>
-            <span class="nav-wordmark hidden text-[15px] font-700 tracking-tight sm:inline"
-                  style="font-weight: 700; color: var(--nav-text); letter-spacing: -0.02em;">
-                Car<span style="color: var(--nav-accent);">Market</span>
-            </span>
-        </a>
+   class="group flex items-center gap-3 mr-2 flex-shrink-0">
+
+    <div class="flex items-center justify-center">
+        <x-application-logo class="block h-6 w-auto text-white" />
+    </div>
+
+    <span class="nav-wordmark hidden text-[15px] font-700 tracking-tight sm:inline"
+          style="font-weight: 700; color: var(--nav-text); letter-spacing: -0.02em;">
+        Car<span style="color: var(--nav-accent);">Market</span>
+    </span>
+</a>
 
         {{-- ── Desktop nav ─────────────────────────────────────────── --}}
         <div class="hidden lg:flex items-center gap-0.5 flex-1">
